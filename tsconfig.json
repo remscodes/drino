@@ -1,0 +1,34 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "module": "ES2022",
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "declarationDir": "./dist/types",
+    "sourceMap": true,
+    "declaration": true,
+    "removeComments": true,
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-test",
+    "test"
+  ]
+}

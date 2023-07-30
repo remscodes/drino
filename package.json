@@ -1,0 +1,34 @@
+{
+  "name": "drino",
+  "version": "0.1.0-alpha.1",
+  "description": "Intuitive HTTP client",
+  "author": {
+    "name": "RemsCodes"
+  },
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "types": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "test": "ts-node --project tsconfig.spec.json test/index.spec.ts"
+  },
+  "dependencies": {
+    "tslib": "^2.6.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6",
+    "ts-node": "^10.9.1"
+  },
+  "keywords": [
+    "http",
+    "fetch",
+    "request",
+    "promise",
+    "callback"
+  ]
+}
