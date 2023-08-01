@@ -4,7 +4,7 @@ export type RequestMethodType =
   | 'POST'
   | 'PUT'
   | 'DELETE'
-  | 'CONNECT'
+  // | 'CONNECT'
   | 'OPTIONS'
-  | 'TRACE'
+  // | 'TRACE'
   | 'PATCH';

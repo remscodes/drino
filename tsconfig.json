@@ -1,8 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "target": "ESNext",
     "module": "ES2022",
-    "target": "ES2022",
     "lib": [
       "ES2022",
       "DOM"
@@ -19,6 +19,9 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "useDefineForClassFields": true,
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -28,7 +31,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "dist-test",
-    "test"
+    "test",
+    "scripts"
   ]
 }

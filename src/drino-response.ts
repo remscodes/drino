@@ -1,3 +1,8 @@
+interface DrinoResponseInit {
+
+}
+
 export class DrinoResponse {
-  public constructor() {}
+
+  public constructor(init: DrinoResponseInit) { }
 }

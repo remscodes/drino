@@ -2,7 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "CommonJS",
-    "declaration": false
   },
   "include": [
     "test"
@@ -10,7 +9,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "dist-test",
-    "src"
+    "src",
+    "scripts"
   ]
 }

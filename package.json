@@ -2,27 +2,37 @@
   "name": "drino",
   "version": "0.1.0-alpha.1",
   "description": "Intuitive HTTP client",
-  "author": {
-    "name": "RemsCodes"
-  },
   "license": "MIT",
+  "author": {
+    "name": "Rémy Abitbol"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "ts-node --project ./tsconfig.spec.json ./test/index.spec.ts",
+    "types": "tsc --noEmit",
+    "prepublishOnly": "npm run test && npm run build",
+    "prebuild": "npm run rm-dist",
+    "rm-dist": "node scripts/rm-dist.js"
+  },
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "tsc",
-    "types": "tsc --noEmit",
-    "prepublishOnly": "npm run build",
-    "test": "ts-node --project tsconfig.spec.json test/index.spec.ts"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RemsCodes/drino"
+  },
+  "engines": {
+    "node": ">=18.X"
   },
   "dependencies": {
     "tslib": "^2.6.1"
   },
   "devDependencies": {
-    "typescript": "^5.1.6",
-    "ts-node": "^10.9.1"
+    "@types/node": "^18.17.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
   },
   "keywords": [
     "http",
@@ -30,5 +40,7 @@
     "request",
     "promise",
     "callback"
-  ]
+  ],
+  "packageManager": "pnpm@8.1.1",
+  "sideEffects": false
 }

@@ -1,18 +1,30 @@
-import { RequestMethodType } from './models/http.model';
-import { Modifier } from './models/modifier.model';
-import { Observer } from './models/observer.model';
-import { Options } from './models/options.model';
+import type { RequestMethodType } from './models/http.model';
+import type { Modifier } from './models/modifier.model';
+import type { Observer } from './models/observer.model';
+import type { Options } from './models/options.model';
+
+interface DrinoRequestInit {
+  method: RequestMethodType;
+  url: string;
+  body?: any;
+  options?: Options;
+}
 
 export class DrinoRequest<T = any> {
 
-  public constructor(
-    private method: RequestMethodType,
-    private url: string,
-    private data: any,
-    private options: Options = {}
-  ) { }
+  public constructor(init: DrinoRequestInit) {
+    this.method = init.method;
+    this.url = init.url;
+    this.body = init.body;
+    this.options = init.options ?? {};
+  }
 
-  private modifiers: Modifier<any, any>[] = [];
+  private readonly method: RequestMethodType;
+  private readonly url: string;
+  private readonly body: any;
+  private readonly options: Options;
+
+  private readonly modifiers: Modifier<any, any>[] = [];
 
   public pipe(): DrinoRequest<T>;
   public pipe<A, B>(modifier: Modifier<A, B>): DrinoRequest<B>;
@@ -31,7 +43,8 @@ export class DrinoRequest<T = any> {
   private get fetchInit(): RequestInit {
     return {
       signal: this.options.signal,
-      method: this.method.toLowerCase()
+      method: this.method,
+      body: this.body
     };
   }
 
@@ -51,18 +64,17 @@ export class DrinoRequest<T = any> {
         return this.modifiers.reduce((_, modifier) => modifier(data), data);
       })
       .then((result: T) => {
-        observer.success?.(result);
         observer.result?.(result);
         return result;
       })
       .catch((err: Error) => {
         if (err.name === 'AbortError') {
-          return observer.aborted?.(err);
+          return observer.abort?.(err);
         }
         observer.error?.(err);
       })
       .finally(() => {
-        observer.finished?.();
+        observer.finish?.();
       });
   }
 }
