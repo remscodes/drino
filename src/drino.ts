@@ -13,35 +13,35 @@ export default class Drino {
     return new DrinoInstance(drino);
   }
 
-  public static request(method: RequestMethodType, url: string, body: any, options?: Options) {
-    return new DrinoRequest({ method, url, body, options });
+  public static request<T>(method: RequestMethodType, url: string, body: any, options?: Options): DrinoRequest<T> {
+    return new DrinoRequest<T>({ method, url, body, options });
   }
 
   public static get<T>(url: string, options?: Options): DrinoRequest<T> {
-    return new DrinoRequest<T>({ method: 'GET', url, options });
+    return this.request('GET', url, undefined, options);
   }
 
   public static head<T>(url: string, options?: Options): DrinoRequest<T> {
-    return new DrinoRequest<T>({ method: 'HEAD', url, options });
+    return this.request('HEAD', url, undefined, options);
   }
 
   public static delete<T>(url: string, options?: Options): DrinoRequest<T> {
-    return new DrinoRequest<T>({ method: 'DELETE', url, options });
+    return this.request('DELETE', url, undefined, options);
   }
 
   public static options<T>(url: string, options?: Options): DrinoRequest<T> {
-    return new DrinoRequest<T>({ method: 'OPTIONS', url, options });
+    return this.request('OPTIONS', url, undefined, options);
   }
 
   public static post<T>(url: string, body: any, options?: Options): DrinoRequest<T> {
-    return new DrinoRequest<T>({ method: 'POST', url, body, options });
+    return this.request('POST', url, body, options);
   }
 
   public static put<T>(url: string, body: any, options?: Options): DrinoRequest<T> {
-    return new DrinoRequest<T>({ method: 'PUT', url, body, options });
+    return this.request('PUT', url, body, options);
   }
 
   public static patch<T>(url: string, body: any, options?: Options): DrinoRequest<T> {
-    return new DrinoRequest<T>({ method: 'PATCH', url, body, options });
+    return this.request('PATCH', url, body, options);
   }
 }

@@ -10,7 +10,7 @@ interface DrinoRequestInit {
   options?: Options;
 }
 
-export class DrinoRequest<T = any> {
+export class DrinoRequest<T> {
 
   public constructor(init: DrinoRequestInit) {
     this.method = init.method;
@@ -40,21 +40,29 @@ export class DrinoRequest<T = any> {
     this.useObserver(observer);
   }
 
-  private get fetchInit(): RequestInit {
-    return {
-      signal: this.options.signal,
-      method: this.method,
-      body: this.body
-    };
+  private buildUrl(): URL {
+    const { prefix, params } = this.options;
+
+    let baseUrl = this.url;
+    if (params && Object.keys(params).length > 0) {
+      const searchParams: URLSearchParams = new URLSearchParams(params as (Record<string, string> | undefined));
+      baseUrl = `${baseUrl}?${searchParams}`;
+    }
+
+    return new URL(baseUrl, prefix);
   }
 
   private async thenable(): Promise<T> {
-    const res = await fetch(this.url, this.fetchInit);
-    return await res.json();
+    try {
+      const res: Response = await this.useFetch();
+      return await res.json();
+    } catch (err) {
+      throw err;
+    }
   }
 
   private useObserver(observer: Observer<T>): void {
-    fetch(this.url, this.fetchInit)
+    this.useFetch()
       .then(async (res: Response) => {
         const isJson = res.headers.get('content-type')?.includes('application/json');
         const data = await res.json();
@@ -76,5 +84,14 @@ export class DrinoRequest<T = any> {
       .finally(() => {
         observer.finish?.();
       });
+  }
+
+  private useFetch(): Promise<Response> {
+    return fetch(this.buildUrl(), {
+      method: this.method,
+      headers: this.options.headers,
+      body: this.body,
+      signal: this.options.signal
+    });
   }
 }

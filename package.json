@@ -8,12 +8,14 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "ts-node --project ./tsconfig.spec.json ./test/index.spec.ts",
+    "test": "web-test-runner",
+    "test:watch": "npm run test -- --watch",
     "types": "tsc --noEmit",
     "prepublishOnly": "npm run test && npm run build",
     "prebuild": "npm run rm-dist",
     "rm-dist": "node scripts/rm-dist.js"
   },
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -30,8 +32,12 @@
     "tslib": "^2.6.1"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.1",
+    "@esm-bundle/chai": "4.3.4-fix.0",
     "@types/node": "^18.17.1",
-    "ts-node": "^10.9.1",
+    "@web/dev-server-esbuild": "^0.4.1",
+    "@web/test-runner": "^0.17.0",
+    "@web/test-runner-playwright": "^0.10.1",
     "typescript": "^5.1.6"
   },
   "keywords": [
