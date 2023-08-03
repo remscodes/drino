@@ -15,7 +15,7 @@ const config = {
   concurrency: 1,
   concurrentBrowsers: 3,
   browsers: [
-    playwrightLauncher({ product: 'chromium',  }),
+    playwrightLauncher({ product: 'chromium' }),
     playwrightLauncher({ product: 'firefox' }),
     playwrightLauncher({ product: 'webkit' })
   ],

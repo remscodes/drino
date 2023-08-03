@@ -1,1 +1,1 @@
-export type Modifier<A, B> = (value: A) => B;
+export type Modifier<A = any, B = any> = (value: A) => B;

@@ -11,9 +11,10 @@
     "test": "web-test-runner",
     "test:watch": "npm run test -- --watch",
     "types": "tsc --noEmit",
+    "rm-dist": "node scripts/rm-dist.cjs",
     "prepublishOnly": "npm run test && npm run build",
-    "prebuild": "npm run rm-dist",
-    "rm-dist": "node scripts/rm-dist.js"
+    "prebuild": "npm run types && npm run rm-dist",
+    "pretest": "npm run types"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -26,15 +27,16 @@
     "url": "https://github.com/RemsCodes/drino"
   },
   "engines": {
-    "node": ">=18.X"
+    "node": ">=16.0.0"
   },
   "dependencies": {
     "tslib": "^2.6.1"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.1",
     "@esm-bundle/chai": "4.3.4-fix.0",
-    "@types/node": "^18.17.1",
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^16.18.39",
     "@web/dev-server-esbuild": "^0.4.1",
     "@web/test-runner": "^0.17.0",
     "@web/test-runner-playwright": "^0.10.1",
@@ -47,6 +49,6 @@
     "promise",
     "callback"
   ],
-  "packageManager": "pnpm@8.1.1",
+  "packageManager": "pnpm@8.6.11",
   "sideEffects": false
 }
