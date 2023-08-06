@@ -1,9 +1,22 @@
 import { DrinoInstance } from './drino-instance';
 import { DrinoRequest } from './drino-request';
 import type { RequestMethodType } from './models/http.model';
-import type { Options, ReadType, ReadTypeMap } from './models/options.model';
+import type { InferReadType, Config, ReadType } from '@_/models/config.model';
 
 export default class Drino {
+
+  private static abortCtrl: AbortController = new AbortController();
+
+  public static default = {
+    config: {
+      read: 'json',
+      signal: this.abortCtrl.signal
+    }
+  };
+
+  public static abort(reason: any): void {
+    this.abortCtrl.abort(reason);
+  }
 
   private static create(): DrinoInstance {
     return new DrinoInstance();
@@ -13,35 +26,35 @@ export default class Drino {
     return new DrinoInstance(drino);
   }
 
-  public static request<T, Read extends ReadType = 'response'>(method: RequestMethodType, url: string, body: any, options?: Options<Read>): DrinoRequest<T, Read> {
-    return new DrinoRequest({ method, url, body, options });
+  public static request<T, Read extends ReadType = InferReadType<T>>(method: RequestMethodType, url: string, body: any, config?: Config<Read>): DrinoRequest<T, Read> {
+    return new DrinoRequest<T, Read>({ method, url, body, config });
   }
 
-  public static get<T, Read extends ReadType = 'response', R = (T extends unknown ? ReadTypeMap[Read] : T)>(url: string, options?: Options<Read>): DrinoRequest<T, Read> {
-    return this.request('GET', url, null, options);
+  public static get<T, Read extends ReadType = InferReadType<T>>(url: string, config?: Config<Read>): DrinoRequest<T, Read> {
+    return this.request('GET', url, null, config);
   }
 
-  public static head<T, Read extends ReadType = 'response'>(url: string, options?: Options<Read>): DrinoRequest<T, Read> {
-    return this.request('HEAD', url, null, options);
+  public static head<T, Read extends ReadType = InferReadType<T>>(url: string, config?: Config<Read>): DrinoRequest<T, Read> {
+    return this.request('HEAD', url, null, config);
   }
 
-  public static delete<T, Read extends ReadType = 'response'>(url: string, options?: Options<Read>): DrinoRequest<T, Read> {
-    return this.request('DELETE', url, null, options);
+  public static delete<T, Read extends ReadType = InferReadType<T>>(url: string, config?: Config<Read>): DrinoRequest<T, Read> {
+    return this.request('DELETE', url, null, config);
   }
 
-  public static options<T, Read extends ReadType = 'response'>(url: string, options?: Options<Read>): DrinoRequest<T, Read> {
-    return this.request('OPTIONS', url, null, options);
+  public static options<T, Read extends ReadType = InferReadType<T>>(url: string, config?: Config<Read>): DrinoRequest<T, Read> {
+    return this.request('OPTIONS', url, null, config);
   }
 
-  public static post<T, Read extends ReadType = 'response'>(url: string, body: any, options?: Options<Read>):DrinoRequest<T, Read> {
-    return this.request('POST', url, body, options);
+  public static post<T, Read extends ReadType = InferReadType<T>>(url: string, body: any, config?: Config<Read>): DrinoRequest<T, Read> {
+    return this.request('POST', url, body, config);
   }
 
-  public static put<T, Read extends ReadType = 'response'>(url: string, body: any, options?: Options<Read>): DrinoRequest<T, Read> {
-    return this.request('PUT', url, body, options);
+  public static put<T, Read extends ReadType = InferReadType<T>>(url: string, body: any, config?: Config<Read>): DrinoRequest<T, Read> {
+    return this.request('PUT', url, body, config);
   }
 
-  public static patch<T, Read extends ReadType = 'response'>(url: string, body: any, options?: Options<Read>): DrinoRequest<T, Read> {
-    return this.request('PATCH', url, body, options);
+  public static patch<T, Read extends ReadType = InferReadType<T>>(url: string, body: any, config?: Config<Read>): DrinoRequest<T, Read> {
+    return this.request('PATCH', url, body, config);
   }
 }

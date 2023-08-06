@@ -1,19 +1,25 @@
 import { DrinoResponse } from '../drino-response';
 
-export interface Options<Read extends ReadType = 'response'> {
+export interface Config<Read extends ReadType = 'json'> {
   prefix?: string;
 
   headers?: Headers | Record<string, string>;
   queryParams?: Record<string, string> | URLSearchParams;
 
   /**
-   * @default "response"
+   * @default "json"
    */
   read?: Read;
 
   withCredentials?: boolean;
   signal?: AbortSignal;
   timeout?: number;
+  retry?: RetryConfig;
+}
+
+export interface RetryConfig {
+  count: number;
+  forStatusCode: number[];
 }
 
 export interface ReadTypeMap<Data = any> {
@@ -26,3 +32,12 @@ export interface ReadTypeMap<Data = any> {
 }
 
 export type ReadType = keyof ReadTypeMap
+
+export type InferReadType<Data>
+  = Data extends DrinoResponse<Data> ? 'response'
+  : Data extends Blob ? 'blob'
+    : Data extends ArrayBuffer ? 'arrayBuffer'
+      : Data extends FormData ? 'formData'
+        : Data extends string ? 'text'
+          : Data extends object ? 'json'
+            : never

@@ -11,6 +11,8 @@ export interface Observer<T = any> {
   clientError?: (error: any) => void;
   serverError?: (error: any) => void;
 
+  unavailable?: (error: any) => void;
+
   retry?: (args: RetryArgs) => void;
   abort?: (reason: any) => void;
 }

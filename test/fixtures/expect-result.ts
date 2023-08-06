@@ -7,8 +7,19 @@ export interface JsonPlaceholderPost {
 }
 
 export function expectJsonPlaceholderPost(result: unknown): void {
-  expect(result).to.have.property('title').and.to.be.a('string');
-  expect(result).to.have.property('body').and.to.be.a('string');
-  expect(result).to.have.property('userId').and.to.be.a('number');
-  expect(result).to.have.property('id').and.to.be.a('number');
+  expectProperty(result, 'title', 'string');
+  expectProperty(result, 'body', 'string');
+  expectProperty(result, 'userId', 'number');
+  expectProperty(result, 'id', 'number');
+}
+
+export function expectDrinoResponse(result: unknown): void {
+
+}
+
+function expectProperty(obj: any, propertyKey: string, type: string): void {
+  expect(obj)
+    .to.have.property(propertyKey)
+    .and
+    .to.be.a(type);
 }

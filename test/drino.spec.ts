@@ -1,24 +1,21 @@
 import drino, { DrinoRequest } from '../src';
 import { expectJsonPlaceholderPost, JsonPlaceholderPost } from './fixtures/expect-result';
+import { DrinoService } from './fixtures/drino.service';
 import { JSON_PLACEHOLDER_API } from './fixtures/testing-api-res';
 
 describe('Drino Static', () => {
 
+  const service = new DrinoService();
+
   describe('GET', () => {
 
-    function getPost(): DrinoRequest<JsonPlaceholderPost, 'json'> {
-      return drino.get(JSON_PLACEHOLDER_API.GET, {
-        read: 'json'
-      });
-    }
-
     it('should get result via promise', async () => {
-      const result = await getPost().consume();
+      const result = await service.getPost().consume();
       expectJsonPlaceholderPost(result);
     });
 
     it('should get result via callback', (done) => {
-      getPost().consume({
+      service.getPost().consume({
         result: (result) => {
           expectJsonPlaceholderPost(result);
           done();
