@@ -1,21 +1,21 @@
-import type { Nullable, Optional } from '@_/models/shared.model';
 import { DrinoResponse } from './drino-response';
-import type { RequestMethodType } from './models/http.model';
-import type { Modifier } from './models/modifier.model';
-import type { Observer } from './models/observer.model';
-import type { Config, ReadType, ReadTypeMap, RetryConfig } from '@_/models/config.model';
+import type { Config, InferReadType, ReadType, RetryConfig } from './models/config.model';
+import type { RequestMethodType, Url } from './models/http.model';
+import type { CheckCallback, Modifier, Observer, RequestProcessResult } from './models/request-controller.model';
+import type { Nullable, Optional } from './models/shared.model';
+import { keysOf } from './utils/object-util';
 import { bodyFromReadType } from './utils/response-util';
 
 interface DrinoRequestInit<Read extends ReadType> {
   method: RequestMethodType;
-  url: string;
+  url: Url;
   body?: any;
   config?: Config<Read>;
 }
 
-export class DrinoRequest<Resource, Read extends keyof ReadTypeMap<Resource>> {
+export class RequestController<Resource> {
 
-  public constructor(init: DrinoRequestInit<Read>) {
+  public constructor(init: DrinoRequestInit<InferReadType<Resource>>) {
     const { method, url, body, config = {} } = init;
 
     this.method = method;
@@ -35,12 +35,12 @@ export class DrinoRequest<Resource, Read extends keyof ReadTypeMap<Resource>> {
   }
 
   private readonly method: RequestMethodType;
-  private readonly url: string;
+  private readonly url: Url;
   private readonly body: any;
 
-  private readonly options: Config<Read>;
+  private readonly options: Config<InferReadType<Resource>>;
 
-  private readonly read: Optional<Read>;
+  private readonly read: Optional<InferReadType<Resource>>;
 
   private readonly abortCtrl: Optional<AbortController>;
   private readonly signal: AbortSignal;
@@ -49,21 +49,33 @@ export class DrinoRequest<Resource, Read extends keyof ReadTypeMap<Resource>> {
 
   private readonly modifiers: Modifier[] = [];
 
-  public pipe(): DrinoRequest<Resource, Read>;
-  public pipe<A, B>(modifier: Modifier<A, B>): DrinoRequest<B, Read>;
-  public pipe(...modifiers: Modifier[]): DrinoRequest<any, Read> {
+  public transform(): RequestController<Resource>;
+  public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
+  public transform(...modifiers: Modifier[]): RequestController<any> {
     this.modifiers.push(...modifiers);
     return this;
   }
 
-  public consume(): Promise<ReadTypeMap<Resource>[Read]>;
-  public consume(observer: Observer<ReadTypeMap<Resource>[Read]>): void;
-  public consume(observer?: Observer<ReadTypeMap<Resource>[Read]>): Promise<ReadTypeMap<Resource>[Read]> | void {
+  public consume(): Promise<Resource>;
+  public consume(observer: Observer<Resource>): void;
+  public consume(observer?: Observer<Resource>): Promise<Resource> | void {
     if (!observer) return this.thenable();
     this.useObserver(observer);
   }
 
-  private async thenable(): Promise<ReadTypeMap<Resource>[Read]> {
+  public check(): RequestController<Resource>;
+  public check(checkFn: CheckCallback<Resource>): RequestController<Resource>;
+  public check(checkFn?: CheckCallback<any>): RequestController<any> {
+    if (checkFn) {
+      this.modifiers.push((result) => {
+        checkFn(result);
+        return result;
+      });
+    }
+    return this;
+  }
+
+  private async thenable(): Promise<Resource> {
     let { result, ok } = await this.processRequest();
     if (!ok) throw result;
 
@@ -71,7 +83,7 @@ export class DrinoRequest<Resource, Read extends keyof ReadTypeMap<Resource>> {
     return result as any;
   }
 
-  private useObserver(observer: Observer<ReadTypeMap<Resource>[Read]>): void {
+  private useObserver(observer: Observer<Resource>): void {
     const start: number = Date.now();
     this.processRequest()
       .then(async ({ result, ok }) => {
@@ -96,7 +108,7 @@ export class DrinoRequest<Resource, Read extends keyof ReadTypeMap<Resource>> {
       });
   }
 
-  private async processRequest() {
+  private async processRequest(): Promise<RequestProcessResult<Resource, InferReadType<Resource>>> {
     const fetchResponse: Response = await this.useFetch();
 
     const { headers, status, statusText, ok, url } = fetchResponse;
@@ -107,7 +119,7 @@ export class DrinoRequest<Resource, Read extends keyof ReadTypeMap<Resource>> {
       ok,
       result: (this.read === 'response')
         ? new DrinoResponse<Resource>({ headers, status, statusText, ok, body, url })
-        : body
+        : body as any
     };
   }
 
@@ -116,24 +128,24 @@ export class DrinoRequest<Resource, Read extends keyof ReadTypeMap<Resource>> {
 
     return fetch(this.buildUrl(), {
       method: this.method,
-      body: this.body,
+      body: this.body && JSON.stringify(this.body),
       headers,
       signal,
       credentials: (withCredentials) ? 'include' : 'omit'
     });
   }
 
-  private convertBody(fetchResponse: Response): Promise<ReadTypeMap<Resource>[Read]> {
+  private convertBody(fetchResponse: Response): Promise<Resource> {
     if (this.read) return bodyFromReadType(fetchResponse, this.read);
 
     else {
       const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
 
       const readType: ReadType
-        = (contentType === 'application/json') ? 'json'
+        = (contentType === 'application/json') ? 'object'
         : (contentType === 'application/octet-stream') ? 'blob'
           : (contentType === 'multipart/form-data') ? 'formData'
-            : 'text';
+            : 'string';
 
       return bodyFromReadType(fetchResponse, readType);
     }
@@ -142,16 +154,18 @@ export class DrinoRequest<Resource, Read extends keyof ReadTypeMap<Resource>> {
   private buildUrl(): URL {
     const { prefix, queryParams } = this.options;
 
-    let baseUrl = this.url;
+    const url: URL = new URL(this.url, prefix);
 
-    if (queryParams && (queryParams?.size || Object.keys(queryParams).length)) {
+    if (queryParams && (queryParams?.size || keysOf(queryParams).length)) {
       const searchParams: URLSearchParams = (queryParams instanceof URLSearchParams)
         ? queryParams
         : new URLSearchParams(queryParams);
 
-      baseUrl = `${baseUrl}?${searchParams}`;
+      searchParams.forEach((value: string, key: string) => {
+        url.searchParams.set(key, value);
+      });
     }
 
-    return new URL(baseUrl, prefix);
+    return url;
   }
 }

@@ -1,14 +1,11 @@
 import { DrinoResponse } from '../drino-response';
 
-export interface Config<Read extends ReadType = 'json'> {
+export interface Config<Read extends ReadType | undefined> {
   prefix?: string;
 
   headers?: Headers | Record<string, string>;
   queryParams?: Record<string, string> | URLSearchParams;
 
-  /**
-   * @default "json"
-   */
   read?: Read;
 
   withCredentials?: boolean;
@@ -24,20 +21,20 @@ export interface RetryConfig {
 
 export interface ReadTypeMap<Data = any> {
   response: DrinoResponse<Data>;
-  json: Extract<Data, object>;
-  text: Extract<Data, string>;
+  object: Extract<Data, object>;
+  string: Extract<Data, string>;
   blob: Extract<Data, Blob>;
   arrayBuffer: Extract<Data, ArrayBuffer>;
   formData: Extract<Data, FormData>;
 }
 
-export type ReadType = keyof ReadTypeMap
+export type ReadType<T = any> = keyof ReadTypeMap<T>
 
 export type InferReadType<Data>
   = Data extends DrinoResponse<Data> ? 'response'
   : Data extends Blob ? 'blob'
     : Data extends ArrayBuffer ? 'arrayBuffer'
       : Data extends FormData ? 'formData'
-        : Data extends string ? 'text'
-          : Data extends object ? 'json'
+        : Data extends string ? 'string'
+          : Data extends object ? 'object'
             : never

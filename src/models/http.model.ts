@@ -8,3 +8,7 @@ export type RequestMethodType =
   | 'OPTIONS'
   // | 'TRACE'
   | 'PATCH';
+
+export type Url =
+  | string
+  | URL

@@ -1,5 +1,13 @@
+interface DrinoInstanceConfig {
+
+}
+
 export class DrinoInstance {
+
   public constructor(
-    private parent?: DrinoInstance
-  ) { }
+    init?: DrinoInstanceConfig,
+    parent?: DrinoInstance
+  ) {
+
+  }
 }

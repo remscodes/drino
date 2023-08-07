@@ -1,9 +1,12 @@
-import drino, { DrinoInstance } from '../src';
+import drino, { Drino } from '../src';
 
 describe.skip('Drino Instance', () => {
-  let instance: DrinoInstance;
+  let instance: Drino;
 
-  //   instance = drino.create();
-  // });
-  // beforeEach(() => {
+  beforeEach(() => {
+
+    instance = drino.create();
+
+    instance
+  });
 });

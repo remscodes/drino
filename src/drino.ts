@@ -1,60 +1,128 @@
-import { DrinoInstance } from './drino-instance';
-import { DrinoRequest } from './drino-request';
-import type { RequestMethodType } from './models/http.model';
-import type { InferReadType, Config, ReadType } from '@_/models/config.model';
+import type { Config } from './models/config.model';
+import type { RequestMethodType, Url } from './models/http.model';
+import type { AnyRequestController, ArrayBufferRequestController, BlobRequestController, FormDataRequestController, ObjectRequestController, RequestControllerForResponse, StringRequestController } from './models/request-controller.model';
+import { RequestController } from './request-controller';
 
-export default class Drino {
+interface DefaultConfig {
+  baseUrl?: Url;
+  config?: Config<any>;
+}
 
-  private static abortCtrl: AbortController = new AbortController();
+export class Drino {
 
-  public static default = {
-    config: {
-      read: 'json',
-      signal: this.abortCtrl.signal
-    }
-  };
-
-  public static abort(reason: any): void {
-    this.abortCtrl.abort(reason);
+  public constructor(config: DefaultConfig, parent?: Drino) {
+    this._defaultConfig = {
+      ...parent?.defaultConfig,
+      ...config
+    };
   }
 
-  private static create(): DrinoInstance {
-    return new DrinoInstance();
+  private _defaultConfig: DefaultConfig;
+
+  public get defaultConfig(): DefaultConfig {
+    return this._defaultConfig;
   }
 
-  private static extend(drino: DrinoInstance): DrinoInstance {
-    return new DrinoInstance(drino);
+  public set defaultConfig(config: DefaultConfig) {
+    this._defaultConfig = {
+      ...this.defaultConfig,
+      ...config
+    };
   }
 
-  public static request<T, Read extends ReadType = InferReadType<T>>(method: RequestMethodType, url: string, body: any, config?: Config<Read>): DrinoRequest<T, Read> {
-    return new DrinoRequest<T, Read>({ method, url, body, config });
+  public create(config: DefaultConfig = {}): Drino {
+    return new Drino(config);
   }
 
-  public static get<T, Read extends ReadType = InferReadType<T>>(url: string, config?: Config<Read>): DrinoRequest<T, Read> {
-    return this.request('GET', url, null, config);
+  public extend(drino: Drino, config: DefaultConfig = {}): Drino {
+    return new Drino(config, drino);
   }
 
-  public static head<T, Read extends ReadType = InferReadType<T>>(url: string, config?: Config<Read>): DrinoRequest<T, Read> {
-    return this.request('HEAD', url, null, config);
+  public request<T>(method: RequestMethodType, url: Url, body: any, config?: Config<'response'>): RequestControllerForResponse<T>;
+  public request<T>(method: RequestMethodType, url: Url, body: any, config?: Config<'blob'>): BlobRequestController<T>;
+  public request<T>(method: RequestMethodType, url: Url, body: any, config?: Config<'arrayBuffer'>): ArrayBufferRequestController<T>;
+  public request<T>(method: RequestMethodType, url: Url, body: any, config?: Config<'formData'>): FormDataRequestController<T>;
+  public request<T>(method: RequestMethodType, url: Url, body: any, config?: Config<'string'>): StringRequestController<T>;
+  public request<T>(method: RequestMethodType, url: Url, body: any, config?: Config<'object'>): ObjectRequestController<T>;
+  public request<T>(method: RequestMethodType, url: Url, body: any, config?: Config<any>): AnyRequestController {
+    return new RequestController<T>({ method, url, body, config });
   }
 
-  public static delete<T, Read extends ReadType = InferReadType<T>>(url: string, config?: Config<Read>): DrinoRequest<T, Read> {
-    return this.request('DELETE', url, null, config);
+  public get<T>(url: Url, config?: Config<'response'>): RequestControllerForResponse<T>;
+  public get<T>(url: Url, config?: Config<'blob'>): BlobRequestController<T>;
+  public get<T>(url: Url, config?: Config<'arrayBuffer'>): ArrayBufferRequestController<T>;
+  public get<T>(url: Url, config?: Config<'formData'>): FormDataRequestController<T>;
+  public get<T>(url: Url, config?: Config<'string'>): StringRequestController<T>;
+  public get<T>(url: Url, config?: Config<'object'>): ObjectRequestController<T>;
+  public get<T>(url: Url, config?: Config<any>): AnyRequestController {
+    return this.request<T>('GET', url, null, config);
   }
 
-  public static options<T, Read extends ReadType = InferReadType<T>>(url: string, config?: Config<Read>): DrinoRequest<T, Read> {
-    return this.request('OPTIONS', url, null, config);
+  public head<T>(url: Url, config?: Config<'response'>): RequestControllerForResponse<T>;
+  public head<T>(url: Url, config?: Config<'blob'>): BlobRequestController<T>;
+  public head<T>(url: Url, config?: Config<'arrayBuffer'>): ArrayBufferRequestController<T>;
+  public head<T>(url: Url, config?: Config<'formData'>): FormDataRequestController<T>;
+  public head<T>(url: Url, config?: Config<'string'>): StringRequestController<T>;
+  public head<T>(url: Url, config?: Config<'object'>): ObjectRequestController<T>;
+  public head<T>(url: Url, config?: Config<any>): AnyRequestController {
+    return this.request<T>('HEAD', url, null, config);
   }
 
-  public static post<T, Read extends ReadType = InferReadType<T>>(url: string, body: any, config?: Config<Read>): DrinoRequest<T, Read> {
-    return this.request('POST', url, body, config);
+  public delete<T>(url: Url, config?: Config<'response'>): RequestControllerForResponse<T>;
+  public delete<T>(url: Url, config?: Config<'blob'>): BlobRequestController<T>;
+  public delete<T>(url: Url, config?: Config<'arrayBuffer'>): ArrayBufferRequestController<T>;
+  public delete<T>(url: Url, config?: Config<'formData'>): FormDataRequestController<T>;
+  public delete<T>(url: Url, config?: Config<'string'>): StringRequestController<T>;
+  public delete<T>(url: Url, config?: Config<'object'>): ObjectRequestController<T>;
+  public delete<T>(url: Url, config?: Config<any>): AnyRequestController {
+    return this.request<T>('DELETE', url, null, config);
   }
 
-  public static put<T, Read extends ReadType = InferReadType<T>>(url: string, body: any, config?: Config<Read>): DrinoRequest<T, Read> {
-    return this.request('PUT', url, body, config);
+  public options<T>(url: Url, config?: Config<'response'>): RequestControllerForResponse<T>;
+  public options<T>(url: Url, config?: Config<'blob'>): BlobRequestController<T>;
+  public options<T>(url: Url, config?: Config<'arrayBuffer'>): ArrayBufferRequestController<T>;
+  public options<T>(url: Url, config?: Config<'formData'>): FormDataRequestController<T>;
+  public options<T>(url: Url, config?: Config<'string'>): StringRequestController<T>;
+  public options<T>(url: Url, config?: Config<'object'>): ObjectRequestController<T>;
+  public options<T>(url: Url, config?: Config<any>): AnyRequestController {
+    return this.request<T>('OPTIONS', url, null, config);
   }
 
-  public static patch<T, Read extends ReadType = InferReadType<T>>(url: string, body: any, config?: Config<Read>): DrinoRequest<T, Read> {
-    return this.request('PATCH', url, body, config);
+  public post<T>(url: Url, body: any, config?: Config<'response'>): RequestControllerForResponse<T>;
+  public post<T>(url: Url, body: any, config?: Config<'blob'>): BlobRequestController<T>;
+  public post<T>(url: Url, body: any, config?: Config<'arrayBuffer'>): ArrayBufferRequestController<T>;
+  public post<T>(url: Url, body: any, config?: Config<'formData'>): FormDataRequestController<T>;
+  public post<T>(url: Url, body: any, config?: Config<'string'>): StringRequestController<T>;
+  public post<T>(url: Url, body: any, config?: Config<'object'>): ObjectRequestController<T>;
+  public post<T>(url: Url, body: any, config?: Config<any>): AnyRequestController {
+    return this.request<T>('POST', url, body, config);
+  }
+
+  public put<T>(url: Url, body: any, config?: Config<'response'>): RequestControllerForResponse<T>;
+  public put<T>(url: Url, body: any, config?: Config<'blob'>): BlobRequestController<T>;
+  public put<T>(url: Url, body: any, config?: Config<'arrayBuffer'>): ArrayBufferRequestController<T>;
+  public put<T>(url: Url, body: any, config?: Config<'formData'>): FormDataRequestController<T>;
+  public put<T>(url: Url, body: any, config?: Config<'string'>): StringRequestController<T>;
+  public put<T>(url: Url, body: any, config?: Config<'object'>): ObjectRequestController<T>;
+  public put<T>(url: Url, body: any, config?: Config<any>): AnyRequestController {
+    return this.request<T>('PUT', url, body, config);
+  }
+
+  public patch<T>(url: Url, body: any, config?: Config<'response'>): RequestControllerForResponse<T>;
+  public patch<T>(url: Url, body: any, config?: Config<'blob'>): BlobRequestController<T>;
+  public patch<T>(url: Url, body: any, config?: Config<'arrayBuffer'>): ArrayBufferRequestController<T>;
+  public patch<T>(url: Url, body: any, config?: Config<'formData'>): FormDataRequestController<T>;
+  public patch<T>(url: Url, body: any, config?: Config<'string'>): StringRequestController<T>;
+  public patch<T>(url: Url, body: any, config?: Config<'object'>): ObjectRequestController<T>;
+  public patch<T>(url: Url, body: any, config?: Config<any>): AnyRequestController {
+    return this.request<T>('PATCH', url, body, config);
   }
 }
+
+const defaultConfig: DefaultConfig = {
+  config: {
+    read: 'object'
+  }
+};
+
+export default new Drino(defaultConfig);

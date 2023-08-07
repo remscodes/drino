@@ -1,8 +1,8 @@
-import { ReadType } from '@_/models/config.model';
+import { ReadType } from '../models/config.model';
 
 export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promise<any> {
   switch (read) {
-    case 'text':
+    case 'string':
       return fetchResponse.text();
     case 'blob':
       return fetchResponse.blob();
@@ -11,7 +11,7 @@ export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promi
     case 'formData':
       return fetchResponse.formData();
     default :
-      if (read !== 'response' && read !== 'json') throw `Invalid read value used : ${read}.`;
+      if (read !== 'response' && read !== 'object') throw `Invalid read value used : ${read}.`;
       return fetchResponse.json();
   }
 }

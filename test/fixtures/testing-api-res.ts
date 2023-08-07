@@ -1,4 +1,4 @@
-import { RequestMethodType } from '@_/models/http.model';
+import { RequestMethodType } from '../../src/models/http.model';
 
 const baseUrl: string = 'https://jsonplaceholder.typicode.com';
 

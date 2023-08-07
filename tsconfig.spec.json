@@ -3,8 +3,7 @@
   "compilerOptions": {
     "module": "CommonJS",
     "types": [
-      "mocha",
-      "node"
+      "mocha"
     ]
   },
   "include": [

@@ -28,12 +28,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@_/models/*": [
-        "src/models/*"
-      ],
-    }
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": [
     "node_modules",

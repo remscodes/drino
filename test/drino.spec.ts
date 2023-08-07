@@ -1,6 +1,7 @@
-import drino, { DrinoRequest } from '../src';
-import { expectJsonPlaceholderPost, JsonPlaceholderPost } from './fixtures/expect-result';
+import drino from '../src';
 import { DrinoService } from './fixtures/drino.service';
+import type { JsonPlaceholderPost } from './fixtures/expect-result';
+import { expectJsonPlaceholderPost } from './fixtures/expect-result';
 import { JSON_PLACEHOLDER_API } from './fixtures/testing-api-res';
 
 describe('Drino Static', () => {
