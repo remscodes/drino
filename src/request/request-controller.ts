@@ -1,12 +1,13 @@
-import type { DefaultConfig } from './drino';
-import { DrinoResponse } from './response/drino-response';
-import type { Config, InferReadType, ReadType, RetryConfig } from './models/config.model';
-import type { RequestMethodType, Url } from './models/http.model';
+import type { DefaultConfig } from '../drino';
+import type { RetryConfig } from '../features';
+import type { Config, InferReadType, ReadType } from '../models/config.model';
+import type { RequestMethodType, Url } from '../models/http.model';
+import type { Nullable, Optional } from '../models/shared.model';
+import { DrinoResponse } from '../response';
+import { keysOf } from '../utils/object-util';
+import { bodyFromReadType } from '../utils/response-util';
+import { createUrl } from '../utils/url-util';
 import type { CheckCallback, Modifier, Observer, RequestProcessResult } from './models/request-controller.model';
-import type { Nullable, Optional } from './models/shared.model';
-import { keysOf } from './utils/object-util';
-import { bodyFromReadType } from './utils/response-util';
-import { createUrl } from './utils/url-util';
 
 interface DrinoRequestInit<Read extends ReadType> {
   method: RequestMethodType;

@@ -1,6 +1,7 @@
-import type { DrinoResponse } from '../response/drino-response';
+import type { RetryConfig } from '../features';
+import type { DrinoResponse } from '../response';
 
-export interface Config<Read extends ReadType | void> {
+export interface Config<Read extends ReadType> {
   prefix?: string;
 
   headers?: Headers | Record<string, string>;
@@ -14,11 +15,6 @@ export interface Config<Read extends ReadType | void> {
   retry?: RetryConfig;
 }
 
-export interface RetryConfig {
-  count: number;
-  forStatusCode: number[];
-}
-
 export interface ReadTypeMap<Data = any> {
   response: DrinoResponse<Data>;
   object: Extract<Data, object>;
@@ -26,6 +22,7 @@ export interface ReadTypeMap<Data = any> {
   blob: Extract<Data, Blob>;
   arrayBuffer: Extract<Data, ArrayBuffer>;
   formData: Extract<Data, FormData>;
+  none: Extract<Data, void>;
 }
 
 export type ReadType<T = any> = keyof ReadTypeMap<T>

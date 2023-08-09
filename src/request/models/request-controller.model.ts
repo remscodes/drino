@@ -1,7 +1,7 @@
-import type { DrinoResponse } from '../response/drino-response';
-import type { RetryController } from '../features/retry-controller';
+import type { RetryArgs } from '../../features';
+import type { ReadType, ReadTypeMap } from '../../models/config.model';
+import type { DrinoResponse } from '../../response';
 import type { RequestController } from '../request-controller';
-import type { ReadType, ReadTypeMap } from './config.model';
 
 export type ResponseRequestController<T> = RequestController<DrinoResponse<T>>
 export type BlobRequestController<T> = RequestController<Extract<T, Blob>>
@@ -11,8 +11,10 @@ export type StringRequestController<T> = RequestController<Extract<T, string>>
 export type ObjectRequestController<T> = RequestController<Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | DrinoResponse<any>>>
 export type AnyRequestController = RequestController<any>
 
-export type Modifier<A = any, B = any> = (value: A) => B;
-export type CheckCallback<T> = Modifier<T, void>
+export interface RequestProcessResult<Resource, Read extends ReadType> {
+  ok: boolean;
+  result: ReadTypeMap<Resource>[Read];
+}
 
 export interface Observer<T = any> {
   result?: (result: T) => void;
@@ -34,13 +36,5 @@ export interface Observer<T = any> {
   abort?: (reason: any) => void;
 }
 
-export interface RetryArgs {
-  count: number;
-  error: any;
-  rc: RetryController;
-}
-
-export interface RequestProcessResult<Resource, Read extends ReadType> {
-  ok: boolean;
-  result: ReadTypeMap<Resource>[Read];
-}
+export type Modifier<A = any, B = any> = (value: A) => B;
+export type CheckCallback<T> = Modifier<T, void>

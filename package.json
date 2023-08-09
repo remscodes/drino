@@ -1,10 +1,11 @@
 {
   "name": "drino",
   "version": "0.1.0-alpha.1",
-  "description": "Intuitive HTTP client",
+  "description": "Intuitive and Typed HTTP Client",
   "license": "MIT",
   "author": {
-    "name": "Rémy Abitbol"
+    "name": "Rémy Abitbol",
+    "url": "https://github.com/remscodes"
   },
   "scripts": {
     "build": "tsc",
@@ -14,7 +15,7 @@
     "rm-dist": "node scripts/rm-dist.cjs",
     "prepublishOnly": "npm run test && npm run build",
     "prebuild": "npm run types && npm run rm-dist",
-    "pretest": "npm run types"
+    "pretest": "npm run types && npm run types -- -p ./tsconfig.spec.json"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -24,7 +25,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/RemsCodes/drino"
+    "url": "https://github.com/remscodes/drino"
   },
   "engines": {
     "node": ">=16.0.0"

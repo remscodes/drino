@@ -8,7 +8,7 @@ describe('Drino', () => {
 
   describe('GET', () => {
 
-    it('should get item using GET and retrieve result from Promise', async () => {
+    it.only('should get item using GET and retrieve result from Promise', async () => {
       const id: number = 1;
 
       const result = await service.getOneItem(id).consume();
@@ -31,7 +31,7 @@ describe('Drino', () => {
     });
   });
 
-  describe.only('HEAD', () => {
+  describe('HEAD', () => {
 
     it('should get headers using HEAD and retrieve result from Promise ', async () => {
       const result = await service.getHeaders().consume();

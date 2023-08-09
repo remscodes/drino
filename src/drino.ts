@@ -1,7 +1,7 @@
-import type { AnyRequestController, ArrayBufferRequestController, BlobRequestController, DrinoInstance, FormDataRequestController, ObjectRequestController, ResponseRequestController, StringRequestController } from './models';
+import type { AnyRequestController, ArrayBufferRequestController, BlobRequestController, DrinoInstance, FormDataRequestController, ObjectRequestController, ResponseRequestController, StringRequestController } from './';
 import type { Config } from './models/config.model';
 import type { RequestMethodType, Url } from './models/http.model';
-import { RequestController } from './request-controller';
+import { RequestController } from './request/request-controller';
 
 export interface DefaultConfig {
   baseUrl?: Url;

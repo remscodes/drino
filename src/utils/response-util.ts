@@ -1,4 +1,4 @@
-import { ReadType } from '../models/config.model';
+import type { ReadType } from '../models/config.model';
 
 export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promise<any> {
   switch (read) {
@@ -10,8 +10,10 @@ export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promi
       return fetchResponse.arrayBuffer();
     case 'formData':
       return fetchResponse.formData();
-    default :
-      if (read !== 'response' && read !== 'object') throw `Invalid read value used : ${read}.`;
+    case 'response':
+    case 'object':
       return fetchResponse.json();
+    default :
+      return Promise.resolve();
   }
 }
