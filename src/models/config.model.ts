@@ -1,6 +1,6 @@
-import { DrinoResponse } from '../drino-response';
+import type { DrinoResponse } from '../response/drino-response';
 
-export interface Config<Read extends ReadType | undefined> {
+export interface Config<Read extends ReadType | void> {
   prefix?: string;
 
   headers?: Headers | Record<string, string>;

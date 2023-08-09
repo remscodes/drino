@@ -10,5 +10,6 @@ export type RequestMethodType =
   | 'PATCH';
 
 export type Url =
-  | string
+  | `http${string}`
+  | `/${string}`
   | URL

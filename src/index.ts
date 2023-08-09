@@ -1,7 +1,9 @@
+export * from './models';
+
 export { default } from './drino';
 export type { Drino } from './drino';
 
-export { RequestController } from './request-controller';
+export type { RequestController } from './request-controller';
 
-export { DrinoResponse } from './drino-response';
-export { DrinoErrorResponse } from './drino-error-response';
+export { DrinoResponse } from './response/drino-response';
+export { DrinoErrorResponse } from './response/drino-error-response';

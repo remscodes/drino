@@ -18,17 +18,18 @@
     "moduleResolution": "node",
     "isolatedModules": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "useDefineForClassFields": true,
-    "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "strict": true,
     "noImplicitOverride": true,
+    "pretty": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "stripInternal": true
   },
   "exclude": [
     "node_modules",

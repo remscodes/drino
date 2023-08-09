@@ -1,14 +1,14 @@
-import { DrinoResponse } from '../drino-response';
-import { RetryController } from '../lifecycle/retry-controller';
-import { RequestController } from '../request-controller';
-import { ReadType, ReadTypeMap } from './config.model';
+import type { DrinoResponse } from '../response/drino-response';
+import type { RetryController } from '../features/retry-controller';
+import type { RequestController } from '../request-controller';
+import type { ReadType, ReadTypeMap } from './config.model';
 
-export type RequestControllerForResponse<T> = RequestController<DrinoResponse<T>>
+export type ResponseRequestController<T> = RequestController<DrinoResponse<T>>
 export type BlobRequestController<T> = RequestController<Extract<T, Blob>>
 export type ArrayBufferRequestController<T> = RequestController<Extract<T, ArrayBuffer>>
 export type FormDataRequestController<T> = RequestController<Extract<T, FormData>>
 export type StringRequestController<T> = RequestController<Extract<T, string>>
-export type ObjectRequestController<T> = RequestController<Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData>>
+export type ObjectRequestController<T> = RequestController<Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | DrinoResponse<any>>>
 export type AnyRequestController = RequestController<any>
 
 export type Modifier<A = any, B = any> = (value: A) => B;

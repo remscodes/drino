@@ -1,43 +1,89 @@
-import drino from '../src';
+import type { TestItem } from './fixtures/drino.service';
 import { DrinoService } from './fixtures/drino.service';
-import type { JsonPlaceholderPost } from './fixtures/expect-result';
-import { expectJsonPlaceholderPost } from './fixtures/expect-result';
-import { JSON_PLACEHOLDER_API } from './fixtures/testing-api-res';
+import { expectProperty } from './fixtures/expect-util';
 
-describe('Drino Static', () => {
+describe('Drino', () => {
 
-  const service = new DrinoService();
+  const service: DrinoService = new DrinoService();
 
   describe('GET', () => {
 
-    it('should get result via promise', async () => {
-      const result = await service.getPost().consume();
-      expectJsonPlaceholderPost(result);
+    it('should get item using GET and retrieve result from Promise', async () => {
+      const id: number = 1;
+
+      const result = await service.getOneItem(id).consume();
+
+      expectProperty(result, 'id', 'number', id);
+      expectProperty(result, 'name', 'string');
     });
 
-    it('should get result via callback', (done) => {
-      service.getPost().consume({
+    it('should get item using GET and retrieve result from Observer', (done) => {
+      const id: number = 1;
+
+      service.getOneItem(id).consume({
         result: (result) => {
-          expectJsonPlaceholderPost(result);
+          expectProperty(result, 'id', 'number', id);
+          expectProperty(result, 'name', 'string');
+
           done();
         }
       });
     });
   });
 
-  describe('HEAD', () => {
+  describe.only('HEAD', () => {
 
-    it('should ', async () => {
-      const result = await drino.head<JsonPlaceholderPost>(JSON_PLACEHOLDER_API.HEAD, {
-        headers: {}
-      }).consume();
+    it('should get headers using HEAD and retrieve result from Promise ', async () => {
+      const result = await service.getHeaders().consume();
+      console.log(result);
     });
   });
 
   describe('POST', () => {
 
-    it('should ', async () => {
-      const result = await drino.post(JSON_PLACEHOLDER_API.POST, {}).consume();
+    it('should create item using POST and retrieve result from Promise', async () => {
+      const itemName: string = 'With Promise';
+
+      const result: TestItem = await service.createItem(itemName).consume();
+
+      expectProperty(result, 'id', 'number');
+      expectProperty(result, 'name', 'string', itemName);
     });
+
+    it('should create item using POST and retrieve result from Observer', (done) => {
+      const itemName: string = 'With Observer';
+
+      service.createItem(itemName).consume({
+        result: (result: TestItem) => {
+          expectProperty(result, 'id', 'number');
+          expectProperty(result, 'name', 'string', itemName);
+
+          done();
+        }
+      });
+    });
+  });
+
+  describe.skip('PUT', () => {
+    it('should update item using PUT and retrieve result from Promise', async () => {
+      const itemName: string = 'With Promise';
+
+      const result: TestItem = await service.createItem(itemName).consume();
+
+      expectProperty(result, 'id', 'number');
+      expectProperty(result, 'name', 'string', itemName);
+    });
+  });
+
+  describe.skip('DELETE', () => {
+    const id: number = 1;
+  });
+
+  describe.skip('OPTIONS', () => {
+
+  });
+
+  describe.skip('PATCH', () => {
+
   });
 });
