@@ -1,4 +1,4 @@
-import type { ReadType } from '../models/config.model';
+import type { ReadType } from '../request/models/request-config.model';
 
 export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promise<any> {
   switch (read) {

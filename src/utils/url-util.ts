@@ -1,9 +1,10 @@
-import type { DefaultConfig } from '../drino';
-import type { Config } from '../models/config.model';
+import { emitError } from 'thror';
+import type { DrinoConfig } from '../models/drino.model';
 import type { Url } from '../models/http.model';
+import type { RequestConfig } from '../request/models/request-config.model';
 import { keysOf } from './object-util';
 
-export function buildUrl(url: Url, config: Config<any>, defaultConfig: DefaultConfig): URL {
+export function buildUrl(url: Url, config: RequestConfig<any>, defaultConfig: DrinoConfig): URL {
   const { baseUrl } = defaultConfig;
   const { prefix, queryParams } = config;
 
@@ -25,6 +26,9 @@ export function createUrl(url: Url | string, base?: Url): URL {
     return new URL(url, base);
   }
   catch (err: any) {
-    throw `Url is invalid : "${base ?? ''}" + "${url}" (baseUrl + url).`;
+    emitError('URL Format', `Url is invalid : "${base ?? ''}" + "${url}" (baseUrl + url).`, {
+      original: err,
+      withStack: true
+    });
   }
 }

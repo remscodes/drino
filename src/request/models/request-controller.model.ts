@@ -1,5 +1,5 @@
 import type { RetryArgs } from '../../features';
-import type { ReadType, ReadTypeMap } from '../../models/config.model';
+import type { ReadType, ReadTypeMap } from './request-config.model';
 import type { DrinoResponse } from '../../response';
 import type { RequestController } from '../request-controller';
 
@@ -37,4 +37,4 @@ export interface Observer<T = any> {
 }
 
 export type Modifier<A = any, B = any> = (value: A) => B;
-export type CheckCallback<T> = Modifier<T, void>
+export type CheckCallback<T> = (result: T) => void

@@ -1,24 +1,24 @@
-import type { DefaultConfig } from '../drino';
 import type { RetryConfig } from '../features';
-import type { Config, InferReadType, ReadType } from '../models/config.model';
+import type { DrinoConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import type { Nullable, Optional } from '../models/shared.model';
 import { DrinoResponse } from '../response';
 import { keysOf } from '../utils/object-util';
 import { bodyFromReadType } from '../utils/response-util';
 import { createUrl } from '../utils/url-util';
+import type { InferReadType, ReadType, RequestConfig } from './models/request-config.model';
 import type { CheckCallback, Modifier, Observer, RequestProcessResult } from './models/request-controller.model';
 
 interface DrinoRequestInit<Read extends ReadType> {
   method: RequestMethodType;
   url: Url;
   body?: any;
-  config?: Config<Read>;
+  config?: RequestConfig<Read>;
 }
 
 export class RequestController<Resource> {
 
-  public constructor(init: DrinoRequestInit<InferReadType<Resource>>, defaultConfig: DefaultConfig) {
+  public constructor(init: DrinoRequestInit<InferReadType<Resource>>, defaultConfig: DrinoConfig) {
     const { method, url, body, config = {} } = init;
 
     this.defaultConfig = defaultConfig;
@@ -39,13 +39,13 @@ export class RequestController<Resource> {
     this.retry = config.retry;
   }
 
-  private readonly defaultConfig: DefaultConfig;
+  private readonly defaultConfig: DrinoConfig;
 
   private readonly method: RequestMethodType;
   private readonly url: Url;
   private readonly body: any;
 
-  private readonly config: Config<InferReadType<Resource>>;
+  private readonly config: RequestConfig<InferReadType<Resource>>;
 
   private readonly read: Optional<InferReadType<Resource>>;
 
@@ -138,7 +138,7 @@ export class RequestController<Resource> {
   }
 
   private useFetch(): Promise<Response> {
-    const { headers: configHeaders = {}, signal, withCredentials } = this.config;
+    const { headers: configHeaders = {} } = this.config;
 
     const headers: Headers = new Headers(configHeaders);
     headers.set('Content-Type', 'application/json');
@@ -147,7 +147,7 @@ export class RequestController<Resource> {
       method: this.method,
       body: (this.body !== undefined && this.body !== null) ? JSON.stringify(this.body) : undefined,
       headers,
-      signal
+      signal: this.signal
       // credentials: (withCredentials) ? 'include' : 'omit'
     });
   }
@@ -169,18 +169,15 @@ export class RequestController<Resource> {
   }
 
   private buildUrl(): URL {
-    const { baseUrl, config } = this.defaultConfig;
-    const prefix: string = config?.prefix ?? '';
+    const { baseUrl, requestConfig } = this.defaultConfig;
+    const prefix: string = requestConfig?.prefix ?? '';
 
     const { queryParams } = this.config;
 
     const url: URL = createUrl( `${prefix}${this.url}`.replace(/\/$/, ''), baseUrl);
 
     if (queryParams && (queryParams?.size || keysOf(queryParams).length)) {
-      const searchParams: URLSearchParams = (queryParams instanceof URLSearchParams)
-        ? queryParams
-        : new URLSearchParams(queryParams);
-
+      const searchParams: URLSearchParams = new URLSearchParams(queryParams);
       searchParams.forEach((value: string, key: string) => {
         url.searchParams.set(key, value);
       });

@@ -1,11 +1,12 @@
-import type { RetryConfig } from '../features';
-import type { DrinoResponse } from '../response';
+import type { RetryConfig } from '../../features';
+import type { PlainObject } from '../../models/shared.model';
+import type { DrinoResponse } from '../../response';
 
-export interface Config<Read extends ReadType> {
+export interface RequestConfig<Read extends ReadType> {
   prefix?: string;
 
-  headers?: Headers | Record<string, string>;
-  queryParams?: Record<string, string> | URLSearchParams;
+  headers?: Headers | PlainObject;
+  queryParams?: URLSearchParams | PlainObject;
 
   read?: Read;
 

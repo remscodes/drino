@@ -1,3 +1,5 @@
+import { StatusType } from '../models/http.model';
+
 export interface CommonResponseInit {
   url: string;
   headers: Headers;
@@ -26,5 +28,5 @@ export abstract class CommonResponse {
   public readonly headers: Headers;
   public readonly status: number;
   public readonly statusText: string;
-  public readonly statusType: 'Info' | 'Success' | 'Redirection' | 'ClientError' | 'ServerError';
+  public readonly statusType: StatusType;
 }

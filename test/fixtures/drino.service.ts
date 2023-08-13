@@ -13,7 +13,7 @@ const mainDrino: DrinoInstance = drino.create({
 export class DrinoService {
 
   private client: DrinoInstance = mainDrino.child({
-    config: {
+    requestConfig: {
       prefix: '/item'
     }
   });
