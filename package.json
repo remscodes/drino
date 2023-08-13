@@ -31,6 +31,7 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
+    "thror": "^1.0.0",
     "tslib": "^2.6.1"
   },
   "devDependencies": {
@@ -50,6 +51,6 @@
     "promise",
     "callback"
   ],
-  "packageManager": "pnpm@8.6.11",
+  "packageManager": "pnpm@8.6.12",
   "sideEffects": false
 }
