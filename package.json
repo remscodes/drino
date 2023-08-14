@@ -16,7 +16,6 @@
     "start-server": "node ./test/fixtures/server/server.mjs",
     "start-web-runner": "wait-on tcp:8080 && web-test-runner",
     "rm-dist": "node ./scripts/rm-dist.cjs",
-    "prepublishOnly": "npm run test && npm run build",
     "prebuild": "npm run rm-dist",
     "pretest": "npm run types:all"
   },

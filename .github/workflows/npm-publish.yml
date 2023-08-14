@@ -29,6 +29,12 @@ jobs:
       - name: Clean install node modules
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Build project
+        run: pnpm run build
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
       - name: Test project
         run: pnpm run test
 
