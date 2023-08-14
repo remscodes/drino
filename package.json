@@ -9,13 +9,16 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "web-test-runner",
-    "test:watch": "npm run test -- --watch",
+    "test": "concurrently npm:start-server npm:start-web-runner --kill-others --success first",
     "types": "tsc --noEmit",
-    "rm-dist": "node scripts/rm-dist.cjs",
+    "types:spec": "npm run types -- -p ./tsconfig.spec.json",
+    "types:all": "npm run types & npm run types:spec",
+    "start-server": "node ./test/fixtures/server/server.mjs",
+    "start-web-runner": "wait-on tcp:8080 && web-test-runner",
+    "rm-dist": "node ./scripts/rm-dist.cjs",
     "prepublishOnly": "npm run test && npm run build",
-    "prebuild": "npm run types && npm run rm-dist",
-    "pretest": "npm run types && npm run types -- -p ./tsconfig.spec.json"
+    "prebuild": "npm run rm-dist",
+    "pretest": "npm run types:all"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -37,12 +40,19 @@
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@types/chai": "^4.3.5",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
     "@types/mocha": "^10.0.1",
     "@types/node": "^16.18.39",
     "@web/dev-server-esbuild": "^0.4.1",
     "@web/test-runner": "^0.17.0",
     "@web/test-runner-playwright": "^0.10.1",
-    "typescript": "^5.1.6"
+    "concurrently": "^8.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "typescript": "^5.1.6",
+    "wait-on": "^7.0.1"
   },
   "keywords": [
     "http",
