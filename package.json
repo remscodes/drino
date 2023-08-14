@@ -16,6 +16,7 @@
     "start-server": "node ./test/fixtures/server/server.mjs",
     "start-web-runner": "wait-on tcp:8080 && web-test-runner",
     "rm-dist": "node ./scripts/rm-dist.cjs",
+    "install-playwright": "node ./node_modules/.pnpm/playwright@1.36.2/node_modules/playwright/cli.js install --with-deps",
     "prebuild": "npm run rm-dist",
     "pretest": "npm run types:all"
   },
@@ -25,6 +26,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/remscodes/drino"
