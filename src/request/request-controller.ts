@@ -1,8 +1,9 @@
 import type { RetryConfig } from '../features';
-import type { DrinoConfig } from '../models/drino.model';
+import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import type { Nullable, Optional } from '../models/shared.model';
 import { DrinoResponse } from '../response';
+import { isAbortError } from '../utils';
 import { keysOf } from '../utils/object-util';
 import { bodyFromReadType } from '../utils/response-util';
 import { createUrl } from '../utils/url-util';
@@ -18,7 +19,7 @@ interface DrinoRequestInit<Read extends ReadType> {
 
 export class RequestController<Resource> {
 
-  public constructor(init: DrinoRequestInit<InferReadType<Resource>>, defaultConfig: DrinoConfig) {
+  public constructor(init: DrinoRequestInit<InferReadType<Resource>>, defaultConfig: DrinoDefaultConfig) {
     const { method, url, body, config = {} } = init;
 
     this.defaultConfig = defaultConfig;
@@ -34,12 +35,14 @@ export class RequestController<Resource> {
       this.abortCtrl = new AbortController();
       this.signal = this.abortCtrl.signal;
     }
-    else this.signal = config.signal;
+    else {
+      this.signal = config.signal;
+    }
 
-    this.retry = config.retry;
+    // this.retry = config.retry;
   }
 
-  private readonly defaultConfig: DrinoConfig;
+  private readonly defaultConfig: DrinoDefaultConfig;
 
   private readonly method: RequestMethodType;
   private readonly url: Url;
@@ -83,20 +86,23 @@ export class RequestController<Resource> {
   }
 
   private async thenable(): Promise<Resource> {
-    let { result, ok } = await this.processRequest();
-    if (!ok) throw result;
+    try {
+      let { result, ok } = await this.processRequest();
+      if (!ok) return Promise.reject(result);
 
-    for (const modifier of this.modifiers) result = await modifier(result);
-    return result as any;
+      for (const modifier of this.modifiers) result = await modifier(result);
+      return result as any;
+    }
+    catch (err: any) {
+      return Promise.reject(err);
+    }
   }
 
   private useObserver(observer: Observer<Resource>): void {
-    const start: number = Date.now();
     this.processRequest()
       .then(async ({ result, ok }) => {
-        if (!ok) {
-          return Promise.reject(result);
-        }
+        if (!ok) return Promise.reject(result);
+
         try {
           for (const modifier of this.modifiers) result = await modifier(result);
           observer.result?.(result as any);
@@ -107,11 +113,11 @@ export class RequestController<Resource> {
         }
       })
       .catch((err: Error) => {
-        if (err.name === 'AbortError') return observer.abort?.(err);
+        if (isAbortError(err)) return observer.abort?.(err.message);
         observer.error?.(err);
       })
       .finally(() => {
-        observer.finish?.(Date.now() - start);
+        observer.finish?.();
       });
   }
 
@@ -159,9 +165,9 @@ export class RequestController<Resource> {
       const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
 
       const readType: ReadType
-        = (contentType === 'application/json') ? 'object'
-        : (contentType === 'application/octet-stream') ? 'blob'
-          : (contentType === 'multipart/form-data') ? 'formData'
+        = (contentType?.includes('application/json')) ? 'object'
+        : (contentType?.includes('application/octet-stream')) ? 'blob'
+          : (contentType?.includes('multipart/form-data')) ? 'formData'
             : 'string';
 
       return bodyFromReadType(fetchResponse, readType);
@@ -174,7 +180,7 @@ export class RequestController<Resource> {
 
     const { queryParams } = this.config;
 
-    const url: URL = createUrl( `${prefix}${this.url}`.replace(/\/$/, ''), baseUrl);
+    const url: URL = createUrl(`${prefix}${this.url}`.replace(/\/$/, ''), baseUrl);
 
     if (queryParams && (queryParams?.size || keysOf(queryParams).length)) {
       const searchParams: URLSearchParams = new URLSearchParams(queryParams);

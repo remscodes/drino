@@ -1,43 +1,43 @@
 import type { AnyRequestController, ArrayBufferRequestController, BlobRequestController, DrinoInstance, FormDataRequestController, ObjectRequestController, ResponseRequestController, StringRequestController } from './';
-import type { DrinoConfig } from './models/drino.model';
+import type { DrinoDefaultConfig } from './models/drino.model';
 import type { RequestMethodType, Url } from './models/http.model';
+import type { RequestConfig } from './request';
 import { RequestController } from './request';
-import type { RequestConfig } from './request/models/request-config.model';
 
 export class Drino {
 
-  public constructor(config: DrinoConfig = {}, parent?: Drino) {
-    this._defaultConfig = {
-      ...parent?.defaultConfig ?? {},
+  public constructor(config: DrinoDefaultConfig = {}, parent?: Drino) {
+    this._default = {
+      ...parent?.default ?? {},
       ...config
     };
     
-    this._defaultConfig.requestConfig = {
+    this._default.requestConfig = {
       headers: new Headers(),
       queryParams: new URLSearchParams(),
-      ...parent?.defaultConfig.requestConfig ?? {},
+      ...parent?.default.requestConfig ?? {},
       ...config.requestConfig ?? {}
     };
   }
 
-  private _defaultConfig: DrinoConfig;
+  private _default: DrinoDefaultConfig;
 
-  public get defaultConfig(): DrinoConfig {
-    return this._defaultConfig;
+  public get default(): DrinoDefaultConfig {
+    return this._default;
   }
 
-  public set defaultConfig(config: DrinoConfig) {
-    this._defaultConfig = {
-      ...this.defaultConfig,
+  public set default(config: DrinoDefaultConfig) {
+    this._default = {
+      ...this.default,
       ...config
     };
   }
 
-  public create(config: DrinoConfig = {}): DrinoInstance {
+  public create(config: DrinoDefaultConfig = {}): DrinoInstance {
     return new Drino(config);
   }
 
-  public child(config: DrinoConfig = {}): DrinoInstance {
+  public child(config: DrinoDefaultConfig = {}): DrinoInstance {
     return new Drino(config, this);
   }
 
@@ -48,7 +48,7 @@ export class Drino {
   private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
   private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'string'>): StringRequestController<T>;
   private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<any>): AnyRequestController {
-    return new RequestController<T>({ method, url, body, config }, this.defaultConfig);
+    return new RequestController<T>({ method, url, body, config }, this.default);
   }
 
   public get<T>(url: Url, config?: RequestConfig<'object'>): ObjectRequestController<T>;

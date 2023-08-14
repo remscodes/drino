@@ -8,7 +8,7 @@ export type Nullable<T> =
 
 export type InferPromiseType<T>
   = T extends Promise<infer A> ? A
-  : T;
+  : never;
 
 export type PlainObject = Record<string, string>
 

@@ -1,4 +1,3 @@
-import type { RetryConfig } from '../../features';
 import type { PlainObject } from '../../models/shared.model';
 import type { DrinoResponse } from '../../response';
 
@@ -10,10 +9,15 @@ export interface RequestConfig<Read extends ReadType> {
 
   read?: Read;
 
-  withCredentials?: boolean;
+  // withCredentials?: boolean;
   signal?: AbortSignal;
-  timeout?: number;
-  retry?: RetryConfig;
+  // timeout?: number;
+  // retry?: RetryConfig;
+  // interceptors?: any;
+}
+
+interface Interceptors {
+
 }
 
 export interface ReadTypeMap<Data = any> {

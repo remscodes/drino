@@ -1,7 +1,6 @@
-import type { RetryArgs } from '../../features';
-import type { ReadType, ReadTypeMap } from './request-config.model';
 import type { DrinoResponse } from '../../response';
 import type { RequestController } from '../request-controller';
+import type { ReadType, ReadTypeMap } from './request-config.model';
 
 export type ResponseRequestController<T> = RequestController<DrinoResponse<T>>
 export type BlobRequestController<T> = RequestController<Extract<T, Blob>>
@@ -19,21 +18,21 @@ export interface RequestProcessResult<Resource, Read extends ReadType> {
 export interface Observer<T = any> {
   result?: (result: T) => void;
   error?: (error: any) => void;
-  finish?: (ms: number) => void;
+  finish?: () => void;
 
-  uploadProgress?: () => void;
-  downloadProgress?: () => void;
-
-  info?: (result: any) => void;
-  success?: (result: T) => void;
-  redirect?: (result: any) => void;
-  clientError?: (error: any) => void;
-  serverError?: (error: any) => void;
-
-  unavailable?: (error: any) => void;
-
-  retry?: (args: RetryArgs) => void;
-  abort?: (reason: any) => void;
+  // uploadProgress?: () => void;
+  // downloadProgress?: () => void;
+  //
+  // info?: (result: any) => void;
+  // success?: (result: T) => void;
+  // redirect?: (result: any) => void;
+  // clientError?: (error: any) => void;
+  // serverError?: (error: any) => void;
+  //
+  // unavailable?: (error: any) => void;
+  //
+  // retry?: (args: RetryArgs) => void;
+  abort?: (reason: string) => void;
 }
 
 export type Modifier<A = any, B = any> = (value: A) => B;
