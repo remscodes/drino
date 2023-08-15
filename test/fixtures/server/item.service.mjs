@@ -1,4 +1,12 @@
+import { Item } from './item.mjs';
+
 class ItemService {
+
+  constructor() {
+    this.create(new Item('My First Item'));
+    this.create(new Item('My Second Item'));
+    this.create(new Item('My Third Item'));
+  }
 
   #itemMap = new Map();
   #sequence = 0;

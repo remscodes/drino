@@ -37,4 +37,8 @@ export class DrinoService {
   public deleteOneItem(id: number): RequestController<DrinoResponse<void>> {
     return this.client.delete(`/${id}`, { read: 'response' });
   }
+
+  public longRequest(signal: AbortSignal): RequestController<void> {
+    return this.client.head('/long', { read: 'none', signal });
+  }
 }

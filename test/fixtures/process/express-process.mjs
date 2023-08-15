@@ -10,16 +10,4 @@ spawn(
       'inherit' // Error,
     ]
   }
-)
-//   .once('spawn', () => {
-//   connect({
-//     keepAlive: true,
-//     keepAliveInitialDelay: 2000,
-//     port: 8080,
-//     host: '127.0.0.1',
-//     family: 4
-//   }, () => {
-//     console.log('TEST')
-//     process.send('TEST');
-//   })
-// });
+);

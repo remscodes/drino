@@ -113,7 +113,7 @@ export class RequestController<Resource> {
         }
       })
       .catch((err: Error) => {
-        if (isAbortError(err)) return observer.abort?.(err.message);
+        if (this.signal.aborted && isAbortError(err)) return observer.abort?.(this.signal.reason);
         observer.error?.(err);
       })
       .finally(() => {

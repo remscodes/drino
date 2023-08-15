@@ -2,20 +2,11 @@ import type { TestItem } from '../fixtures/drino.service';
 import { DrinoService } from '../fixtures/drino.service';
 import { expectProperty } from '../fixtures/expect-util';
 
-describe('Drino', () => {
+describe('Drino - Requests', () => {
 
   const service: DrinoService = new DrinoService();
 
   describe('GET', () => {
-
-    it('should retrieve result from Promise', async () => {
-      const id: number = 1;
-
-      const result: TestItem = await service.getOneItem(id).consume();
-
-      expectProperty(result, 'id', 'number', id);
-      expectProperty(result, 'name', 'string');
-    });
 
     it('should retrieve result from Observer', (done: Mocha.Done) => {
       const id: number = 1;
@@ -29,6 +20,15 @@ describe('Drino', () => {
         }
       });
     });
+
+    it('should retrieve result from Promise', async () => {
+      const id: number = 1;
+
+      const result: TestItem = await service.getOneItem(id).consume();
+
+      expectProperty(result, 'id', 'number', id);
+      expectProperty(result, 'name', 'string');
+    });
   });
 
   describe('HEAD', () => {
@@ -39,15 +39,6 @@ describe('Drino', () => {
   });
 
   describe('POST', () => {
-
-    it('should retrieve result from Promise', async () => {
-      const itemName: string = 'With Promise';
-
-      const result: TestItem = await service.createItem(itemName).consume();
-
-      expectProperty(result, 'id', 'number');
-      expectProperty(result, 'name', 'string', itemName);
-    });
 
     it('should retrieve result from Observer', (done: Mocha.Done) => {
       const itemName: string = 'With Observer';
@@ -60,6 +51,15 @@ describe('Drino', () => {
           done();
         }
       });
+    });
+
+    it('should retrieve result from Promise', async () => {
+      const itemName: string = 'With Promise';
+
+      const result: TestItem = await service.createItem(itemName).consume();
+
+      expectProperty(result, 'id', 'number');
+      expectProperty(result, 'name', 'string', itemName);
     });
   });
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { service } from "./item.service.mjs";
+import { setTimeout } from 'node:timers'
+import { service } from './item.service.mjs';
 
 export const itemRouter = Router()
   .post('/', ({ body: item }, res) => {
@@ -34,4 +35,9 @@ export const itemRouter = Router()
     if (!deleted) return res.status(404).send(`Could not find item with id=${id}.`);
 
     res.status(204).send();
+  })
+  .get('/long', (_, res) => {
+    setTimeout(() => {
+      res.status(200).json(service.findAll());
+    }, 3000);
   });
