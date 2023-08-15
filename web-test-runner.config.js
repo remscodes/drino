@@ -24,6 +24,9 @@ const config = {
     include: [
       './src/**'
     ],
+    exclude: [
+      './src/**/index.ts'
+    ],
     threshold: {
       branches: 80,
       functions: 80,
