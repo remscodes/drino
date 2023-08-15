@@ -6,6 +6,7 @@ export type {
   BlobRequestController,
   ArrayBufferRequestController,
   ObjectRequestController,
+  VoidRequestController,
   FormDataRequestController,
   StringRequestController
 } from './request-controller.model';

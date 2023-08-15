@@ -18,8 +18,8 @@ export class DrinoService {
     }
   });
 
-  public getHeaders(): RequestController<DrinoResponse<void>> {
-    return this.client.head('/', { read: 'response' });
+  public getHeaders(): RequestController<void> {
+    return this.client.head('/', { read: 'none' });
   }
 
   public createItem(name: string): RequestController<TestItem> {

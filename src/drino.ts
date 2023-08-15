@@ -1,4 +1,4 @@
-import type { AnyRequestController, ArrayBufferRequestController, BlobRequestController, DrinoInstance, FormDataRequestController, ObjectRequestController, ResponseRequestController, StringRequestController } from './';
+import type { AnyRequestController, ArrayBufferRequestController, BlobRequestController, DrinoInstance, FormDataRequestController, ObjectRequestController, ResponseRequestController, StringRequestController, VoidRequestController } from './';
 import type { DrinoDefaultConfig } from './models/drino.model';
 import type { RequestMethodType, Url } from './models/http.model';
 import type { RequestConfig } from './request';
@@ -11,7 +11,7 @@ export class Drino {
       ...parent?.default ?? {},
       ...config
     };
-    
+
     this._default.requestConfig = {
       headers: new Headers(),
       queryParams: new URLSearchParams(),
@@ -42,6 +42,7 @@ export class Drino {
   }
 
   private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'object'>): ObjectRequestController<T>;
+  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'none'>): VoidRequestController<T>;
   private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'response'>): ResponseRequestController<T>;
   private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'blob'>): BlobRequestController<T>;
   private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
@@ -61,14 +62,10 @@ export class Drino {
     return this.request<T>('GET', url, null, config);
   }
 
-  public head<T>(url: Url, config?: RequestConfig<'object'>): ObjectRequestController<T>;
-  public head<T>(url: Url, config?: RequestConfig<'response'>): ResponseRequestController<T>;
-  public head<T>(url: Url, config?: RequestConfig<'blob'>): BlobRequestController<T>;
-  public head<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
-  public head<T>(url: Url, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
-  public head<T>(url: Url, config?: RequestConfig<'string'>): StringRequestController<T>;
-  public head<T>(url: Url, config?: RequestConfig<any>): AnyRequestController {
-    return this.request<T>('HEAD', url, null, config);
+  public head<T>(url: Url, config: RequestConfig<'response'>): ResponseRequestController<T>;
+  public head<T>(url: Url, config: RequestConfig<'none'>): VoidRequestController<T>;
+  public head<T>(url: Url, config: RequestConfig<any> = {}): AnyRequestController {
+    return this.request<T>('HEAD', url, null, { ...config, read: 'none' });
   }
 
   public delete<T>(url: Url, config?: RequestConfig<'object'>): ObjectRequestController<T>;

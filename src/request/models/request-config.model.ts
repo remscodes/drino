@@ -39,4 +39,5 @@ export type InferReadType<Data>
       : Data extends FormData ? 'formData'
         : Data extends string ? 'string'
           : Data extends object ? 'object'
-            : never
+            : Data extends void ? 'none'
+              : never

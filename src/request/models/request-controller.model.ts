@@ -7,6 +7,7 @@ export type BlobRequestController<T> = RequestController<Extract<T, Blob>>
 export type ArrayBufferRequestController<T> = RequestController<Extract<T, ArrayBuffer>>
 export type FormDataRequestController<T> = RequestController<Extract<T, FormData>>
 export type StringRequestController<T> = RequestController<Extract<T, string>>
+export type VoidRequestController<T> = RequestController<Extract<T, void>>
 export type ObjectRequestController<T> = RequestController<Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | DrinoResponse<any>>>
 export type AnyRequestController = RequestController<any>
 
