@@ -1,5 +1,4 @@
 import { expect } from '@esm-bundle/chai';
-import { isAbortError } from '../../src/utils';
 import { DrinoService } from '../fixtures/drino.service';
 
 describe('Drino - Abort', () => {
@@ -35,7 +34,7 @@ describe('Drino - Abort', () => {
         done('Test Failed');
       }
       catch (err: any) {
-        if (isAbortError(err) && signal.aborted) {
+        if (signal.aborted) {
           expect(signal.reason).to.be.equal(abortReason);
           done();
         }

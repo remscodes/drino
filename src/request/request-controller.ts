@@ -3,7 +3,6 @@ import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import type { Nullable, Optional } from '../models/shared.model';
 import { DrinoResponse } from '../response';
-import { isAbortError } from '../utils';
 import { keysOf } from '../utils/object-util';
 import { bodyFromReadType } from '../utils/response-util';
 import { createUrl } from '../utils/url-util';
@@ -113,7 +112,7 @@ export class RequestController<Resource> {
         }
       })
       .catch((err: Error) => {
-        if (this.signal.aborted && isAbortError(err)) return observer.abort?.(this.signal.reason);
+        if (this.signal.aborted) return observer.abort?.(this.signal.reason);
         observer.error?.(err);
       })
       .finally(() => {

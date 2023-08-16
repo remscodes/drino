@@ -1,6 +1,6 @@
 import type { TestItem } from '../fixtures/drino.service';
 import { DrinoService } from '../fixtures/drino.service';
-import { expectProperty } from '../fixtures/expect-util';
+import { expectProperty } from '../fixtures/utils/expect-util';
 
 describe('Drino - Requests', () => {
 
@@ -15,7 +15,6 @@ describe('Drino - Requests', () => {
         result: (result: TestItem) => {
           expectProperty(result, 'id', 'number', id);
           expectProperty(result, 'name', 'string');
-
           done();
         }
       });
@@ -47,7 +46,6 @@ describe('Drino - Requests', () => {
         result: (result: TestItem) => {
           expectProperty(result, 'id', 'number');
           expectProperty(result, 'name', 'string', itemName);
-
           done();
         }
       });
@@ -64,6 +62,19 @@ describe('Drino - Requests', () => {
   });
 
   describe('PUT', () => {
+
+    it('should retrieve result from Observer', (done: Mocha.Done) => {
+      const itemName: string = 'With Promise';
+
+      service.createItem(itemName).consume({
+        result: (result) => {
+          expectProperty(result, 'id', 'number');
+          expectProperty(result, 'name', 'string', itemName);
+          done();
+        }
+      });
+    });
+
     it('should retrieve result from Promise', async () => {
       const itemName: string = 'With Promise';
 
