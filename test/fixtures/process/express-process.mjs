@@ -5,9 +5,9 @@ spawn(
   ['run', 'start-server'],
   {
     stdio: [
-      'inherit', // Input
-      'inherit', // Output
-      'inherit' // Error,
+      'inherit', // Input channel
+      'inherit', // Output channel
+      'inherit' // Error channel
     ]
   }
 );

@@ -19,6 +19,6 @@ express()
   )
   .use('/item', itemRouter)
   .listen(port, hostname, () => {
-    console.info(`Testing server running on : http://${hostname}:${port}`);
+    console.info(`Test server running on : http://${hostname}:${port}`);
   });
 

@@ -5,9 +5,11 @@ spawn(
   ['run', 'start-web-runner'],
   {
     stdio: [
-      'inherit', // Input
-      'inherit', // Output
-      'inherit' // Error
+      'inherit', // Input channel
+      'inherit', // Output channel
+      'inherit' // Error channel
     ]
   }
-);
+).once('close', (code, _signal) => {
+  process.exit(code);
+});
