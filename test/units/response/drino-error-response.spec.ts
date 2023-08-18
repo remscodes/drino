@@ -1,6 +1,6 @@
 import type { Thror } from 'thror';
 import { createError } from 'thror';
-import { DrinoErrorResponse } from '../../../src';
+import { HttpErrorResponse } from '../../../src';
 import { expectProperty } from '../../fixtures/utils/expect-util';
 
 describe('DrinoErrorResponse', () => {
@@ -13,7 +13,7 @@ describe('DrinoErrorResponse', () => {
 
   it('should initialize', () => {
 
-    const res: DrinoErrorResponse = new DrinoErrorResponse({ url, headers, status, statusText, error });
+    const res: HttpErrorResponse = new HttpErrorResponse({ url, headers, status, statusText, error });
 
     expectProperty(res, 'url', 'URL');
     expectProperty(res, 'headers', 'Headers', headers);

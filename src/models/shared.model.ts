@@ -1,3 +1,5 @@
+import { HttpResponse } from '../response';
+
 export type Optional<T> =
   | T
   | undefined
@@ -6,18 +8,22 @@ export type Nullable<T> =
   | T
   | null
 
-export type InferPromiseType<T>
-  = T extends Promise<infer A> ? A
+export type UnwrapPromise<T>
+  = T extends Promise<infer F> ? F
   : never;
+
+export type UnwrapHttpResponse<T>
+  = T extends HttpResponse<infer F> ? F
+  : T
 
 export type PlainObject = Record<string, string>
 
-export type Prefix<prefix extends string, T extends string> = `${prefix}${T}`
+export type Prefix<Prefix extends string, Str extends string> = `${Prefix}${Str}`
 
-export type PartialBy<T, P extends keyof T> =
-  & Omit<T, P>
-  & Partial<Pick<T, P>>
+export type PartialBy<Obj, Prop extends keyof Obj> =
+  & Omit<Obj, Prop>
+  & Partial<Pick<Obj, Prop>>
 
-export type RequiredBy<T, P extends keyof T> =
-  & Omit<T, P>
-  & Required<Pick<T, P>>
+export type RequiredBy<Obj, Prop extends keyof Obj> =
+  & Omit<Obj, Prop>
+  & Required<Pick<Obj, Prop>>

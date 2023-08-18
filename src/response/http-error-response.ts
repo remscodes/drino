@@ -1,13 +1,13 @@
 import type { CommonResponseInit } from './common-response';
 import { CommonResponse } from './common-response';
 
-interface DrinoErrorResponseInit extends CommonResponseInit {
+interface HttpErrorResponseInit extends CommonResponseInit {
   error: Error;
 }
 
-export class DrinoErrorResponse extends CommonResponse {
+export class HttpErrorResponse extends CommonResponse {
 
-  public constructor(init: DrinoErrorResponseInit) {
+  public constructor(init: HttpErrorResponseInit) {
     super(init);
 
     this.error = init.error;

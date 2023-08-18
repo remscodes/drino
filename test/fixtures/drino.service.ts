@@ -1,4 +1,4 @@
-import type { DrinoInstance, DrinoResponse, RequestController } from '../../src';
+import type { DrinoInstance, RequestController } from '../../src';
 import drino from '../../src';
 
 export interface TestItem {
@@ -19,7 +19,7 @@ export class DrinoService {
   });
 
   public getHeaders(): RequestController<void> {
-    return this.client.head('/', { read: 'none' });
+    return this.client.head('/');
   }
 
   public createItem(name: string): RequestController<TestItem> {
@@ -34,8 +34,8 @@ export class DrinoService {
     return this.client.get(`/${id}`);
   }
 
-  public deleteOneItem(id: number): RequestController<DrinoResponse<void>> {
-    return this.client.delete(`/${id}`, { read: 'response' });
+  public deleteOneItem(id: number): RequestController<void> {
+    return this.client.delete(`/${id}`, { read: 'none' });
   }
 
   public longRequest(signal: AbortSignal): RequestController<void> {

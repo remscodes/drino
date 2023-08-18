@@ -1,15 +1,12 @@
-import type { DrinoResponse } from '../../response';
-import type { RequestController } from '../request-controller';
+import type { HttpResponse } from '../../response';
 import type { ReadType, ReadTypeMap } from './request-config.model';
 
-export type ResponseRequestController<T> = RequestController<DrinoResponse<T>>
-export type BlobRequestController<T> = RequestController<Extract<T, Blob>>
-export type ArrayBufferRequestController<T> = RequestController<Extract<T, ArrayBuffer>>
-export type FormDataRequestController<T> = RequestController<Extract<T, FormData>>
-export type StringRequestController<T> = RequestController<Extract<T, string>>
-export type VoidRequestController<T> = RequestController<Extract<T, void>>
-export type ObjectRequestController<T> = RequestController<Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | DrinoResponse<any>>>
-export type AnyRequestController = RequestController<any>
+export type ObjectBody<T> = Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | HttpResponse<any>>
+export type StringBody<T> = Extract<T, string>
+export type VoidBody<T> = Extract<T, void>
+export type BlobBody<T> = Extract<T, Blob>
+export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
+export type FormDataBody<T> = Extract<T, FormData>
 
 export interface RequestProcessResult<Resource, Read extends ReadType> {
   ok: boolean;
@@ -30,11 +27,9 @@ export interface Observer<T = any> {
   // clientError?: (error: any) => void;
   // serverError?: (error: any) => void;
   //
-  // unavailable?: (error: any) => void;
-  //
   // retry?: (args: RetryArgs) => void;
   abort?: (reason: string) => void;
 }
 
-export type Modifier<A = any, B = any> = (value: A) => B;
+export type Modifier<I = any, O = any> = (value: I) => O;
 export type CheckCallback<T> = (result: T) => void
