@@ -5,10 +5,10 @@
 
 <div align="center">
 
-[![github ci](https://img.shields.io/github/actions/workflow/status/remscodes/drino/npm-ci.yml?&logo=github&label=CI&style=for-the-badge)](https://github.com/remscodes/thror/actions/workflows/npm-ci.yml)
+[![github ci](https://img.shields.io/github/actions/workflow/status/remscodes/drino/npm-ci.yml.svg?&logo=github&label=CI&style=for-the-badge)](https://github.com/remscodes/thror/actions/workflows/npm-ci.yml)
 [![codecov coverage](https://img.shields.io/codecov/c/github/remscodes/drino/main.svg?style=for-the-badge&logo=codecov)](https://codecov.io/gh/remscodes/thror)
 [![npm version](https://img.shields.io/npm/v/drino.svg?&style=for-the-badge&logo=npm)](https://www.npmjs.org/package/thror)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/drino?style=for-the-badge)](https://bundlephobia.com/package/drino)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/drino.svg?style=for-the-badge)](https://bundlephobia.com/package/drino)
 [![license](https://img.shields.io/github/license/remscodes/thror.svg?style=for-the-badge)](LICENSE)
 
 </div>
@@ -241,8 +241,6 @@ You can cancel a send request (before receive response) by using `AbortSignal` a
 Example :
 
 ```ts
-import { isAbortError } from 'drino';
-
 const abortCtrl: AbortController = new AbortController();
 const signal: AbortSignal = abortCtrl.signal;
 
@@ -250,7 +248,7 @@ setTimeout(() => abortCtrl.abort('Too Long'), 2000);
 
 // With Observer
 drino.get<Cat>('/cat/meow', { signal }).consume({
-  result: (res) => {
+  result: (res: Cat) => {
     // handle result
   },
   abort: (reason: any) => {
@@ -261,12 +259,12 @@ drino.get<Cat>('/cat/meow', { signal }).consume({
 
 // With Promise
 drino.get<Cat>('/cat/meow', { signal }).consume()
-  .then((res) => {
+  .then((res: Cat) => {
     // handle result
   })
   .catch((err: any) => {
-    if (isAbortError(err) && signal.aborted) {
-      const reason: string = signal.reason;
+    if (signal.aborted) {
+      const reason: any = signal.reason;
       console.error(reason); // "Too Long"
       // handle abort reason
     }
