@@ -1,2 +1,2 @@
-export { DrinoErrorResponse } from './drino-error-response';
-export { DrinoResponse } from './drino-response';
+export { HttpErrorResponse } from './http-error-response';
+export { HttpResponse } from './http-response';

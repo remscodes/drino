@@ -1,4 +1,4 @@
-import { DrinoResponse } from '../../../src';
+import { HttpResponse } from '../../../src';
 import { expectProperty } from '../../fixtures/utils/expect-util';
 
 describe('DrinoResponse', () => {
@@ -11,7 +11,7 @@ describe('DrinoResponse', () => {
   const ok: boolean = true;
 
   it('should initialize', () => {
-    const res: DrinoResponse<number> = new DrinoResponse({ url, headers, status, statusText, body, ok });
+    const res: HttpResponse<number> = new HttpResponse({ url, headers, status, statusText, body, ok });
 
     expectProperty(res, 'url', 'URL');
     expectProperty(res, 'headers', 'Headers', headers);

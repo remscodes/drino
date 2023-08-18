@@ -1,14 +1,14 @@
 import type { CommonResponseInit } from './common-response';
 import { CommonResponse } from './common-response';
 
-interface DrinoResponseInit<Data = any> extends CommonResponseInit {
+interface HttpResponseInit<T = any> extends CommonResponseInit {
   ok: boolean;
-  body: Data;
+  body: T;
 }
 
-export class DrinoResponse<Resource> extends CommonResponse {
+export class HttpResponse<Resource> extends CommonResponse {
 
-  public constructor(init: DrinoResponseInit) {
+  public constructor(init: HttpResponseInit) {
     super(init);
 
     this.ok = init.ok;

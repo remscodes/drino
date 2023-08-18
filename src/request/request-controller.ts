@@ -1,12 +1,12 @@
 import type { RetryConfig } from '../features';
 import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
-import type { Nullable, Optional } from '../models/shared.model';
-import { DrinoResponse } from '../response';
+import type { Nullable, Optional, UnwrapHttpResponse } from '../models/shared.model';
+import { HttpResponse } from '../response';
 import { keysOf } from '../utils/object-util';
 import { bodyFromReadType } from '../utils/response-util';
 import { createUrl } from '../utils/url-util';
-import type { InferReadType, ReadType, RequestConfig } from './models/request-config.model';
+import type { InferReadType, ReadType, RequestConfig, WrapperType } from './models/request-config.model';
 import type { CheckCallback, Modifier, Observer, RequestProcessResult } from './models/request-controller.model';
 
 interface DrinoRequestInit<Read extends ReadType> {
@@ -50,6 +50,7 @@ export class RequestController<Resource> {
   private readonly config: RequestConfig<InferReadType<Resource>>;
 
   private readonly read: Optional<InferReadType<Resource>>;
+  private readonly wrapper: Optional<WrapperType> = 'none';
 
   private readonly abortCtrl: Optional<AbortController>;
   private readonly signal: AbortSignal;
@@ -129,8 +130,8 @@ export class RequestController<Resource> {
 
     return {
       ok,
-      result: (this.read === 'response')
-        ? new DrinoResponse<Resource>({
+      result: (this.wrapper === 'response')
+        ? new HttpResponse<UnwrapHttpResponse<Resource>>({
           body,
           headers: new Headers(headers),
           ok,
@@ -150,8 +151,8 @@ export class RequestController<Resource> {
 
     return fetch(this.buildUrl(), {
       method: this.method,
-      body: (this.body !== undefined && this.body !== null) ? JSON.stringify(this.body) : undefined,
       headers,
+      body: (this.body !== undefined && this.body !== null) ? JSON.stringify(this.body) : undefined,
       signal: this.signal
       // credentials: (withCredentials) ? 'include' : 'omit'
     });

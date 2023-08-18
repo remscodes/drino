@@ -1,12 +1,13 @@
-import { expect } from '@esm-bundle/chai';
 import { DrinoService } from '../fixtures/drino.service';
+import { expectEqual } from '../fixtures/utils/expect-util';
 
 describe('Drino - Abort', () => {
   const service: DrinoService = new DrinoService();
-  const abortReason: string = 'Too Long';
 
   let abortCtrl: AbortController;
   let signal: AbortSignal;
+
+  const abortReason: string = 'Too Long';
 
   beforeEach(() => {
     abortCtrl = new AbortController();
@@ -19,7 +20,7 @@ describe('Drino - Abort', () => {
         done('Test failed');
       },
       abort: (reason: string) => {
-        expect(reason).to.be.equal(abortReason);
+        expectEqual(reason, abortReason);
         done();
       }
     });
@@ -35,7 +36,7 @@ describe('Drino - Abort', () => {
       }
       catch (err: any) {
         if (signal.aborted) {
-          expect(signal.reason).to.be.equal(abortReason);
+          expectEqual(signal.reason, abortReason);
           done();
         }
         else {

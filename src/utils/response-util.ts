@@ -10,7 +10,6 @@ export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promi
       return fetchResponse.arrayBuffer();
     case 'formData':
       return fetchResponse.formData();
-    case 'response':
     case 'object':
       return fetchResponse.json();
     default :

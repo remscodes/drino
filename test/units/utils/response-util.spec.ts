@@ -28,9 +28,4 @@ describe('Util - Response', () => {
     const result = await bodyFromReadType(mockFetchResponse, 'arrayBuffer');
     expectType(result, 'ArrayBuffer');
   });
-
-  it('should return Object', async () => {
-    const result = await bodyFromReadType(mockFetchResponse, 'response');
-    expectType(result, 'object');
-  });
 });

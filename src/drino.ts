@@ -1,8 +1,9 @@
-import type { AnyRequestController, ArrayBufferRequestController, BlobRequestController, DrinoInstance, FormDataRequestController, ObjectRequestController, ResponseRequestController, StringRequestController, VoidRequestController } from './';
+import type { DrinoInstance, HttpResponse } from './';
 import type { DrinoDefaultConfig } from './models/drino.model';
 import type { RequestMethodType, Url } from './models/http.model';
 import type { RequestConfig } from './request';
 import { RequestController } from './request';
+import type { ArrayBufferBody, BlobBody, FormDataBody, ObjectBody, StringBody, VoidBody } from './request/models/request-controller.model';
 
 export class Drino {
 
@@ -41,80 +42,121 @@ export class Drino {
     return new Drino(config, this);
   }
 
-  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'object'>): ObjectRequestController<T>;
-  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'none'>): VoidRequestController<T>;
-  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'response'>): ResponseRequestController<T>;
-  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'blob'>): BlobRequestController<T>;
-  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
-  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
-  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<'string'>): StringRequestController<T>;
-  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<any>): AnyRequestController {
+  private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<any, any>): RequestController<any> {
     return new RequestController<T>({ method, url, body, config }, this.default);
   }
 
-  public get<T>(url: Url, config?: RequestConfig<'object'>): ObjectRequestController<T>;
-  public get<T>(url: Url, config?: RequestConfig<'response'>): ResponseRequestController<T>;
-  public get<T>(url: Url, config?: RequestConfig<'blob'>): BlobRequestController<T>;
-  public get<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
-  public get<T>(url: Url, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
-  public get<T>(url: Url, config?: RequestConfig<'string'>): StringRequestController<T>;
-  public get<T>(url: Url, config?: RequestConfig<any>): AnyRequestController {
+  public get<T>(url: Url, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public get<T>(url: Url, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
+  public get<T>(url: Url, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public get<T>(url: Url, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
+  public get<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
+  public get<T>(url: Url, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
+  public get<T>(url: Url, config?: RequestConfig<'auto'>): RequestController<T>;
+  public get<T>(url: Url, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
+  public get<T>(url: Url, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
+  public get<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  public get<T>(url: Url, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
+  public get<T>(url: Url, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
+  public get<T>(url: Url, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
+  public get<T>(url: Url, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
+  public get<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('GET', url, null, config);
   }
 
-  public head<T>(url: Url, config: RequestConfig<'response'>): ResponseRequestController<T>;
-  public head<T>(url: Url, config: RequestConfig<'none'>): VoidRequestController<T>;
-  public head<T>(url: Url, config: RequestConfig<any> = {}): AnyRequestController {
+  public head<T>(url: Url, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public head<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  public head<T>(url: Url, config?: RequestConfig<'none', any>): RequestController<any> {
     return this.request<T>('HEAD', url, null, { ...config, read: 'none' });
   }
 
-  public delete<T>(url: Url, config?: RequestConfig<'object'>): ObjectRequestController<T>;
-  public delete<T>(url: Url, config?: RequestConfig<'response'>): ResponseRequestController<T>;
-  public delete<T>(url: Url, config?: RequestConfig<'blob'>): BlobRequestController<T>;
-  public delete<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
-  public delete<T>(url: Url, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
-  public delete<T>(url: Url, config?: RequestConfig<'string'>): StringRequestController<T>;
-  public delete<T>(url: Url, config?: RequestConfig<any>): AnyRequestController {
+  public delete<T>(url: Url, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public delete<T>(url: Url, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
+  public delete<T>(url: Url, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public delete<T>(url: Url, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
+  public delete<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
+  public delete<T>(url: Url, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
+  public delete<T>(url: Url, config?: RequestConfig<'auto'>): RequestController<T>;
+  public delete<T>(url: Url, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
+  public delete<T>(url: Url, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
+  public delete<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  public delete<T>(url: Url, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
+  public delete<T>(url: Url, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
+  public delete<T>(url: Url, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
+  public delete<T>(url: Url, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
+  public delete<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('DELETE', url, null, config);
   }
 
-  public options<T>(url: Url, config?: RequestConfig<'object'>): ObjectRequestController<T>;
-  public options<T>(url: Url, config?: RequestConfig<'response'>): ResponseRequestController<T>;
-  public options<T>(url: Url, config?: RequestConfig<'blob'>): BlobRequestController<T>;
-  public options<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
-  public options<T>(url: Url, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
-  public options<T>(url: Url, config?: RequestConfig<'string'>): StringRequestController<T>;
-  public options<T>(url: Url, config?: RequestConfig<any>): AnyRequestController {
+  public options<T>(url: Url, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public options<T>(url: Url, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
+  public options<T>(url: Url, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public options<T>(url: Url, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
+  public options<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
+  public options<T>(url: Url, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
+  public options<T>(url: Url, config?: RequestConfig<'auto'>): RequestController<T>;
+  public options<T>(url: Url, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
+  public options<T>(url: Url, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
+  public options<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  public options<T>(url: Url, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
+  public options<T>(url: Url, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
+  public options<T>(url: Url, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
+  public options<T>(url: Url, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
+  public options<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('OPTIONS', url, null, config);
   }
 
-  public post<T>(url: Url, body: any, config?: RequestConfig<'object'>): ObjectRequestController<T>;
-  public post<T>(url: Url, body: any, config?: RequestConfig<'response'>): ResponseRequestController<T>;
-  public post<T>(url: Url, body: any, config?: RequestConfig<'blob'>): BlobRequestController<T>;
-  public post<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
-  public post<T>(url: Url, body: any, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
-  public post<T>(url: Url, body: any, config?: RequestConfig<'string'>): StringRequestController<T>;
-  public post<T>(url: Url, body: any, config?: RequestConfig<any>): AnyRequestController {
+  public post<T>(url: Url, body: any, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'auto'>): RequestController<T>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('POST', url, body, config);
   }
 
-  public put<T>(url: Url, body: any, config?: RequestConfig<'object'>): ObjectRequestController<T>;
-  public put<T>(url: Url, body: any, config?: RequestConfig<'response'>): ResponseRequestController<T>;
-  public put<T>(url: Url, body: any, config?: RequestConfig<'blob'>): BlobRequestController<T>;
-  public put<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
-  public put<T>(url: Url, body: any, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
-  public put<T>(url: Url, body: any, config?: RequestConfig<'string'>): StringRequestController<T>;
-  public put<T>(url: Url, body: any, config?: RequestConfig<any>): AnyRequestController {
+  public put<T>(url: Url, body: any, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'auto'>): RequestController<T>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('PUT', url, body, config);
   }
 
-  public patch<T>(url: Url, body: any, config?: RequestConfig<'object'>): ObjectRequestController<T>;
-  public patch<T>(url: Url, body: any, config?: RequestConfig<'response'>): ResponseRequestController<T>;
-  public patch<T>(url: Url, body: any, config?: RequestConfig<'blob'>): BlobRequestController<T>;
-  public patch<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer'>): ArrayBufferRequestController<T>;
-  public patch<T>(url: Url, body: any, config?: RequestConfig<'formData'>): FormDataRequestController<T>;
-  public patch<T>(url: Url, body: any, config?: RequestConfig<'string'>): StringRequestController<T>;
-  public patch<T>(url: Url, body: any, config?: RequestConfig<any>): AnyRequestController {
+  public patch<T>(url: Url, body: any, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'auto'>): RequestController<T>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('PATCH', url, body, config);
   }
 }
