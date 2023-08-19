@@ -88,9 +88,9 @@ export class Drino {
     return this.request<T>('DELETE', url, null, config);
   }
 
-  public options<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
-  public options<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
-  public options<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
+  private options<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
+  private options<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  private options<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('OPTIONS', url, null, config);
   }
 
