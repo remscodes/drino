@@ -3,7 +3,7 @@ import { createError } from 'thror';
 import { HttpErrorResponse } from '../../../src';
 import { expectProperty } from '../../fixtures/utils/expect-util';
 
-describe('DrinoErrorResponse', () => {
+describe('HttpErrorResponse', () => {
 
   const url: string = 'http://localhost';
   const headers: Headers = new Headers();

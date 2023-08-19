@@ -20,8 +20,8 @@ export interface RequestConfig<
   queryParams?: URLSearchParams | PlainObject;
   /**
    * Response type that will be passed into :
-   *  - result callback when using Observer.
-   *  - then callback when using Promise.
+   *  - result() callback when using Observer.
+   *  - then() callback when using Promise.
    *
    * If 'auto' is specified, read will be deducted from "content-type" response header.
    *
@@ -54,27 +54,15 @@ interface Interceptors {
 
 }
 
+export type ReadType =
+  | 'object'
+  | 'string'
+  | 'none'
+  | 'blob'
+  | 'arrayBuffer'
+  | 'formData'
+  | 'auto'
+
 export type WrapperType =
   | 'none'
   | 'response'
-
-export interface ReadTypeMap<Data = any> {
-  object: Extract<Data, object>;
-  string: Extract<Data, string>;
-  none: Extract<Data, void>;
-  blob: Extract<Data, Blob>;
-  arrayBuffer: Extract<Data, ArrayBuffer>;
-  formData: Extract<Data, FormData>;
-  auto: any;
-}
-
-export type ReadType<T = any> = keyof ReadTypeMap<T>
-
-export type InferReadType<Data>
-  = Data extends Blob ? 'blob'
-  : Data extends ArrayBuffer ? 'arrayBuffer'
-    : Data extends FormData ? 'formData'
-      : Data extends string ? 'string'
-        : Data extends object ? 'object'
-          : Data extends void ? 'none'
-            : never

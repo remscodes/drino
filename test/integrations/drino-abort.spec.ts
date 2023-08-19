@@ -35,13 +35,10 @@ describe('Drino - Abort', () => {
         done('Test Failed');
       }
       catch (err: any) {
-        if (signal.aborted) {
-          expectEqual(signal.reason, abortReason);
-          done();
-        }
-        else {
-          done('Test Failed');
-        }
+        if (!signal.aborted) return done('Test Failed');
+
+        expectEqual(signal.reason, abortReason);
+        done();
       }
     }
 

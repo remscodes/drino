@@ -8,7 +8,8 @@ export const itemRouter = Router()
 
     res.status(201).json(service.create(item))
   })
-  .get('/:id', ({ params: { id } }, res) => {
+  .get('/:id', ({ params: { id: rawId } }, res) => {
+    const id = parseInt(rawId, 10);
     if (!id) return res.status(400).send(`Missing id path parameter !`);
 
     const item = service.findById(parseInt(id, 10));
@@ -19,16 +20,30 @@ export const itemRouter = Router()
   .get('/', (_, res) => {
     res.status(200).json(service.findAll());
   })
-  .put('/:id', ({ body: updatedItem, params: { id } }, res) => {
-    if (!updatedItem) return res.status(400).send(`Missing item body !`);
+  .put('/:id', ({ body: updatedItem, params: { id: rawId } }, res) => {
+    const id = parseInt(rawId, 10);
     if (!id) return res.status(400).send(`Missing id path parameter !`);
+
+    if (!updatedItem) return res.status(400).send(`Missing item body !`);
 
     const item = service.update(id, updatedItem);
     if (!item) return res.status(404).send(`Could not find item with id=${id}.`);
 
     res.status(200).json(item);
   })
-  .delete('/:id', ({ params: { id } }, res) => {
+  .patch('/:id', ({ body: updatedItem, params: { id: rawId } }, res) => {
+    const id = parseInt(rawId, 10);
+    if (!id) return res.status(400).send(`Missing id path parameter !`);
+
+    if (!updatedItem) return res.status(400).send(`Missing item body !`);
+
+    const item = service.update(id, updatedItem);
+    if (!item) return res.status(404).send(`Could not find item with id=${id}.`);
+
+    res.status(200).json(item);
+  })
+  .delete('/:id', ({ params: { id: rawId } }, res) => {
+    const id = parseInt(rawId, 10);
     if (!id) return res.status(400).send(`Missing id path parameter !`);
 
     const deleted = service.delete(id);

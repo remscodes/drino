@@ -2,7 +2,7 @@ import type { CommonResponseInit } from './common-response';
 import { CommonResponse } from './common-response';
 
 interface HttpErrorResponseInit extends CommonResponseInit {
-  error: Error;
+  error: any;
 }
 
 export class HttpErrorResponse extends CommonResponse {

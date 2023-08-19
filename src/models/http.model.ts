@@ -1,3 +1,6 @@
+import type { HttpResponse } from '../response';
+import type { Prefix } from './shared.model';
+
 export type RequestMethodType =
   | 'GET'
   | 'HEAD'
@@ -10,8 +13,8 @@ export type RequestMethodType =
   | 'PATCH';
 
 export type Url =
-  | `http${string}`
-  | `/${string}`
+  | Prefix<string, `http${'s' | ''}://`>
+  | Prefix<string, '/'>
   | URL
 
 export type StatusType =
@@ -26,3 +29,9 @@ type StatusSuccessType =
 type StatusErrorType =
   | 'ClientError'
   | 'ServerError'
+
+export type FetchFn = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+
+export type UnwrapHttpResponse<T>
+  = T extends HttpResponse<infer F> ? F
+  : T

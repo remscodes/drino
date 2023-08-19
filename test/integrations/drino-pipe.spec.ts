@@ -1,3 +1,3 @@
-describe('Drino - Pipe Methods', () => {
+describe.skip('Drino - Pipe Methods', () => {
 
 });

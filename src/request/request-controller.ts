@@ -1,13 +1,13 @@
-import type { RetryConfig } from '../features';
+import { emitError } from 'thror';
 import type { DrinoDefaultConfig } from '../models/drino.model';
-import type { RequestMethodType, Url } from '../models/http.model';
-import type { Nullable, Optional, UnwrapHttpResponse } from '../models/shared.model';
-import { HttpResponse } from '../response';
+import type { FetchFn, RequestMethodType, UnwrapHttpResponse, Url } from '../models/http.model';
+import type { Nullable } from '../models/shared.model';
+import { HttpErrorResponse, HttpResponse } from '../response';
 import { keysOf } from '../utils/object-util';
 import { bodyFromReadType } from '../utils/response-util';
 import { createUrl } from '../utils/url-util';
-import type { InferReadType, ReadType, RequestConfig, WrapperType } from './models/request-config.model';
-import type { CheckCallback, Modifier, Observer, RequestProcessResult } from './models/request-controller.model';
+import type { ReadType, RequestConfig, WrapperType } from './models/request-config.model';
+import type { CheckCallback, Modifier, Observer } from './models/request-controller.model';
 
 interface DrinoRequestInit<Read extends ReadType> {
   method: RequestMethodType;
@@ -18,7 +18,7 @@ interface DrinoRequestInit<Read extends ReadType> {
 
 export class RequestController<Resource> {
 
-  public constructor(init: DrinoRequestInit<InferReadType<Resource>>, defaultConfig: DrinoDefaultConfig) {
+  public constructor(init: DrinoRequestInit<any>, defaultConfig: DrinoDefaultConfig) {
     const { method, url, body, config = {} } = init;
 
     this.defaultConfig = defaultConfig;
@@ -28,15 +28,11 @@ export class RequestController<Resource> {
     this.body = body;
     this.config = config;
 
-    this.read = config.read;
+    this.read = config.read ?? 'object';
+    this.wrapper = config.wrapper ?? 'none';
 
-    if (!config.signal) {
-      this.abortCtrl = new AbortController();
-      this.signal = this.abortCtrl.signal;
-    }
-    else {
-      this.signal = config.signal;
-    }
+    this.signal = (!config.signal) ? this.abortCtrl.signal
+      : config.signal;
 
     // this.retry = config.retry;
   }
@@ -46,16 +42,17 @@ export class RequestController<Resource> {
   private readonly method: RequestMethodType;
   private readonly url: Url;
   private readonly body: any;
+  private readonly config: RequestConfig<any, any>;
 
-  private readonly config: RequestConfig<InferReadType<Resource>>;
+  private readonly read: ReadType;
+  private readonly wrapper: WrapperType;
 
-  private readonly read: Optional<InferReadType<Resource>>;
-  private readonly wrapper: Optional<WrapperType> = 'none';
-
-  private readonly abortCtrl: Optional<AbortController>;
+  private readonly abortCtrl: AbortController = new AbortController();
   private readonly signal: AbortSignal;
 
-  private readonly retry: Optional<RetryConfig>;
+  // private readonly timeoutSignal: AbortSignal = AbortSignal.timeout(this.timeout);
+
+  // private readonly retry: Optional<RetryConfig>;
 
   private readonly modifiers: Modifier[] = [];
 
@@ -91,7 +88,7 @@ export class RequestController<Resource> {
       if (!ok) return Promise.reject(result);
 
       for (const modifier of this.modifiers) result = await modifier(result);
-      return result as any;
+      return result;
     }
     catch (err: any) {
       return Promise.reject(err);
@@ -109,47 +106,64 @@ export class RequestController<Resource> {
         }
         catch (err: any) {
           this.abortCtrl?.abort(err);
-          console.error(err);
         }
       })
       .catch((err: Error) => {
         if (this.signal.aborted) return observer.abort?.(this.signal.reason);
         observer.error?.(err);
       })
-      .finally(() => {
-        observer.finish?.();
+      .finally(() => observer.finish?.());
+  }
+
+  private async processRequest(): Promise<any> {
+    const fetchResponse: Response = await this.performFetch();
+
+    const { headers, status, statusText, ok, url } = fetchResponse;
+
+    if (!ok) {
+      const error = await fetchResponse.text();
+      const errorResponse = new HttpErrorResponse({
+        error,
+        headers: new Headers(headers),
+        status,
+        statusText,
+        url
       });
+      return Promise.reject(errorResponse);
+    }
+
+    try {
+      const body = (this.method === 'HEAD' || this.method === 'OPTIONS') ? headers
+        : await this.convertBody(fetchResponse);
+
+      return {
+        ok,
+        result: (this.wrapper === 'response')
+          ? new HttpResponse<UnwrapHttpResponse<Resource>>({
+            body: (this.method === 'HEAD' || this.method === 'OPTIONS') ? undefined : body,
+            headers: new Headers(headers),
+            status,
+            statusText,
+            url
+          })
+          : body
+      };
+    }
+    catch (err: any) {
+      emitError('Fetch Response', `Cannot parse body because RequestConfig 'read' value (='${this.read}') is incompatible with 'content-type' response header (='${headers.get('content-type')}').`, {
+        withStack: true,
+        original: err
+      });
+    }
   }
 
-  private async processRequest(): Promise<RequestProcessResult<Resource, InferReadType<Resource>>> {
-    const fetchResponse: Response = await this.useFetch();
-
-    const { headers = {}, status, statusText, ok, url } = fetchResponse;
-
-    const body = await this.convertBody(fetchResponse);
-
-    return {
-      ok,
-      result: (this.wrapper === 'response')
-        ? new HttpResponse<UnwrapHttpResponse<Resource>>({
-          body,
-          headers: new Headers(headers),
-          ok,
-          status,
-          statusText,
-          url
-        })
-        : body as any
-    };
-  }
-
-  private useFetch(): Promise<Response> {
+  private performFetch(fetchFn: FetchFn = fetch): Promise<Response> {
     const { headers: configHeaders = {} } = this.config;
 
     const headers: Headers = new Headers(configHeaders);
     headers.set('Content-Type', 'application/json');
 
-    return fetch(this.buildUrl(), {
+    return fetchFn(this.buildUrl(), {
       method: this.method,
       headers,
       body: (this.body !== undefined && this.body !== null) ? JSON.stringify(this.body) : undefined,
@@ -158,20 +172,18 @@ export class RequestController<Resource> {
     });
   }
 
-  private convertBody(fetchResponse: Response): Promise<Resource> {
-    if (this.read) return bodyFromReadType(fetchResponse, this.read);
+  private convertBody(fetchResponse: Response): Promise<UnwrapHttpResponse<Resource>> {
+    if (this.read !== 'auto') return bodyFromReadType(fetchResponse, this.read);
 
-    else {
-      const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
+    const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
 
-      const readType: ReadType
-        = (contentType?.includes('application/json')) ? 'object'
-        : (contentType?.includes('application/octet-stream')) ? 'blob'
-          : (contentType?.includes('multipart/form-data')) ? 'formData'
-            : 'string';
+    const readType: ReadType
+      = (contentType?.includes('text/plain')) ? 'string'
+      : (contentType?.includes('application/octet-stream')) ? 'blob'
+        : (contentType?.includes('multipart/form-data')) ? 'formData'
+          : 'object';
 
-      return bodyFromReadType(fetchResponse, readType);
-    }
+    return bodyFromReadType(fetchResponse, readType);
   }
 
   private buildUrl(): URL {

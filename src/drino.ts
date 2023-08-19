@@ -64,9 +64,9 @@ export class Drino {
     return this.request<T>('GET', url, null, config);
   }
 
-  public head<T>(url: Url, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public head<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
   public head<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
-  public head<T>(url: Url, config?: RequestConfig<'none', any>): RequestController<any> {
+  public head<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('HEAD', url, null, { ...config, read: 'none' });
   }
 
@@ -88,20 +88,8 @@ export class Drino {
     return this.request<T>('DELETE', url, null, config);
   }
 
-  public options<T>(url: Url, config?: RequestConfig): RequestController<ObjectBody<T>>;
-  public options<T>(url: Url, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
-  public options<T>(url: Url, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
-  public options<T>(url: Url, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
-  public options<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
-  public options<T>(url: Url, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
-  public options<T>(url: Url, config?: RequestConfig<'auto'>): RequestController<T>;
-  public options<T>(url: Url, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
-  public options<T>(url: Url, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
+  public options<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
   public options<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
-  public options<T>(url: Url, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
-  public options<T>(url: Url, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
-  public options<T>(url: Url, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
-  public options<T>(url: Url, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
   public options<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('OPTIONS', url, null, config);
   }

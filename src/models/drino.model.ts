@@ -6,5 +6,5 @@ export type DrinoInstance = Omit<Drino, 'create'>
 
 export interface DrinoDefaultConfig {
   baseUrl?: Url;
-  requestConfig?: RequestConfig<any>;
+  requestConfig?: Omit<RequestConfig<any>, 'read' | 'wrapper'>;
 }
