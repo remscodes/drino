@@ -284,13 +284,6 @@ drino.get<Cat>('/cat/meow', { signal }).consume()
 
 [//]: # (### Timeout)
 
-## In Progress
-
-- Interceptors
-- Timeout
-- OPTIONS Request
-- Auto read (RequestConfig)
-
 ## License
 
 [MIT](LICENSE) © Rémy Abitbol.
