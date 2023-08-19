@@ -64,6 +64,9 @@ jobs:
       - name: Clean install node modules
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Build project
+        run: pnpm run build
+
       - name: Publish to NPM
         run: npm publish --provenance
         env:
