@@ -72,9 +72,9 @@ drino.get('/cat/meow').consume()
 
 drino.get(url, config?)
 
-drino.head(url, config?)
-
 drino.delete(url, config?)
+
+drino.head(url, config?)
 
 drino.options(url, config?)
 
@@ -99,9 +99,20 @@ interface RequestConfig {
   queryParams?: URLSearchParams | Record<string, string>;
 
   // Response type that will be passed into :
-  // - result callback when using Observer
-  // - then callback when using Promise
-  read?: 'response' | 'object' | 'string' | 'blob' | 'arrayBuffer' | 'formData';
+  // - result() callback when using Observer
+  // - then() callback when using Promise
+  // 
+  // If 'auto' is specified, read will be deducted from "content-type" response header.
+  // 
+  // @default: 'object'
+  read?: 'object' | 'string' | 'blob' | 'arrayBuffer' | 'formData' | 'auto' | 'none';
+
+  // Wrap response body into a specific Object.
+  // - 'response' : HttpResponse
+  // - 'none' : nothing
+  //
+  // @default: 'none'
+  wrapper?: 'response' | 'none';
 
   // AbortSignal to cancel HTTP Request with an AbortController
   // See below in section 'Abort Request'
@@ -140,7 +151,7 @@ child.get('/meow').consume() // GET -> http://localhost:8080/cat/meow
 interface DrinoDefaultConfig {
   // Base URL
   // Example : 'http://localhost:8080'
-  baseUrl?: Url;
+  baseUrl?: string;
 
   // Default requestConfig applied to all requests hosted by the instance
   // See above in section 'Request Config'
@@ -154,7 +165,7 @@ You can override config applied to a `drino` instance (default import or created
 drino.default.baseUrl = 'https://example.com';
 drino.default.requestConfig.headers.set('Custom-Header', 'Cat');
 
-drino.get('/api/date').consume(); // GET -> https://example.com/api/date (headers = { "Custom-Header", "Cat" })
+drino.get('/cat/meow').consume(); // GET -> https://example.com/cat/meow (headers = { "Custom-Header", "Cat" })
 ```
 
 ## Advanced Usage
@@ -270,6 +281,15 @@ drino.get<Cat>('/cat/meow', { signal }).consume()
     }
   });
 ```
+
+[//]: # (### Timeout)
+
+## In Progress
+
+- Interceptors
+- Timeout
+- OPTIONS Request
+- Auto read (RequestConfig)
 
 ## License
 
