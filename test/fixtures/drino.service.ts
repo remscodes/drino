@@ -46,9 +46,9 @@ export class DrinoService {
     return this.client.delete(`/${id}`, { read: 'none', wrapper: 'response' });
   }
 
-  public getOptions(): RequestController<Headers> {
-    return this.client.options(`/`);
-  }
+  // public getOptions(): RequestController<Headers> {
+  //   return this.client.options(`/`);
+  // }
 
   public longRequest(signal: AbortSignal): RequestController<HttpResponse<void>> {
     return this.client.head('/long', { signal, read: 'none' });

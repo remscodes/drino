@@ -113,25 +113,24 @@ describe('Drino - Requests', () => {
     });
   });
 
-  describe.skip('OPTIONS', async () => {
-
-    it('should retrieve result from Observer', (done: Mocha.Done) => {
-
-      service.getOptions().consume({
-        result: (headers: Headers) => {
-
-          expectType(headers, 'Headers');
-          done();
-        }
-      });
-    });
-
-    it('should retrieve result from Promise', async () => {
-      const headers: Headers = await service.getOptions().consume();
-
-      expectType(headers, 'Headers');
-    });
-  });
+  // describe.skip('OPTIONS', async () => {
+  //
+  //   it('should retrieve result from Observer', (done: Mocha.Done) => {
+  //
+  //     service.getOptions().consume({
+  //       result: (headers: Headers) => {
+  //         expectType(headers, 'Headers');
+  //         done();
+  //       }
+  //     });
+  //   });
+  //
+  //   it('should retrieve result from Promise', async () => {
+  //     const headers: Headers = await service.getOptions().consume();
+  //
+  //     expectType(headers, 'Headers');
+  //   });
+  // });
 
   describe('DELETE', () => {
 
@@ -141,7 +140,6 @@ describe('Drino - Requests', () => {
       service.deleteOneItem(id).consume({
         result: ({ status }: HttpResponse<void>) => {
           expectEqual(status, 204);
-
           done();
         }
       });
