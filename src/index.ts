@@ -4,4 +4,3 @@ export * from './response';
 export * from './request';
 
 export { default } from './drino';
-export type { Drino } from './drino';

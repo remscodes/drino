@@ -1,4 +1,4 @@
-import type { DrinoInstance, RequestController } from '../../src';
+import type { DrinoInstance, HttpResponse, RequestController } from '../../src';
 import drino from '../../src';
 
 export interface TestItem {
@@ -18,7 +18,7 @@ export class DrinoService {
     }
   });
 
-  public getHeaders(): RequestController<void> {
+  public getHeaders(): RequestController<Headers> {
     return this.client.head('/');
   }
 
@@ -26,19 +26,35 @@ export class DrinoService {
     return this.client.post('/', { name });
   }
 
+  public putItem(item: TestItem): RequestController<TestItem> {
+    return this.client.put(`/${item.id}`, item);
+  }
+
+  public patchItem(item: TestItem): RequestController<TestItem> {
+    return this.client.patch(`/${item.id}`, item);
+  }
+
   public getItems(): RequestController<TestItem> {
-    return this.client.get('/item');
+    return this.client.get('/');
   }
 
   public getOneItem(id: number): RequestController<TestItem> {
     return this.client.get(`/${id}`);
   }
 
-  public deleteOneItem(id: number): RequestController<void> {
-    return this.client.delete(`/${id}`, { read: 'none' });
+  public deleteOneItem(id: number): RequestController<HttpResponse<void>> {
+    return this.client.delete(`/${id}`, { read: 'none', wrapper: 'response' });
   }
 
-  public longRequest(signal: AbortSignal): RequestController<void> {
-    return this.client.head('/long', { read: 'none', signal });
+  public getOptions(): RequestController<Headers> {
+    return this.client.options(`/`);
+  }
+
+  public longRequest(signal: AbortSignal): RequestController<HttpResponse<void>> {
+    return this.client.head('/long', { signal, read: 'none' });
+  }
+
+  public getWrappedItems(): RequestController<HttpResponse<TestItem[]>> {
+    return this.client.get('/', { wrapper: 'response' });
   }
 }

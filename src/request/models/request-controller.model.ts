@@ -1,5 +1,4 @@
 import type { HttpResponse } from '../../response';
-import type { ReadType, ReadTypeMap } from './request-config.model';
 
 export type ObjectBody<T> = Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | HttpResponse<any>>
 export type StringBody<T> = Extract<T, string>
@@ -8,9 +7,9 @@ export type BlobBody<T> = Extract<T, Blob>
 export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
-export interface RequestProcessResult<Resource, Read extends ReadType> {
+export interface RequestProcessResult<Resource> {
   ok: boolean;
-  result: ReadTypeMap<Resource>[Read];
+  result: Resource;
 }
 
 export interface Observer<T = any> {
