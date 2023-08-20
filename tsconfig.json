@@ -12,7 +12,6 @@
     "declarationDir": "./dist/types",
     "sourceMap": true,
     "declaration": true,
-    "removeComments": true,
     "downlevelIteration": true,
     "importHelpers": true,
     "moduleResolution": "node",
