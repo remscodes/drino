@@ -13,11 +13,11 @@ export class Drino {
       ...config
     };
 
-    this._default.requestConfig = {
+    this._default.requestsConfig = {
       headers: new Headers(),
       queryParams: new URLSearchParams(),
-      ...parent?.default.requestConfig ?? {},
-      ...config.requestConfig ?? {}
+      ...parent?.default.requestsConfig ?? {},
+      ...config.requestsConfig ?? {}
     };
   }
 

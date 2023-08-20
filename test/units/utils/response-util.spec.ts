@@ -1,4 +1,4 @@
-import { bodyFromReadType } from '../../../src/utils/response-util';
+import { bodyFromReadType } from '../../../src/response/response-util';
 import { expectType } from '../../fixtures/utils/expect-util';
 import { mockFetchResponse } from '../../fixtures/mocks/fetch-response.mock';
 

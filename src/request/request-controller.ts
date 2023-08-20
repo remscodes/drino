@@ -1,11 +1,10 @@
 import { emitError } from 'thror';
+import type { Interceptors } from '../features/interceptors/models/interceptor.model';
 import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { FetchFn, RequestMethodType, UnwrapHttpResponse, Url } from '../models/http.model';
-import type { Nullable } from '../models/shared.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
-import { keysOf } from '../utils/object-util';
-import { bodyFromReadType } from '../utils/response-util';
-import { createUrl } from '../utils/url-util';
+import { convertBody } from '../utils/convert-util';
+import { buildUrl } from '../utils/url-util';
 import type { ReadType, RequestConfig, WrapperType } from './models/request-config.model';
 import type { CheckCallback, Modifier, Observer } from './models/request-controller.model';
 
@@ -34,10 +33,19 @@ export class RequestController<Resource> {
     this.signal = (!config.signal) ? this.abortCtrl.signal
       : config.signal;
 
-    // this.retry = config.retry;
+    this.interceptors = {
+      ...defaultConfig.requestsConfig?.interceptors ?? {},
+      ...config.interceptors ?? {}
+    };
+
+    // this.request = new HttpRequest({
+    //   headers
+    // })
   }
 
   private readonly defaultConfig: DrinoDefaultConfig;
+
+  // private readonly request: HttpRequest;
 
   private readonly method: RequestMethodType;
   private readonly url: Url;
@@ -50,9 +58,7 @@ export class RequestController<Resource> {
   private readonly abortCtrl: AbortController = new AbortController();
   private readonly signal: AbortSignal;
 
-  // private readonly timeoutSignal: AbortSignal = AbortSignal.timeout(this.timeout);
-
-  // private readonly retry: Optional<RetryConfig>;
+  private readonly interceptors: Interceptors;
 
   private readonly modifiers: Modifier[] = [];
 
@@ -134,7 +140,7 @@ export class RequestController<Resource> {
 
     try {
       const body = (this.method === 'HEAD' || this.method === 'OPTIONS') ? headers
-        : await this.convertBody(fetchResponse);
+        : await convertBody(fetchResponse, this.read);
 
       return {
         ok,
@@ -163,43 +169,19 @@ export class RequestController<Resource> {
     const headers: Headers = new Headers(configHeaders);
     headers.set('Content-Type', 'application/json');
 
-    return fetchFn(this.buildUrl(), {
+    const requestUrl: URL = buildUrl({
+      url: this.url,
+      prefix: this.config.prefix ?? this.defaultConfig.requestsConfig?.prefix,
+      baseUrl: this.defaultConfig.baseUrl,
+      queryParams: this.config.queryParams
+    });
+
+    return fetchFn(requestUrl, {
       method: this.method,
       headers,
       body: (this.body !== undefined && this.body !== null) ? JSON.stringify(this.body) : undefined,
       signal: this.signal
       // credentials: (withCredentials) ? 'include' : 'omit'
     });
-  }
-
-  private convertBody(fetchResponse: Response): Promise<UnwrapHttpResponse<Resource>> {
-    if (this.read !== 'auto') return bodyFromReadType(fetchResponse, this.read);
-
-    const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
-
-    const readType: ReadType
-      = (contentType?.includes('text/plain')) ? 'string'
-      : (contentType?.includes('application/octet-stream')) ? 'blob'
-        : (contentType?.includes('multipart/form-data')) ? 'formData'
-          : 'object';
-
-    return bodyFromReadType(fetchResponse, readType);
-  }
-
-  private buildUrl(): URL {
-    const { baseUrl, requestConfig } = this.defaultConfig;
-    const prefix: string = requestConfig?.prefix ?? '';
-
-    const { queryParams } = this.config;
-
-    const url: URL = createUrl(`${prefix}${this.url}`.replace(/\/$/, ''), baseUrl);
-
-    if (queryParams && (queryParams?.size || keysOf(queryParams).length)) {
-      const searchParams: URLSearchParams = new URLSearchParams(queryParams);
-      searchParams.forEach((value: string, key: string) => {
-        url.searchParams.set(key, value);
-      });
-    }
-    return url;
   }
 }

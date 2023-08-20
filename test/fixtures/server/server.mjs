@@ -6,16 +6,20 @@ import { itemRouter } from './item.router.mjs';
 const hostname = 'localhost';
 const port = 8080;
 
+function requestInfo() {
+  return ({ method, originalUrl }, _, next) => {
+    // console.info(`Request ${method} on route : ${originalUrl}`);
+    next();
+  }
+}
+
 express()
   .use(
     urlencoded({ extended: true }),
     json(),
     helmet(),
     cors(),
-    ({ method, originalUrl }, _, next) => {
-      console.log(`Request ${method} on route : ${originalUrl}`);
-      next();
-    }
+    requestInfo()
   )
   .use('/item', itemRouter)
   .listen(port, hostname, () => {
