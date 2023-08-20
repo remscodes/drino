@@ -12,6 +12,9 @@ export interface RequestProcessResult<Resource> {
   result: Resource;
 }
 
+export type Modifier<I = any, O = any> = (value: I) => O;
+export type CheckCallback<T> = (result: T) => void
+
 export interface Observer<T = any> {
   result?: (result: T) => void;
   error?: (error: any) => void;
@@ -29,6 +32,3 @@ export interface Observer<T = any> {
   // retry?: (args: RetryArgs) => void;
   abort?: (reason: string) => void;
 }
-
-export type Modifier<I = any, O = any> = (value: I) => O;
-export type CheckCallback<T> = (result: T) => void

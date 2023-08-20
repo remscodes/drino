@@ -1,3 +1,5 @@
+import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
+import type { Url } from '../../models/http.model';
 import type { PlainObject } from '../../models/shared.model';
 
 export interface RequestConfig<
@@ -9,7 +11,7 @@ export interface RequestConfig<
    *
    * Example : 'https://example.com' OR '/api'
    */
-  prefix?: string;
+  prefix?: Exclude<Url, URL>;
   /**
    * HTTP Headers.
    */
@@ -43,19 +45,17 @@ export interface RequestConfig<
    * See below in section "Abort Request".
    */
   signal?: AbortSignal;
-  // interceptors?: any;
-
+  /**
+   *
+   */
+  interceptors?: Interceptors;
   // withCredentials?: boolean;
   // timeout?: number;
   // retry?: RetryConfig;
 }
 
-interface Interceptors {
-
-}
-
 export type ReadType =
-  | 'object'
+  | 'object' // @default
   | 'string'
   | 'none'
   | 'blob'
@@ -64,5 +64,5 @@ export type ReadType =
   | 'auto'
 
 export type WrapperType =
-  | 'none'
+  | 'none' // @default
   | 'response'
