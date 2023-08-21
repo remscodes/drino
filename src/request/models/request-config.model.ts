@@ -1,6 +1,5 @@
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
-import type { Url } from '../../models/http.model';
-import type { PlainObject } from '../../models/shared.model';
+import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
 export interface RequestConfig<
   Read extends ReadType = 'object',
@@ -15,11 +14,11 @@ export interface RequestConfig<
   /**
    * HTTP Headers.
    */
-  headers?: Headers | PlainObject;
+  headers?: HeadersType;
   /**
    * HTTP Parameters.
    */
-  queryParams?: URLSearchParams | PlainObject;
+  queryParams?: QueryParamsType;
   /**
    * Response type that will be passed into :
    *  - result() callback when using Observer.
@@ -49,13 +48,13 @@ export interface RequestConfig<
    *
    */
   interceptors?: Interceptors;
-  // withCredentials?: boolean;
   // timeout?: number;
   // retry?: RetryConfig;
+  // withCredentials?: boolean;
 }
 
 export type ReadType =
-  | 'object' // @default
+  | 'object'
   | 'string'
   | 'none'
   | 'blob'
@@ -64,5 +63,14 @@ export type ReadType =
   | 'auto'
 
 export type WrapperType =
-  | 'none' // @default
+  | 'none'
   | 'response'
+
+/**
+ * @internal
+ */
+export interface DefinedConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams'>> {
+  baseUrl: URL;
+  headers: Headers;
+  queryParams: URLSearchParams;
+}

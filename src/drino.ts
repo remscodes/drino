@@ -67,7 +67,7 @@ export class Drino {
   public head<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
   public head<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
   public head<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
-    return this.request<T>('HEAD', url, null, { ...config, read: 'none' });
+    return this.request<T>('HEAD', url, null, config);
   }
 
   public delete<T>(url: Url, config?: RequestConfig): RequestController<ObjectBody<T>>;

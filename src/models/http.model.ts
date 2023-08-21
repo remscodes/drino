@@ -1,5 +1,5 @@
 import type { HttpResponse } from '../response';
-import type { Prefix } from './shared.model';
+import type { PlainObject, Prefix } from './shared.model';
 
 export type RequestMethodType =
   | 'GET'
@@ -11,6 +11,14 @@ export type RequestMethodType =
   | 'OPTIONS'
   // | 'TRACE'
   | 'PATCH';
+
+export type HeadersType =
+  | Headers
+  | PlainObject
+
+export type QueryParamsType =
+  | URLSearchParams
+  | PlainObject
 
 export type Url =
   | Prefix<string, `http${'s' | ''}://`>

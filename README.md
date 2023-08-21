@@ -155,7 +155,7 @@ interface DrinoDefaultConfig {
 
   // Default requestConfig applied to all requests hosted by the instance
   // See above in section 'Request Config'
-  requestConfig?: RequestConfig;
+  requestsConfig?: RequestConfig;
 }
 ```
 

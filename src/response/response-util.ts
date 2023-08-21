@@ -1,12 +1,20 @@
+import type { UnwrapHttpResponse } from '../models/http.model';
+import type { Nullable } from '../models/shared.model';
 import type { ReadType } from '../request/models/request-config.model';
 
-const convertRecord: Record<Exclude<ReadType, 'none' | 'auto'>, (r: Response) => Promise<any>> = {
-  'string': (r: Response) => r.text(),
-  'blob': (r: Response) => r.blob(),
-  'arrayBuffer': (r: Response) => r.arrayBuffer(),
-  'formData': (r: Response) => r.formData(),
-  'object': (r: Response) => r.json()
-} as const;
+export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise<UnwrapHttpResponse<T>> {
+  if (read !== 'auto') return bodyFromReadType(fetchResponse, read);
+
+  const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
+
+  const readType: ReadType
+    = (contentType?.includes('text/plain')) ? 'string'
+    : (contentType?.includes('application/octet-stream')) ? 'blob'
+      : (contentType?.includes('multipart/form-data')) ? 'formData'
+        : 'object';
+
+  return bodyFromReadType(fetchResponse, readType);
+}
 
 export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promise<any> {
   switch (read) {
