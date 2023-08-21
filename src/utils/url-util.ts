@@ -1,12 +1,10 @@
 import { emitError } from 'thror';
-import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { Url } from '../models/http.model';
-import type { RequestConfig } from '../request';
+import type { DefinedConfig } from '../request/models/request-config.model';
 
-type BuildUrlArgs =
-  & Pick<RequestConfig<any, any>, 'prefix' | 'queryParams'>
-  & Pick<DrinoDefaultConfig, 'baseUrl'>
-  & { url: Url }
+interface BuildUrlArgs extends Pick<DefinedConfig, 'baseUrl' | 'prefix' | 'queryParams'> {
+  url: Url;
+}
 
 export function buildUrl(args: BuildUrlArgs): URL {
   const {
@@ -16,11 +14,10 @@ export function buildUrl(args: BuildUrlArgs): URL {
     queryParams = {}
   } = args;
 
-  const inputUrl = `${(prefix === '/') ? '' : prefix}${path}`.replace(/\/$/, '');
+  const inputUrl = `${prefix.replace(/^\/$/, '')}${path}`.replace(/\/$/, '');
   const url: URL = createUrl(inputUrl, baseUrl);
 
-  const searchParams: URLSearchParams = new URLSearchParams(queryParams);
-  searchParams.forEach((value: string, key: string) => {
+  new URLSearchParams(queryParams).forEach((value: string, key: string) => {
     url.searchParams.set(key, value);
   });
 

@@ -1,26 +1,43 @@
-import type { RequestMethodType } from '../models/http.model';
+import type { RequestMethodType, Url } from '../models/http.model';
 import type { Nullable } from '../models/shared.model';
-import type { ReadType } from './models/request-config.model';
+import { buildUrl } from '../utils/url-util';
+import type { ReadType, WrapperType } from './models/request-config.model';
 
-interface HttpRequestInit<T = any> {
+interface HttpRequestInit<T> {
   method: RequestMethodType;
-  url: string;
+  url: Url;
+  baseUrl: URL;
+  prefix: Exclude<Url, URL>;
   headers: Headers;
+  queryParams: URLSearchParams
   body: Nullable<T>;
   read: ReadType;
+  wrapper: WrapperType;
 }
 
 export class HttpRequest<T = unknown> {
 
   public constructor(init: HttpRequestInit<T>) {
-    this.url = new URL(init.url);
-    this.headers = init.headers;
-    this.body = init.body;
-    this.read = init.read;
+    const { read, headers, url, body, method, wrapper, prefix, queryParams, baseUrl } = init;
+
+    this.method = method;
+    this.headers = headers;
+    this.body = body;
+    this.read = read;
+    this.wrapper = wrapper;
+
+    this.url = buildUrl({
+      url,
+      prefix,
+      baseUrl,
+      queryParams
+    });
   }
 
+  public readonly method: RequestMethodType;
   public readonly url: URL;
   public readonly headers: Headers;
   public readonly body: Nullable<T>;
   public readonly read: ReadType;
+  public readonly wrapper: WrapperType;
 }

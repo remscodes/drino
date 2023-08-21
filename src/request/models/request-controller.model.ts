@@ -7,11 +7,6 @@ export type BlobBody<T> = Extract<T, Blob>
 export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
-export interface RequestProcessResult<Resource> {
-  ok: boolean;
-  result: Resource;
-}
-
 export type Modifier<I = any, O = any> = (value: I) => O;
 export type CheckCallback<T> = (result: T) => void
 
