@@ -1,3 +1,5 @@
+import { defaultSignal } from '../features/abort/abort-util';
+import { mergeInterceptors } from '../features/interceptors/interceptors-util';
 import type { DrinoDefaultConfig } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
@@ -22,20 +24,17 @@ export function mergeConfigs(defaultConfig: DrinoDefaultConfig, requestConfig: R
     prefix,
     read = 'object',
     wrapper = 'none',
-    signal = new AbortController().signal
+    signal = defaultSignal()
   } = requestConfig;
 
   return {
     baseUrl: new URL(baseUrl),
+    prefix: prefix || defaultPrefix,
     headers: mergeHeaders(defaultHeaders, headers),
     queryParams: mergeQueryParams(defaultQueryParams, queryParams),
-    prefix: prefix || defaultPrefix,
+    interceptors: mergeInterceptors(defaultInterceptors, interceptors),
     read,
     wrapper,
-    signal,
-    interceptors: {
-      ...defaultInterceptors,
-      ...interceptors
-    }
+    signal
   };
 }

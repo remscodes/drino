@@ -66,11 +66,9 @@ export type WrapperType =
   | 'none'
   | 'response'
 
-/**
- * @internal
- */
-export interface DefinedConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams'>> {
+export interface DefinedConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'interceptors'>> {
   baseUrl: URL;
   headers: Headers;
   queryParams: URLSearchParams;
+  interceptors: Required<Interceptors>;
 }

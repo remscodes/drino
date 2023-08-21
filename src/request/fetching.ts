@@ -1,4 +1,5 @@
 import { emitError } from 'thror';
+import { Interceptors } from '../features/interceptors/models/interceptor.model';
 import type { FetchFn, UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
 import { convertBody } from '../response/response-util';
@@ -7,22 +8,27 @@ import type { HttpRequest } from './http-request';
 
 export interface FetchExtraTools {
   signal: AbortSignal;
+  interceptors: Required<Interceptors>;
 }
 
 export async function performHttpRequest<T>(request: HttpRequest, tools: FetchExtraTools): Promise<T> {
   const fetchResponse: Response = await performFetch(request, tools);
 
+  tools.interceptors.afterConsume(request);
+
   const { headers, status, statusText, ok, url } = fetchResponse;
 
   if (!ok) {
     const error = await fetchResponse.text();
-    return Promise.reject(new HttpErrorResponse({
+    const errorResponse: HttpErrorResponse = new HttpErrorResponse({
       error,
       headers,
       status,
       statusText,
       url
-    }));
+    });
+    tools.interceptors.beforeError(errorResponse);
+    return Promise.reject(errorResponse);
   }
 
   const isHeadOrOptions: boolean = (request.method === 'HEAD' || request.method === 'OPTIONS');
@@ -30,7 +36,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchEx
   try {
     const body = (isHeadOrOptions) ? headers : await convertBody(fetchResponse, request.read);
 
-    return (request.wrapper === 'response')
+    const result = (request.wrapper === 'response')
       ? new HttpResponse<UnwrapHttpResponse<T>>({
         body: (isHeadOrOptions) ? undefined : body,
         headers,
@@ -39,6 +45,10 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchEx
         url
       })
       : body as any;
+
+    tools.interceptors.beforeResult(result);
+
+    return result;
   }
   catch (err: any) {
     emitError('Fetch Response', `Cannot parse body because RequestConfig 'read' value (='${request.read}') is incompatible with 'content-type' response header (='${headers.get('content-type')}').`, {

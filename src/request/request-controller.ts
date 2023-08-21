@@ -61,24 +61,27 @@ export class RequestController<Resource> {
   public consume(): Promise<Resource>;
   public consume(observer: Observer<Resource>): void;
   public consume(observer?: Observer<Resource>): Promise<Resource> | void {
+    this.config.interceptors.beforeConsume(this.request);
     if (!observer) return this.thenable();
     this.useObserver(observer);
   }
 
   private async thenable(): Promise<Resource> {
     try {
-      let result = await performHttpRequest<Resource>(this.request, { signal: this.config.signal });
-
+      let result = await performHttpRequest<Resource>(this.request, { signal: this.config.signal, interceptors: this.config.interceptors });
       for (const modifier of this.modifiers) result = await modifier(result);
       return result;
     }
     catch (err: any) {
       return Promise.reject(err);
     }
+    finally {
+      this.config.interceptors.beforeFinish();
+    }
   }
 
   private useObserver(observer: Observer<Resource>): void {
-    performHttpRequest<Resource>(this.request, { signal: this.config.signal })
+    performHttpRequest<Resource>(this.request, { signal: this.config.signal, interceptors: this.config.interceptors })
       .then(async (result) => {
         try {
           for (const modifier of this.modifiers) result = await modifier(result);
@@ -92,6 +95,9 @@ export class RequestController<Resource> {
         if (this.config.signal.aborted) return observer.abort?.(this.config.signal.reason);
         observer.error?.(err);
       })
-      .finally(() => observer.finish?.());
+      .finally(() => {
+        this.config.interceptors.beforeFinish();
+        observer.finish?.();
+      });
   }
 }

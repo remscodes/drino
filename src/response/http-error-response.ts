@@ -13,5 +13,5 @@ export class HttpErrorResponse extends CommonResponse {
     this.error = init.error;
   }
 
-  public readonly error: Error;
+  public readonly error: any;
 }
