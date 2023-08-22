@@ -127,7 +127,7 @@ import drino from 'drino';
 import type { DrinoInstance } from 'drino';
 
 const instance: DrinoInstance = drino.create({
-  baseUrl: 'http://localhost:8080'
+  urlOrigin: 'http://localhost:8080'
 });
 
 instance.get('/cat/meow').consume() // GET -> http://localhost:8080/cat/meow
@@ -149,9 +149,9 @@ child.get('/meow').consume() // GET -> http://localhost:8080/cat/meow
 
 ```ts
 interface DrinoDefaultConfig {
-  // Base URL
+  // URL origin
   // Example : 'http://localhost:8080'
-  baseUrl?: string;
+  urlOrigin?: string;
 
   // Default requestConfig applied to all requests hosted by the instance
   // See above in section 'Request Config'
@@ -162,7 +162,7 @@ interface DrinoDefaultConfig {
 You can override config applied to a `drino` instance (default import or created instance)
 
 ```ts
-drino.default.baseUrl = 'https://example.com';
+drino.default.urlOrigin = 'https://example.com';
 drino.default.requestConfig.headers.set('Custom-Header', 'Cat');
 
 drino.get('/cat/meow').consume(); // GET -> https://example.com/cat/meow (headers = { "Custom-Header", "Cat" })

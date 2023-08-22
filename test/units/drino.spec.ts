@@ -7,12 +7,12 @@ describe('Drino', () => {
 
   beforeEach(() => {
     instance = drino.create({
-      baseUrl: 'http://localhost'
+      urlOrigin: 'http://localhost'
     });
   });
 
   it('should change default config', () => {
-    expectNotEqual(instance.default.baseUrl, instance.default.baseUrl = 'http://localhost/api', true);
+    expectNotEqual(instance.default.urlOrigin, instance.default.urlOrigin = 'http://localhost/api', true);
   });
 
   it('should change all default config', () => {

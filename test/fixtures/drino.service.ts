@@ -7,7 +7,7 @@ export interface TestItem {
 }
 
 const mainDrino: DrinoInstance = drino.create({
-  baseUrl: 'http://localhost:8080'
+  urlOrigin: 'http://localhost:8080'
 });
 
 export class DrinoService {

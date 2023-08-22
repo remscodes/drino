@@ -6,7 +6,7 @@ import type { ReadType, WrapperType } from './models/request-config.model';
 interface HttpRequestInit<T> {
   method: RequestMethodType;
   url: Url;
-  baseUrl: URL;
+  urlOrigin: URL;
   prefix: Exclude<Url, URL>;
   headers: Headers;
   queryParams: URLSearchParams
@@ -18,7 +18,7 @@ interface HttpRequestInit<T> {
 export class HttpRequest<T = unknown> {
 
   public constructor(init: HttpRequestInit<T>) {
-    const { read, headers, url, body, method, wrapper, prefix, queryParams, baseUrl } = init;
+    const { read, headers, url, body, method, wrapper, prefix, queryParams, urlOrigin } = init;
 
     this.method = method;
     this.headers = headers;
@@ -29,7 +29,7 @@ export class HttpRequest<T = unknown> {
     this.url = buildUrl({
       url,
       prefix,
-      baseUrl,
+      baseUrl: urlOrigin,
       queryParams
     });
   }
