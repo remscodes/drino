@@ -8,7 +8,7 @@ import type { DefinedConfig } from './models/request-config.model';
 
 export function mergeConfigs(defaultConfig: DrinoDefaultConfig, requestConfig: RequestConfig<any, any>): DefinedConfig {
   const {
-    baseUrl = 'http://localhost',
+    urlOrigin = 'http://localhost',
     requestsConfig: {
       headers: defaultHeaders = {},
       interceptors: defaultInterceptors = {},
@@ -28,7 +28,7 @@ export function mergeConfigs(defaultConfig: DrinoDefaultConfig, requestConfig: R
   } = requestConfig;
 
   return {
-    baseUrl: new URL(baseUrl),
+    baseUrl: new URL(urlOrigin),
     prefix: prefix || defaultPrefix,
     headers: mergeHeaders(defaultHeaders, headers),
     queryParams: mergeQueryParams(defaultQueryParams, queryParams),

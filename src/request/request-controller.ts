@@ -29,7 +29,7 @@ export class RequestController<Resource> {
       wrapper: this.config.wrapper,
       prefix: this.config.prefix,
       queryParams: this.config.queryParams,
-      baseUrl: this.config.baseUrl
+      urlOrigin: this.config.baseUrl
     });
   }
 

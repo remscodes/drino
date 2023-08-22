@@ -14,8 +14,8 @@ export function buildUrl(args: BuildUrlArgs): URL {
     queryParams = {}
   } = args;
 
-  const inputUrl = `${prefix.replace(/^\/$/, '')}${path}`.replace(/\/$/, '');
-  const url: URL = createUrl(inputUrl, baseUrl);
+  const urlInput = `${prefix.replace(/^\/$/, '')}${path}`.replace(/\/$/, '');
+  const url: URL = createUrl(urlInput, baseUrl);
 
   new URLSearchParams(queryParams).forEach((value: string, key: string) => {
     url.searchParams.set(key, value);
@@ -29,7 +29,7 @@ export function createUrl(url: Url | string, base?: Url): URL {
     return new URL(url, base);
   }
   catch (err: any) {
-    emitError('URL Format', `Url is invalid : '${base ?? ''}' + '${url}' (baseUrl + url).`, {
+    emitError('URL Format', `Url is invalid : '${base ?? ''}' + '${url}' (base + url).`, {
       withStack: true,
       original: err
     });
