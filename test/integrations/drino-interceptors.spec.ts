@@ -14,8 +14,7 @@ describe('Drino - Interceptors', () => {
     instance = drino.create({
         urlOrigin: 'http://localhost:8080',
         requestsConfig: {
-          prefix: '/item',
-          interceptors: {}
+          prefix: '/item'
         }
       }
     );
@@ -26,17 +25,16 @@ describe('Drino - Interceptors', () => {
   });
 
   it('should set default header before consume', (done: Mocha.Done) => {
-    const customHeader = { key: 'Cat-Mood', value: 'Good' };
+    const { key, value } = { key: 'Cat-Mood', value: 'Good' };
 
-    instance.default.requestsConfig!.interceptors!.beforeConsume = (request: HttpRequest) => {
-      const { key, value } = customHeader;
+    instance.default.requestsConfig.interceptors.beforeConsume = (request: HttpRequest) => {
       request.headers.set(key, value);
     };
 
     instance.get(`/1`, {
       interceptors: {
         beforeConsume: (request: HttpRequest) => {
-          expectEqual(request.headers.get(customHeader.key), customHeader.value);
+          expectEqual(request.headers.get(key), value);
         }
       }
     }).consume({ finish: done });
@@ -47,7 +45,7 @@ describe('Drino - Interceptors', () => {
 
     const spy: SinonSpy = sandbox.spy(handle);
 
-    instance.default.requestsConfig!.interceptors!.afterConsume = (request: HttpRequest) => {
+    instance.default.requestsConfig.interceptors.afterConsume = (request: HttpRequest) => {
       spy(request);
     };
 
@@ -60,16 +58,16 @@ describe('Drino - Interceptors', () => {
   });
 
   it('should call function before result', (done: Mocha.Done) => {
-    function handle(result: any): void {}
+    function handle(_result: unknown): void {}
 
-    const spy = sandbox.spy(handle);
+    const spy: SinonSpy = sandbox.spy(handle);
 
-    instance.default.requestsConfig!.interceptors!.beforeResult = (result: any) => {
+    instance.default.requestsConfig.interceptors.beforeResult = (result: any) => {
       spy(result);
     };
 
     instance.get('/1').consume({
-      result: (result: any) => {
+      result: (result: unknown) => {
         expect(spy.calledOnceWithExactly(result)).to.be.true;
         done();
       }
@@ -82,7 +80,7 @@ describe('Drino - Interceptors', () => {
 
     const spy: SinonSpy = sandbox.spy(handleError);
 
-    instance.default.requestsConfig!.interceptors!.beforeError = (errorResponse: HttpErrorResponse) => {
+    instance.default.requestsConfig.interceptors.beforeError = (errorResponse: HttpErrorResponse) => {
       spy(errorResponse);
     };
 
@@ -97,9 +95,9 @@ describe('Drino - Interceptors', () => {
   it('should call function before finish', (done: Mocha.Done) => {
     function handle(): void {}
 
-    const spy = sandbox.spy(handle);
+    const spy: SinonSpy = sandbox.spy(handle);
 
-    instance.default.requestsConfig!.interceptors!.beforeFinish = () => {
+    instance.default.requestsConfig.interceptors.beforeFinish = () => {
       spy();
     };
 

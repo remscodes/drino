@@ -1,15 +1,15 @@
 import type { StatusType } from '../models';
 
-export interface CommonResponseInit {
+export interface HttpCommonResponseInit {
   url: string;
   headers: Headers;
   status: number;
   statusText: string;
 }
 
-export abstract class CommonResponse {
+export abstract class HttpCommonResponse {
 
-  protected constructor(init: CommonResponseInit) {
+  protected constructor(init: HttpCommonResponseInit) {
     const { headers, url, status, statusText } = init;
 
     this.url = new URL(url);

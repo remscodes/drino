@@ -1,10 +1,10 @@
-import type { DrinoDefaultConfig } from '../models/drino.model';
+import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
 import type { DefinedConfig, RequestConfig } from './models/request-config.model';
 import type { CheckCallback, Modifier, Observer } from './models/request-controller.model';
-import { mergeConfigs } from './request-util';
+import { mergeRequestConfigs } from './request-util';
 
 interface DrinoRequestInit {
   method: RequestMethodType;
@@ -15,10 +15,10 @@ interface DrinoRequestInit {
 
 export class RequestController<Resource> {
 
-  public constructor(init: DrinoRequestInit, defaultConfig: DrinoDefaultConfig) {
+  public constructor(init: DrinoRequestInit, defaultConfig: DrinoDefaultConfigInit) {
     const { method, url, body, config = {} } = init;
 
-    this.config = mergeConfigs(defaultConfig, config);
+    this.config = mergeRequestConfigs(defaultConfig, config);
 
     this.request = new HttpRequest({
       method,
@@ -29,7 +29,7 @@ export class RequestController<Resource> {
       wrapper: this.config.wrapper,
       prefix: this.config.prefix,
       queryParams: this.config.queryParams,
-      urlOrigin: this.config.baseUrl
+      baseUrl: this.config.baseUrl
     });
   }
 

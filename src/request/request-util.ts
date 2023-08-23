@@ -1,29 +1,29 @@
 import { defaultSignal } from '../features/abort/abort-util';
 import { mergeInterceptors } from '../features/interceptors/interceptors-util';
-import type { DrinoDefaultConfig } from '../models/drino.model';
+import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
 import type { RequestConfig } from './models';
 import type { DefinedConfig } from './models/request-config.model';
 
-export function mergeConfigs(defaultConfig: DrinoDefaultConfig, requestConfig: RequestConfig<any, any>): DefinedConfig {
+export function mergeRequestConfigs(defaultConfig: DrinoDefaultConfigInit, requestConfig: RequestConfig<any, any>): DefinedConfig {
   const {
     urlOrigin = 'http://localhost',
     requestsConfig: {
+      prefix: defaultPrefix = '/',
       headers: defaultHeaders = {},
-      interceptors: defaultInterceptors = {},
       queryParams: defaultQueryParams = {},
-      prefix: defaultPrefix = '/'
+      interceptors: defaultInterceptors = {}
     } = {}
   } = defaultConfig;
 
   const {
-    headers = {},
-    interceptors = {},
-    queryParams = {},
     prefix,
+    headers = {},
+    queryParams = {},
     read = 'object',
     wrapper = 'none',
+    interceptors = {},
     signal = defaultSignal()
   } = requestConfig;
 
@@ -32,9 +32,9 @@ export function mergeConfigs(defaultConfig: DrinoDefaultConfig, requestConfig: R
     prefix: prefix || defaultPrefix,
     headers: mergeHeaders(defaultHeaders, headers),
     queryParams: mergeQueryParams(defaultQueryParams, queryParams),
-    interceptors: mergeInterceptors(defaultInterceptors, interceptors),
     read,
     wrapper,
+    interceptors: mergeInterceptors(defaultInterceptors, interceptors),
     signal
   };
 }

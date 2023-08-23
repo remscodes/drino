@@ -12,7 +12,7 @@ export const itemRouter = Router()
     const id = parseInt(rawId, 10);
     if (!id) return res.status(400).send(`Missing id path parameter !`);
 
-    const item = service.findById(parseInt(id, 10));
+    const item = service.findById(id);
     if (!item) return res.status(404).send(`Could not find item with id=${id}.`);
 
     res.status(200).json(item);

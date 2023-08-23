@@ -1,11 +1,11 @@
-import type { CommonResponseInit } from './common-response';
-import { CommonResponse } from './common-response';
+import type { HttpCommonResponseInit } from './http-common-response';
+import { HttpCommonResponse } from './http-common-response';
 
-interface HttpResponseInit<T = any> extends CommonResponseInit {
+interface HttpResponseInit<T = any> extends HttpCommonResponseInit {
   body: T;
 }
 
-export class HttpResponse<Resource> extends CommonResponse {
+export class HttpResponse<Resource> extends HttpCommonResponse {
 
   public constructor(init: HttpResponseInit) {
     super(init);

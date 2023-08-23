@@ -3,13 +3,13 @@ import type { Nullable } from '../models/shared.model';
 import { buildUrl } from '../utils/url-util';
 import type { ReadType, WrapperType } from './models/request-config.model';
 
-interface HttpRequestInit<T> {
+interface HttpRequestInit<T = unknown> {
   method: RequestMethodType;
   url: Url;
-  urlOrigin: URL;
+  baseUrl: URL;
   prefix: Exclude<Url, URL>;
   headers: Headers;
-  queryParams: URLSearchParams
+  queryParams: URLSearchParams;
   body: Nullable<T>;
   read: ReadType;
   wrapper: WrapperType;
@@ -18,7 +18,7 @@ interface HttpRequestInit<T> {
 export class HttpRequest<T = unknown> {
 
   public constructor(init: HttpRequestInit<T>) {
-    const { read, headers, url, body, method, wrapper, prefix, queryParams, urlOrigin } = init;
+    const { read, headers, url, body, method, wrapper, prefix, queryParams, baseUrl } = init;
 
     this.method = method;
     this.headers = headers;
@@ -29,7 +29,7 @@ export class HttpRequest<T = unknown> {
     this.url = buildUrl({
       url,
       prefix,
-      baseUrl: urlOrigin,
+      baseUrl,
       queryParams
     });
   }

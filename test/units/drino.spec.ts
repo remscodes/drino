@@ -2,7 +2,6 @@ import drino, { DrinoInstance } from '../../src';
 import { expectNotEqual } from '../fixtures/utils/expect-util';
 
 describe('Drino', () => {
-
   let instance: DrinoInstance;
 
   beforeEach(() => {
@@ -11,11 +10,11 @@ describe('Drino', () => {
     });
   });
 
-  it('should change default config', () => {
-    expectNotEqual(instance.default.urlOrigin, instance.default.urlOrigin = 'http://localhost/api', true);
+  it('should change default url origin', () => {
+    expectNotEqual(instance.default.urlOrigin, instance.default.urlOrigin = 'http://localhost/api');
   });
 
-  it('should change all default config', () => {
-    expectNotEqual(instance.default, instance.default = {}, true);
+  it('should change all default prefix', () => {
+    expectNotEqual(instance.default.requestsConfig.prefix, instance.default.requestsConfig.prefix = '/item', true);
   });
 });

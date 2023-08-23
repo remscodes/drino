@@ -1,4 +1,4 @@
-import type { HttpRequest } from '../../../request/http-request';
+import type { HttpRequest } from '../../../request';
 import type { HttpErrorResponse } from '../../../response';
 
 export interface Interceptors<T = any> {

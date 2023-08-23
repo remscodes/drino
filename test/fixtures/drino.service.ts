@@ -6,13 +6,10 @@ export interface TestItem {
   name?: string;
 }
 
-const mainDrino: DrinoInstance = drino.create({
-  urlOrigin: 'http://localhost:8080'
-});
-
 export class DrinoService {
 
-  private client: DrinoInstance = mainDrino.child({
+  private client: DrinoInstance = drino.create({
+    urlOrigin: 'http://localhost:8080',
     requestsConfig: {
       prefix: '/item'
     }

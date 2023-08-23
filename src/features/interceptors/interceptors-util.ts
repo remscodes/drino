@@ -1,4 +1,4 @@
-import type { HttpRequest } from '../../request/http-request';
+import type { HttpRequest } from '../../request';
 import type { HttpErrorResponse } from '../../response';
 import type { Interceptors } from './models/interceptor.model';
 

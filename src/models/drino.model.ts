@@ -5,7 +5,11 @@ import type { Prefix } from './shared.model';
 
 export type DrinoInstance = Omit<Drino, 'create'>
 
-export interface DrinoDefaultConfig {
+export interface DrinoDefaultConfigInit {
   urlOrigin?: Exclude<Url, Prefix<string, '/'>>;
-  requestsConfig?: Omit<RequestConfig<any>, 'read' | 'wrapper' | 'signal'>;
+  requestsConfig?: Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal'>;
+}
+
+export interface DrinoDefaultConfig extends Omit<Required<DrinoDefaultConfigInit>, 'requestsConfig'> {
+  requestsConfig: Omit<Required<RequestConfig<any, any>>, 'read' | 'wrapper' | 'signal' | 'baseUrl'>;
 }

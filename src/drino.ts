@@ -1,5 +1,6 @@
 import type { DrinoInstance, HttpResponse } from './';
-import type { DrinoDefaultConfig } from './models/drino.model';
+import { mergeInstanceConfig } from './drino-util';
+import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
 import type { RequestMethodType, Url } from './models/http.model';
 import type { RequestConfig } from './request';
 import { RequestController } from './request';
@@ -7,39 +8,18 @@ import type { ArrayBufferBody, BlobBody, FormDataBody, ObjectBody, StringBody, V
 
 export class Drino {
 
-  public constructor(config: DrinoDefaultConfig = {}, parent?: Drino) {
-    this._default = {
-      ...parent?.default ?? {},
-      ...config
-    };
-
-    this._default.requestsConfig = {
-      headers: new Headers(),
-      queryParams: new URLSearchParams(),
-      ...parent?.default.requestsConfig ?? {},
-      ...config.requestsConfig ?? {}
-    };
+  public constructor(config: DrinoDefaultConfigInit, parentConfig?: DrinoDefaultConfig) {
+    this.default = mergeInstanceConfig(config, parentConfig ?? {});
   }
 
-  private _default: DrinoDefaultConfig;
+  public default: DrinoDefaultConfig;
 
-  public get default(): DrinoDefaultConfig {
-    return this._default;
-  }
-
-  public set default(config: DrinoDefaultConfig) {
-    this._default = {
-      ...this.default,
-      ...config
-    };
-  }
-
-  public create(config: DrinoDefaultConfig = {}): DrinoInstance {
+  public create(config: DrinoDefaultConfigInit): DrinoInstance {
     return new Drino(config);
   }
 
-  public child(config: DrinoDefaultConfig = {}): DrinoInstance {
-    return new Drino(config, this);
+  public child(config: DrinoDefaultConfigInit): DrinoInstance {
+    return new Drino(config, this.default);
   }
 
   private request<T>(method: RequestMethodType, url: Url, body?: any, config?: RequestConfig<any, any>): RequestController<any> {
@@ -149,4 +129,4 @@ export class Drino {
   }
 }
 
-export default new Drino();
+export default new Drino({});
