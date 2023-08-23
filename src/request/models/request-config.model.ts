@@ -40,15 +40,13 @@ export interface RequestConfig<
   wrapper?: Wrapper;
   /**
    * AbortSignal to cancel HTTP Request with an AbortController.
-   *
-   * See below in section "Abort Request".
    */
   signal?: AbortSignal;
   /**
-   *
+   * Interceptors
    */
   interceptors?: Interceptors;
-  // timeout?: number;
+  // timeoutMs?: number;
   // retry?: RetryConfig;
   // withCredentials?: boolean;
 }
