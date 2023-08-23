@@ -1,15 +1,15 @@
 <div align="center">
     <h1>Drino</h1>
-    <p>Intuitive and Typed HTTP Client</p>
+    <p>Modern and Typed HTTP Client</p>
 </div>
 
 <div align="center">
 
-[![github ci](https://img.shields.io/github/actions/workflow/status/remscodes/drino/npm-ci.yml.svg?&logo=github&label=CI&style=for-the-badge)](https://github.com/remscodes/thror/actions/workflows/npm-ci.yml)
-[![codecov coverage](https://img.shields.io/codecov/c/github/remscodes/drino/main.svg?style=for-the-badge&logo=codecov)](https://codecov.io/gh/remscodes/thror)
-[![npm version](https://img.shields.io/npm/v/drino.svg?&style=for-the-badge&logo=npm)](https://www.npmjs.org/package/thror)
+[![github ci](https://img.shields.io/github/actions/workflow/status/remscodes/drino/npm-ci.yml.svg?&logo=github&label=CI&style=for-the-badge)](https://github.com/remscodes/drino/actions/workflows/npm-ci.yml)
+[![codecov coverage](https://img.shields.io/codecov/c/github/remscodes/drino/main.svg?style=for-the-badge&logo=codecov)](https://codecov.io/gh/remscodes/drino)
+[![npm version](https://img.shields.io/npm/v/drino.svg?&style=for-the-badge&logo=npm)](https://www.npmjs.org/package/drino)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/drino.svg?style=for-the-badge)](https://bundlephobia.com/package/drino)
-[![license](https://img.shields.io/github/license/remscodes/thror.svg?style=for-the-badge)](LICENSE)
+[![license](https://img.shields.io/github/license/remscodes/drino.svg?style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -54,18 +54,6 @@ async function getCatInfo() {
     // after result or error
   }
 }
-
-// With Promise then/catch
-drino.get('/cat/meow').consume()
-  .then((res: Cat) => {
-    // handle result 
-  })
-  .catch((err: any) => {
-    // handle error
-  })
-  .finally(() => {
-    // after result or error
-  });
 ```
 
 ### Request Methods
@@ -104,16 +92,27 @@ interface RequestConfig {
   // 
   // If 'auto' is specified, read will be deducted from "content-type" response header.
   // 
-  // @default: 'object'
+  // default: 'object'
   read?: 'object' | 'string' | 'blob' | 'arrayBuffer' | 'formData' | 'auto' | 'none';
 
   // Wrap response body into a specific Object.
   // - 'response' : HttpResponse
   // - 'none' : nothing
   //
-  // @default: 'none'
-  wrapper?: 'response' | 'none';
+  // default: 'none'
+  wrapper?: 'none' | 'response';
 
+  // Interceptors in order to take action during http request lifecyle.
+  //
+  // See below in section 'Interceptors'
+  interceptors?: {
+    beforeConsume?: (request: HttpRequest) => void;
+    afterConsume?: (request: HttpRequest) => void;
+    beforeResult?: (result: any) => void;
+    beforeError?: (errorResponse: HttpErrorResponse) => void;
+    beforeFinish?: () => void;
+  };
+  
   // AbortSignal to cancel HTTP Request with an AbortController
   // See below in section 'Abort Request'
   signal?: AbortSignal;
@@ -137,7 +136,7 @@ You can create another instance from a parent instance to inherit its config by 
 
 ```ts
 const child: DrinoInstance = instance.child({
-  requestConfig: {
+  requestsConfig: {
     prefix: '/cat'
   }
 });
@@ -150,7 +149,9 @@ child.get('/meow').consume() // GET -> http://localhost:8080/cat/meow
 ```ts
 interface DrinoDefaultConfig {
   // URL origin
-  // Example : 'http://localhost:8080'
+  // Example : 'https://example.com'
+  //
+  // default: 'http://localhost'
   urlOrigin?: string;
 
   // Default requestConfig applied to all requests hosted by the instance
@@ -163,7 +164,7 @@ You can override config applied to a `drino` instance (default import or created
 
 ```ts
 drino.default.urlOrigin = 'https://example.com';
-drino.default.requestConfig.headers.set('Custom-Header', 'Cat');
+drino.default.requestsConfig.headers.set('Custom-Header', 'Cat');
 
 drino.get('/cat/meow').consume(); // GET -> https://example.com/cat/meow (headers = { "Custom-Header", "Cat" })
 ```
@@ -172,7 +173,7 @@ drino.get('/cat/meow').consume(); // GET -> https://example.com/cat/meow (header
 
 ### Pipe methods
 
-Before calling `consume` method, you can chain call methods to modify or inspect the current value before being passed
+Before calling `consume()` method, you can chain call methods to modify or inspect the current value before being passed
 into callbacks.
 
 #### Transform
@@ -195,13 +196,13 @@ drino.get<Cat>('/cat/meow')
 
 #### Check
 
-Check the result value.
+Check the result value without changing it.
 
 Example :
 
 ```ts
 drino.get<Cat>('/cat/meow')
-  .check((res: Cat) => console.log(res))
+  .check((res: Cat) => console.log(res)) // { name: "Gaïa" }
   .consume({
     result: (res: Cat) => {
       // handle value
@@ -227,23 +228,125 @@ drino.get<Cat>('/cat/meow')
   });
 ```
 
-[//]: # (### Interceptors)
+### Interceptors
 
-[//]: # ()
+You can intercept request, result or error throughout the http request lifecycle.
 
-[//]: # (You can intercept request before being sent or response before being passed into callbacks.)
+Interceptors can be passed into instance config (recommended) or into each request config.
 
-[//]: # ()
+```ts
+const instance: DrinoInstance = drino.create({
+  requestsConfig: {
+    interceptors: {
+      // ...
+    }
+  }
+});
 
-[//]: # (#### Before request)
+instance.get('/cat/meow', {
+  interceptors: {
+    // ...
+  }
+}).consume();
+```
 
-[//]: # ()
+#### Before consume
 
-[//]: # (```ts)
+Intercept a `HttpRequest` before the request is launched.
 
-[//]: # (drino)
+Example :
 
-[//]: # (```)
+```ts
+const instance: DrinoInstance = drino.create({
+  requestsConfig: {
+    interceptors: {
+      beforeConsume: (request: HttpRequest) => {
+        const token: string = myService.getToken();
+        request.headers.set('Authorization', `Bearer ${token}`);
+      }
+    }
+  }
+});
+```
+
+#### After consume
+
+Intercept a `HttpRequest` just after the response has been received.
+
+Example :
+
+```ts
+const instance: DrinoInstance = drino.create({
+  requestsConfig: {
+    interceptors: {
+      afterConsume: (request: HttpRequest) => {
+        console.info(`Response received from ${request.url}`);
+      }
+    }
+  }
+});
+```
+
+#### Before result
+
+Intercept a result before being passed into `result` callback (Observer) or into `then()` arg callback (Promise).
+
+Example :
+
+```ts
+const instance: DrinoInstance = drino.create({
+  requestsConfig: {
+    interceptors: {
+      beforeResult: (result: any) => {
+        console.info(`Result : ${result}`);
+      }
+    }
+  }
+});
+```
+
+#### Before error
+
+Intercept an error before being passed into `error` callback (Observer) or into `catch()` arg callback (Promise).
+
+Example :
+
+```ts
+const instance: DrinoInstance = drino.create({
+  requestsConfig: {
+    interceptors: {
+      beforeError: (errorResponse: HttpErrorResponse) => {
+        if (errorResponse.status === 401) {
+          myService.clearToken();
+          myService.navigateToLogin();
+        }
+        
+        else {
+          console.error(`Error ${errorResponse.status} from ${errorResponse.url} : ${errorResponse.error}`);
+        } 
+      }
+    }
+  }
+});
+```
+
+#### Before finish
+
+Intercept before being passed into `finish` callback (Observer) or into `finally()` arg callback (Promise).
+
+Example :
+
+```ts
+const instance: DrinoInstance = drino.create({
+  requestsConfig: {
+    interceptors: {
+      beforeFinish: () => {
+        console.info('Finished');
+      }
+    }
+  }
+});
+```
 
 ### Abort request
 
@@ -268,21 +371,21 @@ drino.get<Cat>('/cat/meow', { signal }).consume({
   }
 });
 
-// With Promise
-drino.get<Cat>('/cat/meow', { signal }).consume()
-  .then((res: Cat) => {
+// With Promise async/await
+async function getCatInfo() {
+  try {
+    const result: Cat = await drino.get<Cat>('/cat/meow', { signal }).consume();
     // handle result
-  })
-  .catch((err: any) => {
+  } 
+  catch (err: any) {
     if (signal.aborted) {
       const reason: any = signal.reason;
       console.error(reason); // "Too Long"
       // handle abort reason
     }
-  });
+  }
+}
 ```
-
-[//]: # (### Timeout)
 
 ## License
 
