@@ -8,9 +8,6 @@ dependencies:
   thror:
     specifier: ^1.0.0
     version: 1.0.0
-  tslib:
-    specifier: ^2.6.1
-    version: 2.6.1
 
 devDependencies:
   '@esm-bundle/chai':

@@ -38,8 +38,7 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "thror": "^1.0.0",
-    "tslib": "^2.6.1"
+    "thror": "^1.0.0"
   },
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
