@@ -3,8 +3,11 @@ import type { Nullable } from '../models/shared.model';
 import type { ReadType } from '../request/models/request-config.model';
 
 export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise<UnwrapHttpResponse<T>> {
-  if (read !== 'auto') return bodyFromReadType(fetchResponse, read);
+  return (read === 'auto') ? inferBodyType(fetchResponse)
+    : bodyFromReadType(fetchResponse, read);
+}
 
+export function inferBodyType(fetchResponse: Response) {
   const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
 
   const readType: ReadType

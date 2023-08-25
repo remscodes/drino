@@ -8,5 +8,11 @@ export function mergeHeaders(...manyHeaders: HeadersType[]): Headers {
 }
 
 export function inferBodyContentType(body: unknown, headers: Headers): void {
-  headers.set('Content-Type', 'application/json');
+  const value: string
+    = (body instanceof FormData) ? 'multipart/form-data'
+    : (body instanceof Blob) ? 'application/octet-stream'
+      : (typeof body === 'string') ? 'text/plain'
+        : 'application/json';
+
+  headers.set('Content-Type', value);
 }
