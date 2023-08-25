@@ -13,7 +13,7 @@
     "sourceMap": true,
     "declaration": true,
     "downlevelIteration": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "moduleResolution": "node",
     "isolatedModules": true,
     "esModuleInterop": true,
