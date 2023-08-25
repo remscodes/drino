@@ -11,7 +11,7 @@ export interface Interceptors<T = any> {
 }
 
 type BeforeConsumeFn = (request: HttpRequest) => void
-type AfterConsumeFn = (request: HttpRequest) => void
+type AfterConsumeFn = (request: HttpRequest, response: Response) => void
 type BeforeRedirectFn = () => void
 type BeforeResultFn<T> = (result: T) => void
 type BeforeErrorFn = (errorResponse: HttpErrorResponse) => void

@@ -14,7 +14,7 @@ export interface FetchExtraTools {
 export async function performHttpRequest<T>(request: HttpRequest, tools: FetchExtraTools): Promise<T> {
   const fetchResponse: Response = await performFetch(request, tools);
 
-  tools.interceptors.afterConsume(request);
+  tools.interceptors.afterConsume(request, fetchResponse);
 
   const { headers, status, statusText, ok, url } = fetchResponse;
 
@@ -34,7 +34,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchEx
   const isHeadOrOptions: boolean = (request.method === 'HEAD' || request.method === 'OPTIONS');
 
   try {
-    const body = (isHeadOrOptions) ? headers : await convertBody(fetchResponse, request.read);
+    const body = (isHeadOrOptions) ? headers : await convertBody<T>(fetchResponse, request.read);
 
     const result = (request.wrapper === 'response')
       ? new HttpResponse<UnwrapHttpResponse<T>>({

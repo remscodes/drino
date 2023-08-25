@@ -8,9 +8,9 @@ export function mergeInterceptors(defaultInterceptors: Interceptors, interceptor
       defaultInterceptors.beforeConsume?.(request);
       interceptors.beforeConsume?.(request);
     },
-    afterConsume: (request: HttpRequest) => {
-      defaultInterceptors.afterConsume?.(request);
-      interceptors.afterConsume?.(request);
+    afterConsume: (request: HttpRequest, response: Response) => {
+      defaultInterceptors.afterConsume?.(request, response);
+      interceptors.afterConsume?.(request, response);
     },
     beforeResult: (result: unknown) => {
       defaultInterceptors.beforeResult?.(result);
