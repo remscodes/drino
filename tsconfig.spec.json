@@ -9,7 +9,8 @@
     "allowJs": true
   },
   "include": [
-    "test"
+    "test",
+    "typings"
   ],
   "exclude": [
     "node_modules",

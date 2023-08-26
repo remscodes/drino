@@ -43,10 +43,13 @@ export interface RequestConfig<
    */
   signal?: AbortSignal;
   /**
-   * Interceptors
+   * Time limit from which the request is aborted.
+   */
+  timeoutMs?: number;
+  /**
+   * Interceptors.
    */
   interceptors?: Interceptors;
-  // timeoutMs?: number;
   // retry?: RetryConfig;
   // withCredentials?: boolean;
 }
@@ -64,7 +67,7 @@ export type WrapperType =
   | 'none'
   | 'response'
 
-export interface DefinedConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'interceptors'>> {
+export interface DefinedConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'interceptors' | 'timeoutMs'>> {
   baseUrl: URL;
   headers: Headers;
   queryParams: URLSearchParams;

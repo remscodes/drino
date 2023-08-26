@@ -51,7 +51,7 @@ export const itemRouter = Router()
 
     res.status(204).send();
   })
-  .get('/long', (_, res) => {
+  .get('/request/long', (_, res) => {
     setTimeout(() => {
       res.status(200).json(service.findAll());
     }, 3000);

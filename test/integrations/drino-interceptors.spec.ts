@@ -84,7 +84,7 @@ describe('Drino - Interceptors', () => {
       spy(errorResponse);
     };
 
-    instance.get('/unknown_route').consume({
+    instance.get('/route/unknown').consume({
       error: (errorResponse: HttpErrorResponse) => {
         expect(spy.calledOnceWithExactly(errorResponse)).to.be.true;
         done();

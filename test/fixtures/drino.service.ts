@@ -48,7 +48,7 @@ export class DrinoService {
   // }
 
   public longRequest(signal: AbortSignal): RequestController<HttpResponse<void>> {
-    return this.client.head('/long', { signal, read: 'none' });
+    return this.client.head('/request/long', { signal, read: 'none' });
   }
 
   public getWrappedItems(): RequestController<HttpResponse<TestItem[]>> {

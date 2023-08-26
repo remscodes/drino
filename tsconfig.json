@@ -28,7 +28,11 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typings"
+    ]
   },
   "exclude": [
     "node_modules",

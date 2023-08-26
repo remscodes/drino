@@ -14,16 +14,6 @@ export interface Observer<T = any> {
   result?: (result: T) => void;
   error?: (error: any) => void;
   finish?: () => void;
-
-  // uploadProgress?: () => void;
-  // downloadProgress?: () => void;
-  //
-  // info?: (result: any) => void;
-  // success?: (result: T) => void;
-  // redirect?: (result: any) => void;
-  // clientError?: (error: any) => void;
-  // serverError?: (error: any) => void;
-  //
   // retry?: (args: RetryArgs) => void;
-  abort?: (reason: string) => void;
+  abort?: (reason: any) => void;
 }

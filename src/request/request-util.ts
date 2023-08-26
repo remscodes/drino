@@ -1,4 +1,4 @@
-import { defaultSignal } from '../features/abort/abort-util';
+import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
 import { mergeInterceptors } from '../features/interceptors/interceptors-util';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
@@ -13,7 +13,8 @@ export function mergeRequestConfigs(defaultConfig: DrinoDefaultConfigInit, reque
       prefix: defaultPrefix = '/',
       headers: defaultHeaders = {},
       queryParams: defaultQueryParams = {},
-      interceptors: defaultInterceptors = {}
+      interceptors: defaultInterceptors = {},
+      timeoutMs: defaultTimeoutMs = 0
     } = {}
   } = defaultConfig;
 
@@ -24,6 +25,7 @@ export function mergeRequestConfigs(defaultConfig: DrinoDefaultConfigInit, reque
     read = 'object',
     wrapper = 'none',
     interceptors = {},
+    timeoutMs,
     signal = defaultSignal()
   } = requestConfig;
 
@@ -35,6 +37,8 @@ export function mergeRequestConfigs(defaultConfig: DrinoDefaultConfigInit, reque
     read,
     wrapper,
     interceptors: mergeInterceptors(defaultInterceptors, interceptors),
-    signal
+    signal: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
+      : (defaultTimeoutMs) ? mergeSignals(signal, timedSignal(defaultTimeoutMs))
+        : signal
   };
 }

@@ -1,3 +1,4 @@
+import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { performHttpRequest } from './fetching';
@@ -72,8 +73,8 @@ export class RequestController<Resource> {
       for (const modifier of this.modifiers) result = await modifier(result);
       return result;
     }
-    catch (err: any) {
-      return Promise.reject(err);
+    catch (err: unknown) {
+      return this.catchable(err);
     }
     finally {
       this.config.interceptors.beforeFinish();
@@ -87,8 +88,8 @@ export class RequestController<Resource> {
           for (const modifier of this.modifiers) result = await modifier(result);
           observer.result?.(result as any);
         }
-        catch (err: any) {
-          return Promise.reject(err);
+        catch (err: unknown) {
+          return this.catchable(err);
         }
       })
       .catch((err: Error) => {
@@ -99,5 +100,14 @@ export class RequestController<Resource> {
         this.config.interceptors.beforeFinish();
         observer.finish?.();
       });
+  }
+
+  private catchable(thrown: any): Promise<any> {
+    const error: any = (this.config.signal.aborted) ?
+      (this.config.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
+        : fixFirefoxAbortError(thrown)
+      : thrown;
+
+    return Promise.reject(error);
   }
 }

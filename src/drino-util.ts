@@ -10,7 +10,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix,
       headers = {},
       queryParams = {},
-      interceptors = {}
+      interceptors = {},
+      timeoutMs
     } = {}
   } = defaultConfig;
 
@@ -20,7 +21,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix: parentPrefix = '/',
       headers: parentHeaders = {},
       queryParams: parentQueryParams = {},
-      interceptors: parentInterceptors = {}
+      interceptors: parentInterceptors = {},
+      timeoutMs: defaultTimeoutMs = 0
     } = {}
   } = parentDefaultConfig;
 
@@ -30,7 +32,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix: prefix || parentPrefix,
       headers: mergeHeaders(parentHeaders, headers),
       queryParams: mergeQueryParams(parentQueryParams, queryParams),
-      interceptors: mergeInterceptors(parentInterceptors, interceptors)
+      interceptors: mergeInterceptors(parentInterceptors, interceptors),
+      timeoutMs: timeoutMs || defaultTimeoutMs
     }
   };
 }

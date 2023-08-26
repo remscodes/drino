@@ -14,7 +14,7 @@ describe('Drino - Abort', () => {
     signal = abortCtrl.signal;
   });
 
-  it('should abort and retrieve reason from Observer', (done: Mocha.Done) => {
+  it('should abort with controller and retrieve reason from Observer', (done: Mocha.Done) => {
     service.longRequest(signal).consume({
       result: () => {
         done('Test failed');
@@ -28,21 +28,25 @@ describe('Drino - Abort', () => {
     abortCtrl.abort(abortReason);
   });
 
-  it('should abort and retrieve reason from Promise', (done: Mocha.Done) => {
-    async function request(): Promise<void> {
-      try {
-        await service.longRequest(signal).consume();
-        done('Test Failed');
-      }
-      catch (err: any) {
+  it('should abort with controller and retrieve reason from Promise', (done: Mocha.Done) => {
+    service.longRequest(signal).consume()
+      .then(() => done('Test Failed'))
+      .catch((err: any) => {
         if (!signal.aborted) return done('Test Failed');
-
+        expectEqual(err.name, 'AbortError');
         expectEqual(signal.reason, abortReason);
         done();
-      }
-    }
+      });
 
-    request();
     abortCtrl.abort(abortReason);
+  });
+
+  it('should abort with timeout', (done: Mocha.Done) => {
+    service['client'].head('/request/long', { timeoutMs: 100 }).consume()
+      .catch((err: any) => {
+          expectEqual(err.name, 'TimeoutError');
+          done();
+        }
+      );
   });
 });
