@@ -7,7 +7,7 @@ export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise
     : bodyFromReadType(fetchResponse, read);
 }
 
-export function inferBodyType(fetchResponse: Response) {
+export function inferBodyType(fetchResponse: Response): Promise<any> {
   const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
 
   const readType: ReadType

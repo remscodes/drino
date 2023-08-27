@@ -1,3 +1,4 @@
+import drino, { DrinoInstance } from '../../src';
 import { DrinoService } from '../fixtures/drino.service';
 import { expectEqual } from '../fixtures/utils/expect-util';
 
@@ -48,5 +49,47 @@ describe('Drino - Abort', () => {
           done();
         }
       );
+  });
+
+  it('should abort by timeout instead of abort controller', (done: Mocha.Done) => {
+    const client: DrinoInstance = drino.create({
+      urlOrigin: 'http://localhost:8080',
+      requestsConfig: {
+        prefix: '/item',
+        timeoutMs: 100
+      }
+    });
+
+    const abortCtrl: AbortController = new AbortController();
+
+    client.head('/request/long', { signal: abortCtrl.signal }).consume()
+      .catch((err: any) => {
+          expectEqual(err.name, 'TimeoutError');
+          done();
+        }
+      );
+
+    window.setTimeout(() => abortCtrl.abort(), 1_000);
+  });
+
+  it('should abort by abort controller instead of timeout', (done: Mocha.Done) => {
+    const client: DrinoInstance = drino.create({
+      urlOrigin: 'http://localhost:8080',
+      requestsConfig: {
+        prefix: '/item',
+        timeoutMs: 1_000
+      }
+    });
+
+    const abortCtrl: AbortController = new AbortController();
+
+    client.head('/request/long', { signal: abortCtrl.signal }).consume()
+      .catch((err: any) => {
+          expectEqual(err.name, 'AbortError');
+          done();
+        }
+      );
+
+    window.setTimeout(() => abortCtrl.abort(), 100);
   });
 });

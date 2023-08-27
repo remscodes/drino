@@ -7,12 +7,9 @@ export function mergeHeaders(...manyHeaders: HeadersType[]): Headers {
   }, new Headers());
 }
 
-export function inferBodyContentType(body: unknown, headers: Headers): void {
-  const value: string
-    = (body instanceof FormData) ? 'multipart/form-data'
+export function inferContentType(body: unknown): string {
+  return (body instanceof FormData) ? 'multipart/form-data'
     : (body instanceof Blob) ? 'application/octet-stream'
       : (typeof body === 'string') ? 'text/plain'
         : 'application/json';
-
-  headers.set('Content-Type', value);
 }

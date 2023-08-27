@@ -12,7 +12,6 @@ describe('HttpErrorResponse', () => {
   const error: Thror = createError('Server', 'Cannot reach server.', { status });
 
   it('should initialize', () => {
-
     const res: HttpErrorResponse = new HttpErrorResponse({ url, headers, status, statusText, error });
 
     expectProperty(res, 'url', 'URL');

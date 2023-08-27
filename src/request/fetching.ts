@@ -3,7 +3,7 @@ import { Interceptors } from '../features/interceptors/models/interceptor.model'
 import type { FetchFn, UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
 import { convertBody } from '../response/response-util';
-import { inferBodyContentType } from '../utils/headers-util';
+import { inferContentType } from '../utils/headers-util';
 import type { HttpRequest } from './http-request';
 
 export interface FetchExtraTools {
@@ -61,7 +61,8 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchEx
 function performFetch(request: HttpRequest, tools: FetchExtraTools, fetchFn: FetchFn = fetch): Promise<Response> {
   const { headers, method, url, body } = request;
 
-  inferBodyContentType(body, headers);
+  const contentType: string = inferContentType(body);
+  headers.set('Content-Type', contentType);
 
   return fetchFn(url, {
     method,

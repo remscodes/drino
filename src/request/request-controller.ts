@@ -1,6 +1,7 @@
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
+import type { FetchExtraTools } from './fetching';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
 import type { DefinedConfig, RequestConfig } from './models/request-config.model';
@@ -63,13 +64,19 @@ export class RequestController<Resource> {
   public consume(observer: Observer<Resource>): void;
   public consume(observer?: Observer<Resource>): Promise<Resource> | void {
     this.config.interceptors.beforeConsume(this.request);
-    if (!observer) return this.thenable();
-    this.useObserver(observer);
+
+    const tools: FetchExtraTools = {
+      signal: this.config.signal,
+      interceptors: this.config.interceptors
+    };
+
+    if (!observer) return this.thenable(tools);
+    this.useObserver(observer, tools);
   }
 
-  private async thenable(): Promise<Resource> {
+  private async thenable(tools: FetchExtraTools): Promise<Resource> {
     try {
-      let result = await performHttpRequest<Resource>(this.request, { signal: this.config.signal, interceptors: this.config.interceptors });
+      let result = await performHttpRequest<Resource>(this.request, tools);
       for (const modifier of this.modifiers) result = await modifier(result);
       return result;
     }
@@ -81,8 +88,8 @@ export class RequestController<Resource> {
     }
   }
 
-  private useObserver(observer: Observer<Resource>): void {
-    performHttpRequest<Resource>(this.request, { signal: this.config.signal, interceptors: this.config.interceptors })
+  private useObserver(observer: Observer<Resource>, tools: FetchExtraTools): void {
+    performHttpRequest<Resource>(this.request, tools)
       .then(async (result) => {
         try {
           for (const modifier of this.modifiers) result = await modifier(result);

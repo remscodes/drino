@@ -13,7 +13,9 @@ export const mockFetchResponse: Response = {
   formData(): Promise<FormData> {
     return Promise.resolve(new FormData());
   },
-  headers: new Headers(),
+  headers: new Headers({
+    'content-type': 'application/json'
+  }),
   json(): Promise<object> {
     return Promise.resolve({});
   },
