@@ -1,3 +1,17 @@
+# 1.2.0 (2023-08-28)
+
+### Features
+
+- Timeout request.
+
+### Improvements
+
+- `baseUrl` for instance config.
+- `prefix` and `url` for request config.
+- `Content-Type` header inferred from body type.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.2.0
+
 # 1.1.0 (2023-08-24)
 
 ### Features
@@ -18,9 +32,9 @@
 
 ### Features
 
-- Requests `GET`, `DELETE`, `HEAD`, `POST`, `PUT` and `PATCH`
-- Instance : `create()` and `child()`
-- Abort request
-- Pipe methods : `transform()` and `check()`
+- Requests `GET`, `DELETE`, `HEAD`, `POST`, `PUT` and `PATCH`.
+- Instance : `create()` and `child()`.
+- Abort request.
+- Pipe methods : `transform()` and `check()`.
 
 > Commits : https://github.com/remscodes/drino/commits/v1.0.0
