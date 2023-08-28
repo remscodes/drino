@@ -348,7 +348,9 @@ const instance: DrinoInstance = drino.create({
 });
 ```
 
-### Abort request
+### Request cancellation
+
+#### AbortController
 
 You can cancel a send request (before receive response) by using `AbortSignal` and `AbortController`.
 
@@ -358,7 +360,7 @@ Example :
 const abortCtrl: AbortController = new AbortController();
 const signal: AbortSignal = abortCtrl.signal;
 
-setTimeout(() => abortCtrl.abort('Too Long'), 2000);
+setTimeout(() => abortCtrl.abort('Too Long'), 2_000);
 
 // With Observer
 drino.get<Cat>('/cat/meow', { signal }).consume({
@@ -382,6 +384,40 @@ async function getCatInfo() {
       const reason: any = signal.reason;
       console.error(reason); // "Too Long"
       // handle abort reason
+    }
+  }
+}
+```
+
+#### Timeout
+
+You can cancel a send request after a certain time using a `timeoutMs` (timeout in milliseconds).
+
+Example :
+
+```ts
+// With Observer
+drino.get<Cat>('/cat/meow', { timeoutMs: 2_000 }).consume({
+  result: (res: Cat) => {
+    // handle result
+  },
+  error: (err: any) => {
+    console.error(err.message); // "The operation timed out."
+    // handle timeout error
+  }
+});
+
+// With Promise async/await
+async function getCatInfo() {
+  try {
+    const result: Cat = await drino.get<Cat>('/cat/meow', { timeoutMs: 2_000 }).consume();
+    // handle result
+  } 
+  catch (err: any) {
+    if (signal.aborted) {
+      const message: string = err.message;
+      console.error(message); // "The operation timed out."
+      // handle timeout error
     }
   }
 }
