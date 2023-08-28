@@ -6,9 +6,9 @@ import { mergeQueryParams } from '../utils/params-util';
 import type { RequestConfig } from './models';
 import type { DefinedConfig } from './models/request-config.model';
 
-export function mergeRequestConfigs(defaultConfig: DrinoDefaultConfigInit, requestConfig: RequestConfig<any, any>): DefinedConfig {
+export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): DefinedConfig {
   const {
-    urlOrigin = 'http://localhost',
+    baseUrl = 'http://localhost',
     requestsConfig: {
       prefix: defaultPrefix = '/',
       headers: defaultHeaders = {},
@@ -30,7 +30,7 @@ export function mergeRequestConfigs(defaultConfig: DrinoDefaultConfigInit, reque
   } = requestConfig;
 
   return {
-    baseUrl: new URL(urlOrigin),
+    baseUrl: new URL(baseUrl),
     prefix: prefix || defaultPrefix,
     headers: mergeHeaders(defaultHeaders, headers),
     queryParams: mergeQueryParams(defaultQueryParams, queryParams),

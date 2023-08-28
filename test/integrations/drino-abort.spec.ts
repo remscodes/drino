@@ -1,4 +1,5 @@
-import drino, { DrinoInstance } from '../../src';
+import type { DrinoInstance } from '../../src';
+import drino from '../../src';
 import { DrinoService } from '../fixtures/drino.service';
 import { expectEqual } from '../fixtures/utils/expect-util';
 
@@ -34,6 +35,7 @@ describe('Drino - Abort', () => {
       .then(() => done('Test Failed'))
       .catch((err: any) => {
         if (!signal.aborted) return done('Test Failed');
+
         expectEqual(err.name, 'AbortError');
         expectEqual(signal.reason, abortReason);
         done();
@@ -53,7 +55,7 @@ describe('Drino - Abort', () => {
 
   it('should abort by timeout instead of abort controller', (done: Mocha.Done) => {
     const client: DrinoInstance = drino.create({
-      urlOrigin: 'http://localhost:8080',
+      baseUrl: 'http://localhost:8080',
       requestsConfig: {
         prefix: '/item',
         timeoutMs: 100
@@ -73,17 +75,12 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort by abort controller instead of timeout', (done: Mocha.Done) => {
-    const client: DrinoInstance = drino.create({
-      urlOrigin: 'http://localhost:8080',
-      requestsConfig: {
-        prefix: '/item',
-        timeoutMs: 1_000
-      }
-    });
-
     const abortCtrl: AbortController = new AbortController();
 
-    client.head('/request/long', { signal: abortCtrl.signal }).consume()
+    drino.head('http://localhost:8080/item/request/long', {
+      timeoutMs: 1_000,
+      signal: abortCtrl.signal
+    }).consume()
       .catch((err: any) => {
           expectEqual(err.name, 'AbortError');
           done();

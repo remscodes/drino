@@ -8,7 +8,7 @@ export interface RequestConfig<
   /**
    * Prefix URL.
    *
-   * Example : 'https://example.com' OR '/api'
+   * Example : 'https://example.com' OR '/v1/api'
    */
   prefix?: Exclude<Url, URL>;
   /**

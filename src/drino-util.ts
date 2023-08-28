@@ -5,18 +5,7 @@ import { mergeQueryParams } from './utils/params-util';
 
 export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, parentDefaultConfig: DrinoDefaultConfigInit): DrinoDefaultConfig {
   const {
-    urlOrigin,
-    requestsConfig: {
-      prefix,
-      headers = {},
-      queryParams = {},
-      interceptors = {},
-      timeoutMs
-    } = {}
-  } = defaultConfig;
-
-  const {
-    urlOrigin: parentUrlOrigin = 'http://localhost',
+    baseUrl: parentBaseUrl = 'http://localhost',
     requestsConfig: {
       prefix: parentPrefix = '/',
       headers: parentHeaders = {},
@@ -26,8 +15,19 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
     } = {}
   } = parentDefaultConfig;
 
+  const {
+    baseUrl,
+    requestsConfig: {
+      prefix,
+      headers = {},
+      queryParams = {},
+      interceptors = {},
+      timeoutMs
+    } = {}
+  } = defaultConfig;
+
   return {
-    urlOrigin: urlOrigin || parentUrlOrigin,
+    baseUrl: baseUrl || parentBaseUrl,
     requestsConfig: {
       prefix: prefix || parentPrefix,
       headers: mergeHeaders(parentHeaders, headers),

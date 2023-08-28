@@ -27,9 +27,9 @@ export class HttpRequest<T = unknown> {
     this.wrapper = wrapper;
 
     this.url = buildUrl({
-      url,
-      prefix,
       baseUrl,
+      prefix,
+      url,
       queryParams
     });
   }

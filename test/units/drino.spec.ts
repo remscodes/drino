@@ -1,4 +1,5 @@
-import drino, { DrinoInstance } from '../../src';
+import type { DrinoInstance } from '../../src';
+import drino from '../../src';
 import { expectNotEqual } from '../fixtures/utils/expect-util';
 
 describe('Drino', () => {
@@ -6,12 +7,12 @@ describe('Drino', () => {
 
   beforeEach(() => {
     instance = drino.create({
-      urlOrigin: 'http://localhost'
+      baseUrl: 'http://localhost'
     });
   });
 
   it('should change default url origin', () => {
-    expectNotEqual(instance.default.urlOrigin, instance.default.urlOrigin = 'http://localhost/api');
+    expectNotEqual(instance.default.baseUrl, instance.default.baseUrl = 'http://localhost/api');
   });
 
   it('should change all default prefix', () => {

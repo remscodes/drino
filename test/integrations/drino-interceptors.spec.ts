@@ -12,10 +12,7 @@ describe('Drino - Interceptors', () => {
 
   beforeEach(() => {
     instance = drino.create({
-        urlOrigin: 'http://localhost:8080',
-        requestsConfig: {
-          prefix: '/item'
-        }
+        baseUrl: 'http://localhost:8080/item'
       }
     );
   });

@@ -9,29 +9,49 @@ interface BuildUrlArgs extends Pick<DefinedConfig, 'baseUrl' | 'prefix' | 'query
 export function buildUrl(args: BuildUrlArgs): URL {
   const {
     baseUrl,
-    prefix = '/',
-    url: path,
+    prefix,
+    url,
     queryParams = {}
   } = args;
 
-  const urlInput = `${prefix.replace(/^\/$/, '')}${path}`.replace(/\/$/, '');
-  const url: URL = createUrl(urlInput, baseUrl);
+  let finalUrl: URL;
+
+  if (hasOrigin(url)) {
+    finalUrl = createUrl(url);
+  }
+  else if (hasOrigin(prefix)) {
+    finalUrl = createUrl(prefix);
+    buildPathname(finalUrl, url);
+  }
+  else {
+    finalUrl = createUrl(baseUrl);
+    buildPathname(finalUrl, `${prefix}/${url}`);
+  }
 
   new URLSearchParams(queryParams).forEach((value: string, key: string) => {
-    url.searchParams.set(key, value);
+    finalUrl.searchParams.set(key, value);
   });
 
-  return url;
+  return finalUrl;
 }
 
-export function createUrl(url: Url | string, base?: Url): URL {
+function buildPathname(finalUrl: URL, postPathname: Url): void {
+  finalUrl.pathname = `${finalUrl.pathname}/${postPathname}`.replace(/\/{2,}/, '/');
+}
+
+function createUrl(url: Url | string): URL {
   try {
-    return new URL(url, base);
+    return new URL(url);
   }
   catch (err: any) {
-    emitError('URL Format', `Url is invalid : '${base ?? ''}' + '${url}' (base + url).`, {
+    emitError('TypeError : Invalid URL', `${url}`, {
       withStack: true,
       original: err
     });
   }
+}
+
+function hasOrigin(url: Url): boolean {
+  if (url instanceof URL) return true;
+  return !!url.match(/http(s)?:\/\/[a-z0-9.]+(:\d{0,5})?/)?.length;
 }

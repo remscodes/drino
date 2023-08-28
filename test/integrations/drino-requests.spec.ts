@@ -1,4 +1,4 @@
-import { HttpResponse } from '../../src';
+import type { HttpResponse } from '../../src';
 import type { TestItem } from '../fixtures/drino.service';
 import { DrinoService } from '../fixtures/drino.service';
 import { expectEqual, expectProperty, expectType } from '../fixtures/utils/expect-util';
@@ -72,7 +72,10 @@ describe('Drino - Requests', () => {
   });
 
   describe('PUT', () => {
-    const updatedItem: TestItem = { id: 1, name: 'Updated First Item' };
+    const updatedItem: TestItem = {
+      id: 1,
+      name: 'Updated First Item'
+    };
 
     it('should retrieve result from Observer', (done: Mocha.Done) => {
       service.putItem(updatedItem).consume({
@@ -93,7 +96,10 @@ describe('Drino - Requests', () => {
   });
 
   describe('PATCH', () => {
-    const updatedItem: TestItem = { id: 1, name: 'Updated Second Item' };
+    const updatedItem: TestItem = {
+      id: 1,
+      name: 'Updated Second Item'
+    };
 
     it('should retrieve result from Observer', (done: Mocha.Done) => {
       service.patchItem(updatedItem).consume({

@@ -9,10 +9,7 @@ export interface TestItem {
 export class DrinoService {
 
   private client: DrinoInstance = drino.create({
-    urlOrigin: 'http://localhost:8080',
-    requestsConfig: {
-      prefix: '/item'
-    }
+    baseUrl: 'http://localhost:8080/item'
   });
 
   public getHeaders(): RequestController<Headers> {

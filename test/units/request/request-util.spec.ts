@@ -1,5 +1,5 @@
-import { RequestConfig } from '../../../src';
-import { DrinoDefaultConfigInit } from '../../../src/models/drino.model';
+import type { RequestConfig } from '../../../src';
+import type { DrinoDefaultConfigInit } from '../../../src/models/drino.model';
 import { mergeRequestConfigs } from '../../../src/request/request-util';
 import { convertBody, inferBodyType } from '../../../src/response/response-util';
 import { mockFetchResponse } from '../../fixtures/mocks/fetch-response.mock';
@@ -23,12 +23,10 @@ describe('Util - Request', () => {
   describe('mergeRequestConfigs', () => {
 
     it('should work', () => {
-
+      const requestConfig: RequestConfig<any, any> = {};
       const drinoConfig: DrinoDefaultConfigInit = {};
 
-      const requestConfig: RequestConfig<any, any> = {};
-
-      mergeRequestConfigs(drinoConfig, requestConfig);
+      mergeRequestConfigs(requestConfig, drinoConfig);
     });
   });
 });
