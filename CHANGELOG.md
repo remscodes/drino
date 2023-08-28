@@ -1,3 +1,11 @@
+# 1.2.1 (2023-08-28)
+
+### Fixes
+
+- URL Pathname RegExp.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.2.1
+
 # 1.2.0 (2023-08-28)
 
 ### Features
