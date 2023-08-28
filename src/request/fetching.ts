@@ -61,8 +61,10 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchEx
 function performFetch(request: HttpRequest, tools: FetchExtraTools, fetchFn: FetchFn = fetch): Promise<Response> {
   const { headers, method, url, body } = request;
 
-  const contentType: string = inferContentType(body);
-  headers.set('Content-Type', contentType);
+  if (body) {
+    const contentType: string = inferContentType(body);
+    headers.set('Content-Type', contentType);
+  }
 
   return fetchFn(url, {
     method,

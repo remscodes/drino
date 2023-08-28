@@ -20,7 +20,7 @@ export class RequestController<Resource> {
   public constructor(init: DrinoRequestInit, defaultConfig: DrinoDefaultConfigInit) {
     const { method, url, body, config = {} } = init;
 
-    this.config = mergeRequestConfigs(config ,defaultConfig);
+    this.config = mergeRequestConfigs(config, defaultConfig);
 
     this.request = new HttpRequest({
       method,

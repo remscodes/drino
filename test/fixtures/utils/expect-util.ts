@@ -1,6 +1,6 @@
 import { expect } from '@esm-bundle/chai';
 
-export function expectProperty<T extends {}>(obj: T, propertyKey: keyof T & string, type: string, value?: any): Chai.Assertion {
+export function expectProperty<T extends object>(obj: T, propertyKey: keyof T & string, type: string, value?: any): Chai.Assertion {
   const assertion: Chai.Assertion = expect(obj)
     .to.have.property(propertyKey)
     .and

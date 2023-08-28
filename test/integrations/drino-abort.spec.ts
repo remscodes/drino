@@ -66,10 +66,9 @@ describe('Drino - Abort', () => {
 
     client.head('/request/long', { signal: abortCtrl.signal }).consume()
       .catch((err: any) => {
-          expectEqual(err.name, 'TimeoutError');
-          done();
-        }
-      );
+        expectEqual(err.name, 'TimeoutError');
+        done();
+      });
 
     window.setTimeout(() => abortCtrl.abort(), 1_000);
   });
