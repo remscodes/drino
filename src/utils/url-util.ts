@@ -36,7 +36,7 @@ export function buildUrl(args: BuildUrlArgs): URL {
 }
 
 function buildPathname(finalUrl: URL, postPathname: Url): void {
-  finalUrl.pathname = `${finalUrl.pathname}/${postPathname}`.replace(/\/{2,}/, '/');
+  finalUrl.pathname = `${finalUrl.pathname}/${postPathname}`.replace(/\/{2,}/g, '/');
 }
 
 function createUrl(url: Url | string): URL {
