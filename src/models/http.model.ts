@@ -23,6 +23,7 @@ export type QueryParamsType =
 export type Url =
   | Prefix<string, `http${'s' | ''}://`>
   | Prefix<string, '/'>
+  | string
   | URL
 
 export type StatusType =
