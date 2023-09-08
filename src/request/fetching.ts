@@ -1,5 +1,5 @@
 import { emitError } from 'thror';
-import { Interceptors } from '../features/interceptors/models/interceptor.model';
+import type { Interceptors } from '../features/interceptors/models/interceptor.model';
 import type { FetchFn, UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
 import { convertBody } from '../response/response-util';
