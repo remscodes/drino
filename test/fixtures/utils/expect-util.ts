@@ -17,19 +17,15 @@ export function expectProperty<T extends object>(obj: T, propertyKey: keyof T & 
 export function expectEqual(current: unknown, expected: any, deep: boolean = false): Chai.Assertion {
   const assertion: Chai.Assertion = expect(current).to.be;
 
-  (deep) ? assertion.deep.equal(expected)
+  return (deep) ? assertion.deep.equal(expected)
     : assertion.equal(expected);
-
-  return assertion;
 }
 
 export function expectNotEqual(current: unknown, expected: any, deep: boolean = false): Chai.Assertion {
   const assertion: Chai.Assertion = expect(current).to.not.be;
 
-  (deep) ? assertion.deep.equal(expected)
+  return (deep) ? assertion.deep.equal(expected)
     : assertion.equal(expected);
-
-  return assertion;
 }
 
 export function expectType(current: unknown, type: string): Chai.Assertion {
@@ -40,4 +36,9 @@ export function expectType(current: unknown, type: string): Chai.Assertion {
 export function expectToBeCalled(spy: SinonSpy, count: number = 1): Chai.Assertion {
   return expect(spy.callCount)
     .to.be.equal(count);
+}
+
+export function expectToBeCalledWith(spy: SinonSpy, ...args: any[]): Chai.Assertion {
+  return expect(spy.calledOnceWithExactly(...args))
+    .to.be.true;
 }
