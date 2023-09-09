@@ -1,5 +1,6 @@
 import type { HttpResponse } from '../../src';
-import { DrinoService, TestItem } from '../fixtures/drino.service';
+import type { TestItem } from '../fixtures/drino.service';
+import { DrinoService } from '../fixtures/drino.service';
 import { expectProperty } from '../fixtures/utils/expect-util';
 
 describe('Drino - Wrapper', () => {
