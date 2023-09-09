@@ -1,3 +1,16 @@
+# 1.3.0 (2023-09-09)
+
+### Features
+
+- Add new pipe methods : `report` and `finalize`.
+
+### Improvements
+
+- `Url` type is no longer restricted by specific prefix.
+- Interceptors are moved from `requestConfig` to instance config.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.3.0
+
 # 1.2.1 (2023-08-28)
 
 ### Fixes
