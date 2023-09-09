@@ -102,17 +102,6 @@ interface RequestConfig {
   // default: 'none'
   wrapper?: 'none' | 'response';
 
-  // Interceptors in order to take action during http request lifecyle.
-  //
-  // See below in section 'Interceptors'
-  interceptors?: {
-    beforeConsume?: (request: HttpRequest) => void;
-    afterConsume?: (request: HttpRequest) => void;
-    beforeResult?: (result: any) => void;
-    beforeError?: (errorResponse: HttpErrorResponse) => void;
-    beforeFinish?: () => void;
-  };
-  
   // AbortSignal to cancel HTTP Request with an AbortController
   // See below in section 'Abort Request'
   signal?: AbortSignal;
@@ -154,6 +143,17 @@ interface DrinoDefaultConfig {
   // default: 'http://localhost'
   baseUrl?: string;
 
+  // Interceptors in order to take action during http request lifecyle.
+  //
+  // See below in section 'Interceptors'
+  interceptors?: {
+    beforeConsume?: (request: HttpRequest) => void;
+    afterConsume?: (request: HttpRequest) => void;
+    beforeResult?: (result: any) => void;
+    beforeError?: (errorResponse: HttpErrorResponse) => void;
+    beforeFinish?: () => void;
+  };
+
   // Default requestConfig applied to all requests hosted by the instance
   // See above in section 'Request Config'
   requestsConfig?: RequestConfig;
@@ -174,7 +174,7 @@ drino.get('/cat/meow').consume(); // GET -> https://example.com/cat/meow (header
 ### Pipe methods
 
 Before calling `consume()` method, you can chain call methods to modify or inspect the current value before being passed
-into callbacks.
+into final callbacks.
 
 #### Transform
 
@@ -196,16 +196,50 @@ drino.get<Cat>('/cat/meow')
 
 #### Check
 
-Check the result value without changing it.
+Read the result value without changing it.
 
 Example :
 
 ```ts
 drino.get<Cat>('/cat/meow')
-  .check((res: Cat) => console.log(res)) // { name: "Gaïa" }
+  .check((res: Cat) => console.log(res)) // (1)
   .consume({
     result: (res: Cat) => {
+      // Output (1) : { name: "Gaïa" }
       // handle value
+    }
+  });
+```
+
+#### Report
+
+Read the error value without changing it.
+
+Example :
+
+```ts
+drino.get<Cat>('/cat/meow')
+  .report((err: any) => console.error(err.name)) // (1)
+  .consume({
+    error: (err: any) => {
+      // Output (1) : "ErrorName" 
+      // handle error
+    }
+  });
+```
+
+#### Finalize
+
+Finalize when controller finished.
+
+Example :
+
+```ts
+drino.get<Cat>('/cat/meow')
+  .finalize(() => console.log('Finished')) // (1)
+  .consume({
+    finish: () => {
+      // Output (1) : "Finished"
     }
   });
 ```
@@ -218,11 +252,13 @@ Example :
 
 ```ts
 drino.get<Cat>('/cat/meow')
-  .check((val: Cat) => console.log(val)) // { name: "Gaïa" }
+  .check((val: Cat) => console.log(val)) // (1)
   .transform((val: Cat) => cat.name)
-  .check((val: string) => console.log(val)) // "Gaïa"
+  .check((val: string) => console.log(val)) // (2)
   .consume({
     result: (name: string) => {
+      // Output (1) : { name: "Gaïa" }
+      // Output (2) : "Gaïa"
       // handle value
     }
   });
@@ -232,22 +268,14 @@ drino.get<Cat>('/cat/meow')
 
 You can intercept request, result or error throughout the http request lifecycle.
 
-Interceptors can be passed into instance config (recommended) or into each request config.
+Interceptors can be passed into instance config .
 
 ```ts
 const instance: DrinoInstance = drino.create({
-  requestsConfig: {
-    interceptors: {
-      // ...
-    }
-  }
-});
-
-instance.get('/cat/meow', {
   interceptors: {
     // ...
   }
-}).consume();
+});
 ```
 
 #### Before consume
@@ -258,12 +286,10 @@ Example :
 
 ```ts
 const instance: DrinoInstance = drino.create({
-  requestsConfig: {
-    interceptors: {
-      beforeConsume: (request: HttpRequest) => {
-        const token: string = myService.getToken();
-        request.headers.set('Authorization', `Bearer ${token}`);
-      }
+  interceptors: {
+    beforeConsume: (request: HttpRequest) => {
+      const token: string = myService.getToken();
+      request.headers.set('Authorization', `Bearer ${token}`);
     }
   }
 });
@@ -277,11 +303,9 @@ Example :
 
 ```ts
 const instance: DrinoInstance = drino.create({
-  requestsConfig: {
-    interceptors: {
-      afterConsume: (request: HttpRequest) => {
-        console.info(`Response received from ${request.url}`);
-      }
+  interceptors: {
+    afterConsume: (request: HttpRequest) => {
+      console.info(`Response received from ${request.url}`);
     }
   }
 });
@@ -295,11 +319,9 @@ Example :
 
 ```ts
 const instance: DrinoInstance = drino.create({
-  requestsConfig: {
-    interceptors: {
-      beforeResult: (result: any) => {
-        console.info(`Result : ${result}`);
-      }
+  interceptors: {
+    beforeResult: (result: any) => {
+      console.info(`Result : ${result}`);
     }
   }
 });
@@ -313,17 +335,15 @@ Example :
 
 ```ts
 const instance: DrinoInstance = drino.create({
-  requestsConfig: {
-    interceptors: {
-      beforeError: (errorResponse: HttpErrorResponse) => {
-        if (errorResponse.status === 401) {
-          myService.clearToken();
-          myService.navigateToLogin();
-        }
-        
-        else {
-          console.error(`Error ${errorResponse.status} from ${errorResponse.url} : ${errorResponse.error}`);
-        } 
+  interceptors: {
+    beforeError: (errorResponse: HttpErrorResponse) => {
+      if (errorResponse.status === 401) {
+        myService.clearToken();
+        myService.navigateToLogin();
+      }
+
+      else {
+        console.error(`Error ${errorResponse.status} from ${errorResponse.url} : ${errorResponse.error}`);
       }
     }
   }
@@ -338,17 +358,15 @@ Example :
 
 ```ts
 const instance: DrinoInstance = drino.create({
-  requestsConfig: {
-    interceptors: {
-      beforeFinish: () => {
-        console.info('Finished');
-      }
+  interceptors: {
+    beforeFinish: () => {
+      console.info('Finished');
     }
   }
 });
 ```
 
-### Request cancellation
+### Request annulation
 
 #### AbortController
 
@@ -378,7 +396,7 @@ async function getCatInfo() {
   try {
     const result: Cat = await drino.get<Cat>('/cat/meow', { signal }).consume();
     // handle result
-  } 
+  }
   catch (err: any) {
     if (signal.aborted) {
       const reason: any = signal.reason;
@@ -412,7 +430,7 @@ async function getCatInfo() {
   try {
     const result: Cat = await drino.get<Cat>('/cat/meow', { timeoutMs: 2_000 }).consume();
     // handle result
-  } 
+  }
   catch (err: any) {
     if (signal.aborted) {
       const message: string = err.message;
