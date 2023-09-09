@@ -1,5 +1,5 @@
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
-import { mergeInterceptors } from '../features/interceptors/interceptors-util';
+import { initInterceptors } from '../features/interceptors/interceptors-util';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
@@ -9,11 +9,11 @@ import type { DefinedConfig } from './models/request-config.model';
 export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): DefinedConfig {
   const {
     baseUrl = 'http://localhost',
+    interceptors: defaultInterceptors = {},
     requestsConfig: {
       prefix: defaultPrefix = '/',
       headers: defaultHeaders = {},
       queryParams: defaultQueryParams = {},
-      interceptors: defaultInterceptors = {},
       timeoutMs: defaultTimeoutMs = 0
     } = {}
   } = defaultConfig;
@@ -24,7 +24,6 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     queryParams = {},
     read = 'object',
     wrapper = 'none',
-    interceptors = {},
     timeoutMs,
     signal = defaultSignal()
   } = requestConfig;
@@ -36,7 +35,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     queryParams: mergeQueryParams(defaultQueryParams, queryParams),
     read,
     wrapper,
-    interceptors: mergeInterceptors(defaultInterceptors, interceptors),
+    interceptors: initInterceptors(defaultInterceptors),
     signal: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
       : (defaultTimeoutMs) ? mergeSignals(signal, timedSignal(defaultTimeoutMs))
         : signal

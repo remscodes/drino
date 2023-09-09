@@ -1,4 +1,5 @@
 import { expect } from '@esm-bundle/chai';
+import type { SinonSpy } from 'sinon';
 
 export function expectProperty<T extends object>(obj: T, propertyKey: keyof T & string, type: string, value?: any): Chai.Assertion {
   const assertion: Chai.Assertion = expect(obj)
@@ -34,4 +35,9 @@ export function expectNotEqual(current: unknown, expected: any, deep: boolean = 
 export function expectType(current: unknown, type: string): Chai.Assertion {
   return expect(current)
     .to.be.a(type);
+}
+
+export function expectToBeCalled(spy: SinonSpy, count: number = 1): Chai.Assertion {
+  return expect(spy.callCount)
+    .to.be.equal(count);
 }

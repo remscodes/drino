@@ -26,3 +26,23 @@ export function mergeInterceptors(defaultInterceptors: Interceptors, interceptor
     }
   };
 }
+
+export function initInterceptors(interceptors: Interceptors): Required<Interceptors> {
+  return {
+    beforeConsume: (request: HttpRequest) => {
+      interceptors.beforeConsume?.(request);
+    },
+    afterConsume: (request: HttpRequest, response: Response) => {
+      interceptors.afterConsume?.(request, response);
+    },
+    beforeResult: (result: unknown) => {
+      interceptors.beforeResult?.(result);
+    },
+    beforeError: (errorResponse: HttpErrorResponse) => {
+      interceptors.beforeError?.(errorResponse);
+    },
+    beforeFinish: () => {
+      interceptors.beforeFinish?.();
+    }
+  };
+}

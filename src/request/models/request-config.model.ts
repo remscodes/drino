@@ -46,10 +46,6 @@ export interface RequestConfig<
    * Time limit from which the request is aborted.
    */
   timeoutMs?: number;
-  /**
-   * Interceptors.
-   */
-  interceptors?: Interceptors;
   // retry?: RetryConfig;
   // withCredentials?: boolean;
 }

@@ -1,4 +1,5 @@
 import type { Drino } from '../drino';
+import type { Interceptors } from '../features/interceptors/models/interceptor.model';
 import type { RequestConfig } from '../request';
 import type { Url } from './http.model';
 import type { Prefix } from './shared.model';
@@ -7,6 +8,10 @@ export type DrinoInstance = Omit<Drino, 'create'>
 
 export interface DrinoDefaultConfigInit {
   baseUrl?: Exclude<Url, Prefix<string, '/'>>;
+  /**
+   * Interceptors.
+   */
+  interceptors?: Interceptors;
   requestsConfig?: Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal'>;
 }
 
