@@ -9,8 +9,10 @@ export type FormDataBody<T> = Extract<T, FormData>
 
 export type Modifier<I = any, O = any> = (value: I) => O;
 export type CheckCallback<T> = (result: T) => void
+export type ReportCallback = (error: any) => void
+export type FinalCallback = () => void
 
-export interface Observer<T = any> {
+export interface Observer<T> {
   result?: (result: T) => void;
   error?: (error: any) => void;
   finish?: () => void;

@@ -5,7 +5,7 @@ import type { FetchExtraTools } from './fetching';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
 import type { DefinedConfig, RequestConfig } from './models/request-config.model';
-import type { CheckCallback, Modifier, Observer } from './models/request-controller.model';
+import type { CheckCallback, FinalCallback, Modifier, Observer, ReportCallback } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
 interface DrinoRequestInit {
@@ -50,12 +50,38 @@ export class RequestController<Resource> {
 
   public check(): RequestController<Resource>;
   public check(checkFn: CheckCallback<Resource>): RequestController<Resource>;
-  public check(checkFn?: CheckCallback<any>): RequestController<any> {
+  public check(checkFn?: CheckCallback<Resource>): RequestController<Resource> {
     if (checkFn) {
-      this.modifiers.push((result) => {
+      this.modifiers.push((result: Resource) => {
         checkFn(result);
         return result;
       });
+    }
+    return this;
+  }
+
+  public report(): RequestController<Resource>;
+  public report(reportFn: ReportCallback): RequestController<Resource>;
+  public report(reportFn?: ReportCallback): RequestController<Resource> {
+    if (reportFn) {
+      const original = this.config.interceptors.beforeError;
+      this.config.interceptors.beforeError = (err: any) => {
+        original(err);
+        reportFn(err);
+      };
+    }
+    return this;
+  }
+
+  public finalize(): RequestController<Resource>;
+  public finalize(finalFn: FinalCallback): RequestController<Resource>;
+  public finalize(finalFn?: FinalCallback): RequestController<Resource> {
+    if (finalFn) {
+      const original = this.config.interceptors.beforeFinish;
+      this.config.interceptors.beforeFinish = () => {
+        original();
+        finalFn();
+      };
     }
     return this;
   }
@@ -93,13 +119,13 @@ export class RequestController<Resource> {
       .then(async (result) => {
         try {
           for (const modifier of this.modifiers) result = await modifier(result);
-          observer.result?.(result as any);
+          observer.result?.(result);
         }
         catch (err: unknown) {
           return this.catchable(err);
         }
       })
-      .catch((err: Error) => {
+      .catch((err: any) => {
         if (this.config.signal.aborted) return observer.abort?.(this.config.signal.reason);
         observer.error?.(err);
       })
