@@ -35,10 +35,10 @@
     "url": "https://github.com/remscodes/drino"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
-    "thror": "^1.0.0"
+    "thror": "^1.0.1"
   },
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
@@ -65,6 +65,6 @@
     "promise",
     "callback"
   ],
-  "packageManager": "pnpm@8.6.12",
+  "packageManager": "pnpm@8.7.4",
   "sideEffects": false
 }

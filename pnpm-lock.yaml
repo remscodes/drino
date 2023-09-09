@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   thror:
-    specifier: ^1.0.0
-    version: 1.0.0
+    specifier: ^1.0.1
+    version: 1.0.1
 
 devDependencies:
   '@esm-bundle/chai':
@@ -2801,11 +2801,9 @@ packages:
       streamx: 2.15.0
     dev: true
 
-  /thror@1.0.0:
-    resolution: {integrity: sha512-TJEoSSfOq8NPL6c8thFQYAibg/pqDe5fdPvLRUEOgQyZR8FtnnvjRiZS4uqy5aETN1nklA4pUGhprRtwp2QgPQ==}
-    engines: {node: '>=16.0.0'}
-    dependencies:
-      tslib: 2.6.1
+  /thror@1.0.1:
+    resolution: {integrity: sha512-9eQflGxhPv2NJr0c7aRjLnYzRmsEQcfMCGFb4SVKg3+CXcRqnD9cAwErlIZZUweNOkBomr4kPZJnZ4dMwMH1Iw==}
+    engines: {node: '>=18.0.0'}
     dev: false
 
   /through@2.3.8:
@@ -2837,6 +2835,7 @@ packages:
 
   /tslib@2.6.1:
     resolution: {integrity: sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==}
+    dev: true
 
   /tsscmp@1.0.6:
     resolution: {integrity: sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA==}
