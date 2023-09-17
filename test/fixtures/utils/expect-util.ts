@@ -1,7 +1,7 @@
 import { expect } from '@esm-bundle/chai';
 import type { SinonSpy } from 'sinon';
 
-export function expectProperty<T extends object>(obj: T, propertyKey: keyof T & string, type: string, value?: any): Chai.Assertion {
+export function expectProperty<T extends object>(obj: T, propertyKey: keyof T & string | string, type: string, value?: any): Chai.Assertion {
   const assertion: Chai.Assertion = expect(obj)
     .to.have.property(propertyKey)
     .and

@@ -4,7 +4,7 @@ import type { RequestConfig } from '../request';
 import type { Url } from './http.model';
 import type { Prefix } from './shared.model';
 
-export type DrinoInstance = Omit<Drino, 'create'>
+export type DrinoInstance = Omit<Drino, 'create' | 'use'>
 
 export interface DrinoDefaultConfigInit {
   baseUrl?: Exclude<Url, Prefix<string, '/'>>;

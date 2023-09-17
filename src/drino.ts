@@ -2,9 +2,12 @@ import type { DrinoInstance, HttpResponse } from './';
 import { mergeInstanceConfig } from './drino-util';
 import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
 import type { RequestMethodType, Url } from './models/http.model';
+import type { DrinoPlugin } from './models/plugin.model';
 import type { RequestConfig } from './request';
 import { RequestController } from './request';
 import type { ArrayBufferBody, BlobBody, FormDataBody, ObjectBody, StringBody, VoidBody } from './request/models/request-controller.model';
+
+const pluginIdsUsed: Set<string> = new Set();
 
 export class Drino {
 
@@ -13,6 +16,13 @@ export class Drino {
   }
 
   public default: DrinoDefaultConfig;
+
+  public use(plugin: DrinoPlugin): void {
+    if (pluginIdsUsed.has(plugin.id)) return;
+
+    plugin.run(RequestController.prototype);
+    pluginIdsUsed.add(plugin.id);
+  }
 
   public create(config: DrinoDefaultConfigInit): DrinoInstance {
     return new Drino(config);
