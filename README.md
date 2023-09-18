@@ -169,6 +169,14 @@ drino.default.requestsConfig.headers.set('Custom-Header', 'Cat');
 drino.get('/cat/meow').consume(); // GET -> https://example.com/cat/meow (headers = { "Custom-Header", "Cat" })
 ```
 
+### Plugin
+
+You can use third-party plugin to add more features.
+
+```ts
+drino.use(myPlugin);
+```
+
 ## Advanced Usage
 
 ### Pipe methods
@@ -240,6 +248,22 @@ drino.get<Cat>('/cat/meow')
   .consume({
     finish: () => {
       // Output (1) : "Finished"
+    }
+  });
+```
+
+#### Follow
+
+Make another http request sequentially that depends on previous one.
+
+Example :
+
+```ts
+drino.get<Cat>('/cat/meow')
+  .follow((cat: Cat) => drino.get<Dog>(`/dog/wouaf/cat-friend/${cat.name}`)) 
+  .consume({
+    result: (res: Dog) => {
+      // handle value
     }
   });
 ```
