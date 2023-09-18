@@ -3,7 +3,8 @@ import sinon from 'sinon';
 import type { DrinoInstance } from '../../src';
 import drino from '../../src';
 import type { TestItem } from '../fixtures/drino.service';
-import { expectToBeCalled, expectToBeCalledWith, expectType } from '../fixtures/utils/expect-util';
+import { DrinoService } from '../fixtures/drino.service';
+import { expectProperty, expectToBeCalled, expectToBeCalledWith, expectType } from '../fixtures/utils/expect-util';
 
 describe('Drino - Pipe Methods', () => {
   const sandbox: SinonSandbox = sinon.createSandbox();
@@ -11,6 +12,8 @@ describe('Drino - Pipe Methods', () => {
   const client: DrinoInstance = drino.create({
     baseUrl: 'http://localhost:8080/item'
   });
+
+  const service = new DrinoService();
 
   afterEach(() => {
     sandbox.restore();
@@ -86,6 +89,28 @@ describe('Drino - Pipe Methods', () => {
       await requestCtrl.consume();
 
       expectToBeCalled(spy);
+    });
+  });
+
+  describe('follow', () => {
+
+    it('should chain another request controller', (done: Mocha.Done) => {
+      const name: string = 'name';
+
+      service
+        .createItem(name)
+        .follow((item: TestItem) => {
+          expectProperty(item, 'name', 'string', name);
+          expectProperty(item, 'id', 'number');
+          return service.getOneItem(item.id!);
+        })
+        .consume({
+          result: (item: TestItem) => {
+            expectProperty(item, 'name', 'string', name);
+            expectProperty(item, 'id', 'number');
+            done();
+          }
+        });
     });
   });
 });

@@ -28,7 +28,7 @@ export class DrinoService {
     return this.client.patch(`/${item.id}`, item);
   }
 
-  public getItems(): RequestController<TestItem> {
+  public getItems(): RequestController<TestItem[]> {
     return this.client.get('/');
   }
 

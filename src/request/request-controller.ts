@@ -5,7 +5,7 @@ import type { FetchExtraTools } from './fetching';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
 import type { DefinedConfig, RequestConfig } from './models/request-config.model';
-import type { CheckCallback, FinalCallback, Modifier, Observer, ReportCallback } from './models/request-controller.model';
+import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
 interface DrinoRequestInit {
@@ -41,48 +41,41 @@ export class RequestController<Resource> {
 
   private readonly modifiers: Modifier[] = [];
 
-  public transform(): RequestController<Resource>;
   public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
-  public transform(...modifiers: Modifier[]): RequestController<any> {
-    this.modifiers.push(...modifiers);
+  public transform(modifiers: Modifier): RequestController<any> {
+    this.modifiers.push(modifiers);
     return this;
   }
 
-  public check(): RequestController<Resource>;
-  public check(checkFn: CheckCallback<Resource>): RequestController<Resource>;
-  public check(checkFn?: CheckCallback<Resource>): RequestController<Resource> {
-    if (checkFn) {
-      this.modifiers.push((result: Resource) => {
-        checkFn(result);
-        return result;
-      });
-    }
+  public check(checkFn: CheckCallback<Resource>): RequestController<Resource> {
+    this.modifiers.push((result: Resource) => {
+      checkFn(result);
+      return result;
+    });
     return this;
   }
 
-  public report(): RequestController<Resource>;
-  public report(reportFn: ReportCallback): RequestController<Resource>;
-  public report(reportFn?: ReportCallback): RequestController<Resource> {
-    if (reportFn) {
-      const original = this.config.interceptors.beforeError;
-      this.config.interceptors.beforeError = (err: any) => {
-        original(err);
-        reportFn(err);
-      };
-    }
+  public report(reportFn: ReportCallback): RequestController<Resource> {
+    const original = this.config.interceptors.beforeError;
+    this.config.interceptors.beforeError = (err: any) => {
+      original(err);
+      reportFn(err);
+    };
     return this;
   }
 
-  public finalize(): RequestController<Resource>;
-  public finalize(finalFn: FinalCallback): RequestController<Resource>;
-  public finalize(finalFn?: FinalCallback): RequestController<Resource> {
-    if (finalFn) {
-      const original = this.config.interceptors.beforeFinish;
-      this.config.interceptors.beforeFinish = () => {
-        original();
-        finalFn();
-      };
-    }
+  public finalize(finalFn: FinalCallback): RequestController<Resource> {
+    const original = this.config.interceptors.beforeFinish;
+    this.config.interceptors.beforeFinish = () => {
+      original();
+      finalFn();
+    };
+    return this;
+  }
+
+  public follow<NewResource>(followFn: FollowCallback<Resource, NewResource>): RequestController<NewResource>;
+  public follow(followFn: FollowCallback<any, any>): RequestController<any> {
+    this.modifiers.push((result: Resource) => followFn(result).consume());
     return this;
   }
 

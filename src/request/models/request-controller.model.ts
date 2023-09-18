@@ -1,4 +1,5 @@
 import type { HttpResponse } from '../../response';
+import type { RequestController } from '../request-controller';
 
 export type ObjectBody<T> = Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | HttpResponse<any>>
 export type StringBody<T> = Extract<T, string>
@@ -7,10 +8,11 @@ export type BlobBody<T> = Extract<T, Blob>
 export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
-export type Modifier<I = any, O = any> = (value: I) => O;
+export type Modifier<I = any, O = any> = (value: I) => O
 export type CheckCallback<T> = (result: T) => void
 export type ReportCallback = (error: any) => void
 export type FinalCallback = () => void
+export type FollowCallback<A, B> = (result: A) => RequestController<B>
 
 export interface Observer<T> {
   result?: (result: T) => void;
