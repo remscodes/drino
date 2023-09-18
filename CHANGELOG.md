@@ -1,3 +1,12 @@
+# 1.4.0 (2023-09-18)
+
+### Features
+
+- Add new pipe method : `follow`.
+- Add plugin compatibility with `drino.use`.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.4.0
+
 # 1.3.0 (2023-09-09)
 
 ### Features
