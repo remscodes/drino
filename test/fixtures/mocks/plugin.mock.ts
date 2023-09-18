@@ -1,9 +1,8 @@
-import type { RequestController } from '../../../src';
-import type { DrinoPlugin } from '../../../src/models/plugin.model';
+import type { DrinoPlugin, PluginTools, RequestController } from '../../../src';
 
 export const mockPlugin: DrinoPlugin = {
   id: 'mock-plugin',
-  run: (reqCtrlPrototype: any) => {
+  run: ({ reqCtrlPrototype }: PluginTools) => {
     Object.defineProperty(reqCtrlPrototype, 'log', {
       value: function (this: RequestController<any>) {},
       writable: true
