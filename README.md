@@ -64,7 +64,7 @@ drino.delete(url, config?)
 
 drino.head(url, config?)
 
-drino.options(url, config?)
+[//]: # (drino.options&#40;url, config?&#41;)
 
 drino.post(url, body, config?)
 
