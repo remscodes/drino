@@ -1,4 +1,6 @@
+import type { RetryConfig } from '../../features';
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
+import type { DrinoRetryConfigInit } from '../../models/drino.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
 export interface RequestConfig<
@@ -24,7 +26,7 @@ export interface RequestConfig<
    *  - result() callback when using Observer.
    *  - then() callback when using Promise.
    *
-   * If 'auto' is specified, read will be deducted from "content-type" response header.
+   * If 'auto' is specified, read will be infered from "content-type" response header.
    *
    * @default 'object'
    */
@@ -46,7 +48,10 @@ export interface RequestConfig<
    * Time limit from which the request is aborted.
    */
   timeoutMs?: number;
-  // retry?: RetryConfig;
+  /**
+   *
+   */
+  retry?: RetryConfig;
   // withCredentials?: boolean;
 }
 
@@ -63,9 +68,10 @@ export type WrapperType =
   | 'none'
   | 'response'
 
-export interface DefinedConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'interceptors' | 'timeoutMs'>> {
+export interface Config extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'interceptors' | 'timeoutMs' | 'retry'>> {
   baseUrl: URL;
   headers: Headers;
   queryParams: URLSearchParams;
   interceptors: Required<Interceptors>;
+  retry: Required<DrinoRetryConfigInit>;
 }

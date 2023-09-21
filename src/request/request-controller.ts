@@ -4,7 +4,7 @@ import type { RequestMethodType, Url } from '../models/http.model';
 import type { FetchExtraTools } from './fetching';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
-import type { DefinedConfig, RequestConfig } from './models/request-config.model';
+import type { Config, RequestConfig } from './models/request-config.model';
 import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
@@ -35,7 +35,7 @@ export class RequestController<Resource> {
     });
   }
 
-  private readonly config: DefinedConfig;
+  private readonly config: Config;
 
   private readonly request: HttpRequest;
 
@@ -86,7 +86,8 @@ export class RequestController<Resource> {
 
     const tools: FetchExtraTools = {
       signal: this.config.signal,
-      interceptors: this.config.interceptors
+      interceptors: this.config.interceptors,
+      retry: this.config.retry
     };
 
     if (!observer) return this.thenable(tools);

@@ -17,3 +17,8 @@ export type PartialBy<Obj, Prop extends keyof Obj> =
 export type RequiredBy<Obj, Prop extends keyof Obj> =
   & Omit<Obj, Prop>
   & Required<Pick<Obj, Prop>>
+
+export interface NumberRange {
+  min: number;
+  max: number;
+}

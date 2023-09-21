@@ -1,7 +1,8 @@
 import type { Drino } from '../drino';
+import type { RetryConfig } from '../features';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
 import type { RequestConfig } from '../request';
-import type { Url } from './http.model';
+import type { RequestMethodType, Url } from './http.model';
 import type { Prefix } from './shared.model';
 
 export type DrinoInstance = Omit<Drino, 'create' | 'use'>
@@ -12,9 +13,21 @@ export interface DrinoDefaultConfigInit {
    * Interceptors.
    */
   interceptors?: Interceptors;
-  requestsConfig?: Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal'>;
+  requestsConfig?: DrinoRequestsConfigInit;
+}
+
+interface DrinoRequestsConfigInit extends Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal'> {
+  retry?: DrinoRetryConfigInit;
+}
+
+export interface DrinoRetryConfigInit extends RetryConfig {
+  onMethods?: (RequestMethodType | '*')[];
 }
 
 export interface DrinoDefaultConfig extends Omit<Required<DrinoDefaultConfigInit>, 'requestsConfig'> {
-  requestsConfig: Omit<Required<RequestConfig<any, any>>, 'read' | 'wrapper' | 'signal'>;
+  requestsConfig: DrinoDefaultRequestsConfig;
+}
+
+export interface DrinoDefaultRequestsConfig extends Omit<Required<RequestConfig<any, any>>, 'read' | 'wrapper' | 'signal' | 'retry'> {
+  retry: Required<DrinoRetryConfigInit>;
 }

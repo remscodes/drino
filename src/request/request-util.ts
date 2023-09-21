@@ -1,12 +1,13 @@
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
+import { defaultRetryCount, defaultRetryOnStatus } from '../features/retry/retry.constants';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
 import type { RequestConfig } from './models';
-import type { DefinedConfig } from './models/request-config.model';
+import type { Config } from './models/request-config.model';
 
-export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): DefinedConfig {
+export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): Config {
   const {
     baseUrl = 'http://localhost',
     interceptors: defaultInterceptors = {},
@@ -25,7 +26,11 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     read = 'object',
     wrapper = 'none',
     timeoutMs,
-    signal = defaultSignal()
+    signal = defaultSignal(),
+    retry: {
+      count = defaultRetryCount,
+      onStatusCodes = defaultRetryOnStatus
+    } = {}
   } = requestConfig;
 
   return {
@@ -36,6 +41,11 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     read,
     wrapper,
     interceptors: initInterceptors(defaultInterceptors),
+    retry: {
+      count,
+      onStatusCodes,
+      onMethods: []
+    },
     signal: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
       : (defaultTimeoutMs) ? mergeSignals(signal, timedSignal(defaultTimeoutMs))
         : signal
