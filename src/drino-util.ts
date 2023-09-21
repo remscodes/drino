@@ -1,9 +1,10 @@
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
-import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
+import type { DrinoDefaultConfig, DrinoDefaultConfigInit, DrinoRetryConfigInit } from './models/drino.model';
+import type { RequestMethodType } from './models/http.model';
 import { mergeHeaders } from './utils/headers-util';
 import { mergeQueryParams } from './utils/params-util';
 
-export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, parentDefaultConfig: DrinoDefaultConfigInit): DrinoDefaultConfig {
+export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, parentDefaultConfig?: DrinoDefaultConfig): DrinoDefaultConfig {
   const {
     baseUrl: parentBaseUrl = 'http://localhost',
     interceptors: parentInterceptors = {},
@@ -11,9 +12,14 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix: parentPrefix = '/',
       headers: parentHeaders = {},
       queryParams: parentQueryParams = {},
-      timeoutMs: defaultTimeoutMs = 0
+      timeoutMs: parentTimeoutMs = 0,
+      retry: {
+        count: parentCount = 0,
+        onStatusCodes: parentOnStatusCodes = { min: 400, max: 599 },
+        onMethods: parentOnMethods = ['*'] as (RequestMethodType | '*')[]
+      } = {} as Required<DrinoRetryConfigInit>
     } = {}
-  } = parentDefaultConfig;
+  } = parentDefaultConfig ?? {};
 
   const {
     baseUrl,
@@ -22,18 +28,28 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix,
       headers = {},
       queryParams = {},
-      timeoutMs
+      timeoutMs,
+      retry: {
+        count,
+        onStatusCodes,
+        onMethods
+      } = {} as DrinoRetryConfigInit
     } = {}
   } = defaultConfig;
 
   return {
     baseUrl: baseUrl || parentBaseUrl,
-    interceptors: mergeInterceptors(parentInterceptors, interceptors),
+    interceptors: mergeInterceptors(interceptors, parentInterceptors),
     requestsConfig: {
       prefix: prefix || parentPrefix,
-      headers: mergeHeaders(parentHeaders, headers),
-      queryParams: mergeQueryParams(parentQueryParams, queryParams),
-      timeoutMs: timeoutMs || defaultTimeoutMs
+      headers: mergeHeaders(headers, parentHeaders),
+      queryParams: mergeQueryParams(queryParams, parentQueryParams),
+      timeoutMs: timeoutMs || parentTimeoutMs,
+      retry: {
+        count: count ?? parentCount,
+        onStatusCodes: onStatusCodes ?? parentOnStatusCodes,
+        onMethods: onMethods ?? parentOnMethods
+      }
     }
   };
 }

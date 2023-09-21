@@ -12,7 +12,7 @@ const pluginIdsUsed: Set<string> = new Set();
 export class Drino {
 
   public constructor(config: DrinoDefaultConfigInit, parentConfig?: DrinoDefaultConfig) {
-    this.default = mergeInstanceConfig(config, parentConfig ?? {});
+    this.default = mergeInstanceConfig(config, parentConfig);
   }
 
   public default: DrinoDefaultConfig;
@@ -80,11 +80,11 @@ export class Drino {
     return this.request<T>('DELETE', url, null, config);
   }
 
-  private options<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
-  private options<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
-  private options<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
-    return this.request<T>('OPTIONS', url, null, config);
-  }
+  // private options<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
+  // private options<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  // private options<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
+  //   return this.request<T>('OPTIONS', url, null, config);
+  // }
 
   public post<T>(url: Url, body: any, config?: RequestConfig): RequestController<ObjectBody<T>>;
   public post<T>(url: Url, body: any, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;

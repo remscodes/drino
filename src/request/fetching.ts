@@ -1,5 +1,6 @@
 import { emitError } from 'thror';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
+import { DrinoRetryConfigInit } from '../models/drino.model';
 import type { FetchFn, UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
 import { convertBody } from '../response/response-util';
@@ -9,6 +10,7 @@ import type { HttpRequest } from './http-request';
 export interface FetchExtraTools {
   signal: AbortSignal;
   interceptors: Required<Interceptors>;
+  retry: Required<DrinoRetryConfigInit>;
 }
 
 export async function performHttpRequest<T>(request: HttpRequest, tools: FetchExtraTools): Promise<T> {
