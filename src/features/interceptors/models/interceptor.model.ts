@@ -1,13 +1,13 @@
 import type { HttpRequest } from '../../../request';
 import type { HttpErrorResponse } from '../../../response';
 
-export interface Interceptors<T = any> {
-  beforeConsume?: BeforeConsumeFn;
-  afterConsume?: AfterConsumeFn;
+export interface Interceptors<T = unknown> {
+  beforeConsume: BeforeConsumeFn;
+  afterConsume: AfterConsumeFn;
   // beforeRedirect?: BeforeRedirectFn;
-  beforeResult?: BeforeResultFn<T>;
-  beforeError?: BeforeErrorFn;
-  beforeFinish?: BeforeFinishFn;
+  beforeResult: BeforeResultFn<T>;
+  beforeError: BeforeErrorFn;
+  beforeFinish: BeforeFinishFn;
 }
 
 type BeforeConsumeFn = (request: HttpRequest) => void

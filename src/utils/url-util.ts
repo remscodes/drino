@@ -1,8 +1,8 @@
 import { emitError } from 'thror';
 import type { Url } from '../models/http.model';
-import type { Config } from '../request/models/request-config.model';
+import type { RequestControllerConfig } from '../request/models/request-config.model';
 
-interface BuildUrlArgs extends Pick<Config, 'baseUrl' | 'prefix' | 'queryParams'> {
+interface BuildUrlArgs extends Pick<RequestControllerConfig, 'baseUrl' | 'prefix' | 'queryParams'> {
   url: Url;
 }
 

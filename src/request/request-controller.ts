@@ -1,10 +1,10 @@
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
-import type { FetchExtraTools } from './fetching';
+import type { FetchTools } from './fetching';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
-import type { Config, RequestConfig } from './models/request-config.model';
+import type { RequestControllerConfig, RequestConfig } from './models/request-config.model';
 import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
@@ -35,14 +35,14 @@ export class RequestController<Resource> {
     });
   }
 
-  private readonly config: Config;
+  private readonly config: RequestControllerConfig;
 
   private readonly request: HttpRequest;
 
-  private readonly modifiers: Modifier[] = [];
+  private readonly modifiers: Modifier<any, any>[] = [];
 
   public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
-  public transform(modifiers: Modifier): RequestController<any> {
+  public transform(modifiers: Modifier<any, any>): RequestController<any> {
     this.modifiers.push(modifiers);
     return this;
   }
@@ -84,7 +84,7 @@ export class RequestController<Resource> {
   public consume(observer?: Observer<Resource>): Promise<Resource> | void {
     this.config.interceptors.beforeConsume(this.request);
 
-    const tools: FetchExtraTools = {
+    const tools: FetchTools = {
       signal: this.config.signal,
       interceptors: this.config.interceptors,
       retry: this.config.retry
@@ -94,7 +94,7 @@ export class RequestController<Resource> {
     this.useObserver(observer, tools);
   }
 
-  private async thenable(tools: FetchExtraTools): Promise<Resource> {
+  private async thenable(tools: FetchTools): Promise<Resource> {
     try {
       let result = await performHttpRequest<Resource>(this.request, tools);
       for (const modifier of this.modifiers) result = await modifier(result);
@@ -108,7 +108,7 @@ export class RequestController<Resource> {
     }
   }
 
-  private useObserver(observer: Observer<Resource>, tools: FetchExtraTools): void {
+  private useObserver(observer: Observer<Resource>, tools: FetchTools): void {
     performHttpRequest<Resource>(this.request, tools)
       .then(async (result) => {
         try {

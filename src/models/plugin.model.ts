@@ -3,7 +3,7 @@ export interface DrinoPlugin {
   run: PluginRunFn;
 }
 
-export type PluginRunFn = (tools: PluginTools) => void
+type PluginRunFn = (tools: PluginTools) => void
 
 export interface PluginTools {
   reqCtrlPrototype: any;

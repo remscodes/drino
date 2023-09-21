@@ -2,7 +2,7 @@ import type { HttpRequest } from '../../request';
 import type { HttpErrorResponse } from '../../response';
 import type { Interceptors } from './models/interceptor.model';
 
-export function mergeInterceptors(defaultInterceptors: Interceptors, interceptors: Interceptors): Required<Interceptors> {
+export function mergeInterceptors(defaultInterceptors: Partial<Interceptors>, interceptors: Partial<Interceptors>): Interceptors {
   return {
     beforeConsume: (request: HttpRequest) => {
       defaultInterceptors.beforeConsume?.(request);
@@ -27,7 +27,7 @@ export function mergeInterceptors(defaultInterceptors: Interceptors, interceptor
   };
 }
 
-export function initInterceptors(interceptors: Interceptors): Required<Interceptors> {
+export function initInterceptors(interceptors: Partial<Interceptors>): Interceptors {
   return {
     beforeConsume: (request: HttpRequest) => {
       interceptors.beforeConsume?.(request);

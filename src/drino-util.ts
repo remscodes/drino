@@ -1,6 +1,7 @@
+import type { RetryConfig } from './features';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
-import type { DrinoDefaultConfig, DrinoDefaultConfigInit, DrinoRetryConfigInit } from './models/drino.model';
-import type { RequestMethodType } from './models/http.model';
+import { defaultRetryMax, defaultRetryOnMethods, defaultRetryOnStatusCodes } from './features/retry/retry.constants';
+import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
 import { mergeHeaders } from './utils/headers-util';
 import { mergeQueryParams } from './utils/params-util';
 
@@ -14,10 +15,10 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       queryParams: parentQueryParams = {},
       timeoutMs: parentTimeoutMs = 0,
       retry: {
-        count: parentCount = 0,
-        onStatusCodes: parentOnStatusCodes = { min: 400, max: 599 },
-        onMethods: parentOnMethods = ['*'] as (RequestMethodType | '*')[]
-      } = {} as Required<DrinoRetryConfigInit>
+        max: parentMax = defaultRetryMax,
+        onStatusCodes: parentOnStatusCodes = defaultRetryOnStatusCodes,
+        onMethods: parentOnMethods = defaultRetryOnMethods
+      } = {} as Required<RetryConfig>
     } = {}
   } = parentDefaultConfig ?? {};
 
@@ -30,10 +31,10 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       queryParams = {},
       timeoutMs,
       retry: {
-        count,
+        max,
         onStatusCodes,
         onMethods
-      } = {} as DrinoRetryConfigInit
+      } = {} as RetryConfig
     } = {}
   } = defaultConfig;
 
@@ -44,9 +45,11 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix: prefix || parentPrefix,
       headers: mergeHeaders(headers, parentHeaders),
       queryParams: mergeQueryParams(queryParams, parentQueryParams),
-      timeoutMs: timeoutMs || parentTimeoutMs,
+      timeoutMs: timeoutMs ?? parentTimeoutMs,
       retry: {
-        count: count ?? parentCount,
+        max: max ?? parentMax,
+        useRetryAfterHeader: true,
+        retryAfterMs: 100,
         onStatusCodes: onStatusCodes ?? parentOnStatusCodes,
         onMethods: onMethods ?? parentOnMethods
       }

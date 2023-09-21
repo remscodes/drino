@@ -1,6 +1,5 @@
 import type { RetryConfig } from '../../features';
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
-import type { DrinoRetryConfigInit } from '../../models/drino.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
 export interface RequestConfig<
@@ -49,9 +48,9 @@ export interface RequestConfig<
    */
   timeoutMs?: number;
   /**
-   *
+   * Retry a failed request a certain number of times on a specific http status.
    */
-  retry?: RetryConfig;
+  retry?: Omit<RetryConfig, 'onMethods'>;
   // withCredentials?: boolean;
 }
 
@@ -68,10 +67,10 @@ export type WrapperType =
   | 'none'
   | 'response'
 
-export interface Config extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'interceptors' | 'timeoutMs' | 'retry'>> {
+export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeoutMs' | 'retry'>> {
   baseUrl: URL;
   headers: Headers;
   queryParams: URLSearchParams;
-  interceptors: Required<Interceptors>;
-  retry: Required<DrinoRetryConfigInit>;
+  interceptors: Interceptors;
+  retry: Required<RetryConfig>;
 }

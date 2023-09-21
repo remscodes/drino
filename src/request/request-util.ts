@@ -1,13 +1,13 @@
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
-import { defaultRetryCount, defaultRetryOnStatus } from '../features/retry/retry.constants';
+import { defaultRetryMax, defaultRetryOnMethods, defaultRetryOnStatusCodes } from '../features/retry/retry.constants';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
 import type { RequestConfig } from './models';
-import type { Config } from './models/request-config.model';
+import type { RequestControllerConfig } from './models/request-config.model';
 
-export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): Config {
+export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): RequestControllerConfig {
   const {
     baseUrl = 'http://localhost',
     interceptors: defaultInterceptors = {},
@@ -15,7 +15,12 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       prefix: defaultPrefix = '/',
       headers: defaultHeaders = {},
       queryParams: defaultQueryParams = {},
-      timeoutMs: defaultTimeoutMs = 0
+      timeoutMs: defaultTimeoutMs = 0,
+      retry: {
+        max: defaultMax = defaultRetryMax,
+        onStatusCodes: defaultOnStatusCodes = defaultRetryOnStatusCodes,
+        onMethods: defaultOnMethods = defaultRetryOnMethods
+      } = {}
     } = {}
   } = defaultConfig;
 
@@ -28,8 +33,8 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     timeoutMs,
     signal = defaultSignal(),
     retry: {
-      count = defaultRetryCount,
-      onStatusCodes = defaultRetryOnStatus
+      max = defaultRetryMax,
+      onStatusCodes = defaultRetryOnStatusCodes
     } = {}
   } = requestConfig;
 
@@ -42,7 +47,9 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     wrapper,
     interceptors: initInterceptors(defaultInterceptors),
     retry: {
-      count,
+      max: max ?? defaultMax,
+      retryAfterMs: 100,
+      useRetryAfterHeader: true,
       onStatusCodes,
       onMethods: []
     },
