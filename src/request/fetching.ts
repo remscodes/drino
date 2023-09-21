@@ -1,19 +1,19 @@
 import { emitError } from 'thror';
+import type { RetryConfig } from '../features';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
-import { DrinoRetryConfigInit } from '../models/drino.model';
-import type { FetchFn, UnwrapHttpResponse } from '../models/http.model';
+import type { UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
 import { convertBody } from '../response/response-util';
 import { inferContentType } from '../utils/headers-util';
 import type { HttpRequest } from './http-request';
 
-export interface FetchExtraTools {
+export interface FetchTools {
   signal: AbortSignal;
-  interceptors: Required<Interceptors>;
-  retry: Required<DrinoRetryConfigInit>;
+  interceptors: Interceptors;
+  retry: Required<RetryConfig>;
 }
 
-export async function performHttpRequest<T>(request: HttpRequest, tools: FetchExtraTools): Promise<T> {
+export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTools): Promise<T> {
   const fetchResponse: Response = await performFetch(request, tools);
 
   tools.interceptors.afterConsume(request, fetchResponse);
@@ -60,7 +60,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchEx
   }
 }
 
-function performFetch(request: HttpRequest, tools: FetchExtraTools, fetchFn: FetchFn = fetch): Promise<Response> {
+function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response> {
   const { headers, method, url, body } = request;
 
   if (body) {
@@ -68,7 +68,7 @@ function performFetch(request: HttpRequest, tools: FetchExtraTools, fetchFn: Fet
     headers.set('Content-Type', contentType);
   }
 
-  return fetchFn(url, {
+  return fetch(url, {
     method,
     headers,
     body: (body !== undefined && body !== null) ? JSON.stringify(body) : undefined,

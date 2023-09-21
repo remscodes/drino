@@ -1,3 +1,4 @@
+import type { RetryArgs } from '../../features';
 import type { HttpResponse } from '../../response';
 import type { RequestController } from '../request-controller';
 
@@ -8,7 +9,7 @@ export type BlobBody<T> = Extract<T, Blob>
 export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
-export type Modifier<I = any, O = any> = (value: I) => O
+export type Modifier<I, O> = (value: I) => O
 export type CheckCallback<T> = (result: T) => void
 export type ReportCallback = (error: any) => void
 export type FinalCallback = () => void
@@ -18,6 +19,6 @@ export interface Observer<T> {
   result?: (result: T) => void;
   error?: (error: any) => void;
   finish?: () => void;
-  // retry?: (args: RetryArgs) => void;
+  retry?: (args: RetryArgs) => void;
   abort?: (reason: any) => void;
 }

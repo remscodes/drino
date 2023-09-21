@@ -23,8 +23,8 @@ export type QueryParamsType =
 export type Url =
   | Prefix<string, `http${'s' | ''}://`>
   | Prefix<string, '/'>
-  | string
   | URL
+  | string
 
 export type StatusType =
   | StatusSuccessType
@@ -38,8 +38,6 @@ type StatusSuccessType =
 type StatusErrorType =
   | 'ClientError'
   | 'ServerError'
-
-export type FetchFn = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 
 export type UnwrapHttpResponse<T>
   = T extends HttpResponse<infer F> ? F
