@@ -456,11 +456,9 @@ async function getCatInfo() {
     // handle result
   }
   catch (err: any) {
-    if (signal.aborted) {
-      const message: string = err.message;
-      console.error(message); // "The operation timed out."
-      // handle timeout error
-    }
+    const message: string = err.message;
+    console.error(message); // "The operation timed out."
+    // handle timeout error
   }
 }
 ```
