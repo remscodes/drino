@@ -1,6 +1,9 @@
-import type { RequestMethodType } from '../../models/http.model';
-import type { OnStatusCodes } from './models/retry.model';
+import type { RetryConfig } from './models';
 
-export const defaultRetryMax: number = 0;
-export const defaultRetryOnStatusCodes: OnStatusCodes = { min: 400, max: 599 };
-export const defaultRetryOnMethods: (RequestMethodType | '*')[] = ['*'];
+export const defaultRetry: Required<RetryConfig> = {
+  max: 0,
+  useRetryAfter: true,
+  intervalMs: 100,
+  onStatusCodes: [408, 429, 503, 504],
+  onMethods: '*'
+};
