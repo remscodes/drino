@@ -1,16 +1,19 @@
 import { Router } from "express";
+import { setTimeout } from "node:timers";
 
 export const errorRouter = Router()
   .get('/401', (_, res) => {
     res.status(401).json({
-      name: 'Bad Token',
-      message: 'Token expired.'
+      name: 'Unauthorized',
     });
   })
-  .get('/408', (_, res) => {
-    res.status(504).json({
-      name: 'Request Timeout'
-    })
+  .get('/408/:timeout', ({ params: { timeout: rawTimeout } }, res) => {
+    const timeout = parseInt(rawTimeout, 10);
+    setTimeout(() => {
+      res.status(408).json({
+        name: 'Request Timeout'
+      });
+    }, timeout);
   })
   .get('/503', (_, res) => {
     res.status(504).json({

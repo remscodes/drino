@@ -1,15 +1,14 @@
 import type { DrinoInstance } from '../../src';
 import drino from '../../src';
-import { DrinoService } from '../fixtures/drino.service';
+import { ErrorService } from '../fixtures/services/error-service';
 import { expectEqual } from '../fixtures/utils/expect-util';
 
 describe('Drino - Abort', () => {
-  const service: DrinoService = new DrinoService();
+  const service: ErrorService = new ErrorService();
+  const abortReason: string = 'Too Long';
 
   let abortCtrl: AbortController;
   let signal: AbortSignal;
-
-  const abortReason: string = 'Too Long';
 
   beforeEach(() => {
     abortCtrl = new AbortController();
@@ -17,7 +16,7 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort with controller and retrieve reason from Observer', (done: Mocha.Done) => {
-    service.longRequest(signal).consume({
+    service.get408(3_000, signal).consume({
       result: () => {
         done('Test failed');
       },
@@ -31,7 +30,7 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort with controller and retrieve reason from Promise', (done: Mocha.Done) => {
-    service.longRequest(signal).consume()
+    service.get408(3_000, signal).consume()
       .then(() => done('Test Failed'))
       .catch((err: any) => {
         if (!signal.aborted) return done('Test Failed');
@@ -45,7 +44,7 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort with timeout', (done: Mocha.Done) => {
-    service['client'].head('/request/long', { timeoutMs: 100 }).consume()
+    service['client'].head('/408/3000', { timeoutMs: 100 }).consume()
       .catch((err: any) => {
           expectEqual(err.name, 'TimeoutError');
           done();
@@ -54,38 +53,37 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort by timeout instead of abort controller', (done: Mocha.Done) => {
-    const client: DrinoInstance = drino.create({
+    const instance: DrinoInstance = drino.create({
       baseUrl: 'http://localhost:8080',
       requestsConfig: {
-        prefix: '/item',
+        prefix: '/error',
         timeoutMs: 100
       }
     });
 
     const abortCtrl: AbortController = new AbortController();
 
-    client.head('/request/long', { signal: abortCtrl.signal }).consume()
+    instance.head('/408/3000', { signal: abortCtrl.signal }).consume()
       .catch((err: any) => {
         expectEqual(err.name, 'TimeoutError');
         done();
       });
 
-    window.setTimeout(() => abortCtrl.abort(), 1_000);
+    setTimeout(() => abortCtrl.abort(), 1_000);
   });
 
   it('should abort by abort controller instead of timeout', (done: Mocha.Done) => {
     const abortCtrl: AbortController = new AbortController();
 
-    drino.head('http://localhost:8080/item/request/long', {
+    drino.head('http://localhost:8080/error/408/3000', {
       timeoutMs: 1_000,
       signal: abortCtrl.signal
-    }).consume()
-      .catch((err: any) => {
-          expectEqual(err.name, 'AbortError');
-          done();
-        }
-      );
+    }).consume().catch((err: any) => {
+        expectEqual(err.name, 'AbortError');
+        done();
+      }
+    );
 
-    window.setTimeout(() => abortCtrl.abort(), 100);
+    setTimeout(() => abortCtrl.abort(), 100);
   });
 });
