@@ -18,7 +18,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         max: parentMax = defaultRetry.max,
         useRetryAfter: parentUseRetryAfter = defaultRetry.useRetryAfter,
         intervalMs: parentIntervalMs = defaultRetry.intervalMs,
-        onStatusCodes: parentOnStatusCodes = defaultRetry.onStatusCodes,
+        onStatus: parentOnStatus = defaultRetry.onStatus,
         onMethods: parentOnMethods = defaultRetry.onMethods
       } = {} as Required<RetryConfig>
     } = {} as DrinoDefaultRequestsConfig
@@ -36,7 +36,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         max,
         useRetryAfter,
         intervalMs,
-        onStatusCodes,
+        onStatus,
         onMethods
       } = {} as RetryConfig
     } = {} as DrinoRequestsConfigInit
@@ -54,7 +54,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         max: max ?? parentMax,
         useRetryAfter: useRetryAfter ?? parentUseRetryAfter,
         intervalMs: intervalMs ?? parentIntervalMs,
-        onStatusCodes: onStatusCodes ?? parentOnStatusCodes,
+        onStatus: onStatus ?? parentOnStatus,
         onMethods: onMethods ?? parentOnMethods
       }
     }

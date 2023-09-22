@@ -16,7 +16,7 @@ export const errorRouter = Router()
     }, timeout);
   })
   .get('/503', (_, res) => {
-    res.status(504).json({
+    res.status(503).json({
       name: 'Service Unavailable'
     })
   })

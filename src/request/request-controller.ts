@@ -87,7 +87,8 @@ export class RequestController<Resource> {
     const tools: FetchTools = {
       signal: this.config.signal,
       interceptors: this.config.interceptors,
-      retry: this.config.retry
+      retry: this.config.retry,
+      retryCb: observer?.retry
     };
 
     if (!observer) return this.thenable(tools);
