@@ -1,7 +1,7 @@
 import type { RetryConfig } from './features';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
-import { defaultRetryMax, defaultRetryOnMethods, defaultRetryOnStatusCodes } from './features/retry/retry.constants';
-import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
+import { defaultRetry } from './features/retry/retry.constants';
+import type { DrinoDefaultConfig, DrinoDefaultConfigInit, DrinoDefaultRequestsConfig, DrinoRequestsConfigInit } from './models/drino.model';
 import { mergeHeaders } from './utils/headers-util';
 import { mergeQueryParams } from './utils/params-util';
 
@@ -15,12 +15,14 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       queryParams: parentQueryParams = {},
       timeoutMs: parentTimeoutMs = 0,
       retry: {
-        max: parentMax = defaultRetryMax,
-        onStatusCodes: parentOnStatusCodes = defaultRetryOnStatusCodes,
-        onMethods: parentOnMethods = defaultRetryOnMethods
+        max: parentMax = defaultRetry.max,
+        useRetryAfter: parentUseRetryAfter = defaultRetry.useRetryAfter,
+        intervalMs: parentIntervalMs = defaultRetry.intervalMs,
+        onStatusCodes: parentOnStatusCodes = defaultRetry.onStatusCodes,
+        onMethods: parentOnMethods = defaultRetry.onMethods
       } = {} as Required<RetryConfig>
-    } = {}
-  } = parentDefaultConfig ?? {};
+    } = {} as DrinoDefaultRequestsConfig
+  } = parentDefaultConfig ?? {} as DrinoDefaultConfig;
 
   const {
     baseUrl,
@@ -32,10 +34,12 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       timeoutMs,
       retry: {
         max,
+        useRetryAfter,
+        intervalMs,
         onStatusCodes,
         onMethods
       } = {} as RetryConfig
-    } = {}
+    } = {} as DrinoRequestsConfigInit
   } = defaultConfig;
 
   return {
@@ -48,8 +52,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       timeoutMs: timeoutMs ?? parentTimeoutMs,
       retry: {
         max: max ?? parentMax,
-        useRetryAfterHeader: true,
-        retryAfterMs: 100,
+        useRetryAfter: useRetryAfter ?? parentUseRetryAfter,
+        intervalMs: intervalMs ?? parentIntervalMs,
         onStatusCodes: onStatusCodes ?? parentOnStatusCodes,
         onMethods: onMethods ?? parentOnMethods
       }

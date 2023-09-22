@@ -13,7 +13,7 @@ export interface DrinoDefaultConfigInit {
   requestsConfig?: DrinoRequestsConfigInit;
 }
 
-interface DrinoRequestsConfigInit extends Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal' | 'retry'> {
+export interface DrinoRequestsConfigInit extends Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal' | 'retry'> {
   retry?: RetryConfig;
 }
 

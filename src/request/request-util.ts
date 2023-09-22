@@ -1,6 +1,6 @@
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
-import { defaultRetryMax, defaultRetryOnMethods, defaultRetryOnStatusCodes } from '../features/retry/retry.constants';
+import { defaultRetry } from '../features/retry/retry.constants';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
@@ -17,9 +17,11 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       queryParams: defaultQueryParams = {},
       timeoutMs: defaultTimeoutMs = 0,
       retry: {
-        max: defaultMax = defaultRetryMax,
-        onStatusCodes: defaultOnStatusCodes = defaultRetryOnStatusCodes,
-        onMethods: defaultOnMethods = defaultRetryOnMethods
+        max: defaultMax = defaultRetry.max,
+        useRetryAfter: defaultUseRetryAfter = defaultRetry.useRetryAfter,
+        intervalMs: defaultIntervalMs = defaultRetry.intervalMs,
+        onStatusCodes: defaultOnStatusCodes = defaultRetry.onStatusCodes,
+        onMethods: defaultOnMethods = defaultRetry.onMethods
       } = {}
     } = {}
   } = defaultConfig;
@@ -33,8 +35,10 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     timeoutMs,
     signal = defaultSignal(),
     retry: {
-      max = defaultRetryMax,
-      onStatusCodes = defaultRetryOnStatusCodes
+      max,
+      useRetryAfter,
+      intervalMs,
+      onStatusCodes
     } = {}
   } = requestConfig;
 
@@ -48,10 +52,10 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     interceptors: initInterceptors(defaultInterceptors),
     retry: {
       max: max ?? defaultMax,
-      retryAfterMs: 100,
-      useRetryAfterHeader: true,
-      onStatusCodes,
-      onMethods: []
+      useRetryAfter: useRetryAfter ?? defaultUseRetryAfter,
+      intervalMs: intervalMs ?? defaultIntervalMs,
+      onStatusCodes: onStatusCodes ?? defaultOnStatusCodes,
+      onMethods: defaultOnMethods
     },
     signal: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
       : (defaultTimeoutMs) ? mergeSignals(signal, timedSignal(defaultTimeoutMs))
