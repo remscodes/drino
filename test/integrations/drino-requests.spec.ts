@@ -1,11 +1,11 @@
 import type { HttpResponse } from '../../src';
-import type { TestItem } from '../fixtures/drino.service';
-import { DrinoService } from '../fixtures/drino.service';
+import type { TestItem } from '../fixtures/services/item-service';
+import { ItemService } from '../fixtures/services/item-service';
 import { expectEqual, expectProperty, expectType } from '../fixtures/utils/expect-util';
 
 describe('Drino - Requests', () => {
 
-  const service: DrinoService = new DrinoService();
+  const service: ItemService = new ItemService();
 
   describe('GET', () => {
 

@@ -1,10 +1,10 @@
 import type { HttpResponse } from '../../src';
-import type { TestItem } from '../fixtures/drino.service';
-import { DrinoService } from '../fixtures/drino.service';
+import type { TestItem } from '../fixtures/services/item-service';
+import { ItemService } from '../fixtures/services/item-service';
 import { expectProperty } from '../fixtures/utils/expect-util';
 
 describe('Drino - Wrapper', () => {
-  const service = new DrinoService();
+  const service = new ItemService();
 
   it('should wrap result into a HttpResponse instance', async () => {
     const response: HttpResponse<TestItem[]> = await service.getWrappedItems().consume();

@@ -2,18 +2,21 @@ import type { SinonSandbox, SinonSpy } from 'sinon';
 import sinon from 'sinon';
 import type { DrinoInstance } from '../../src';
 import drino from '../../src';
-import type { TestItem } from '../fixtures/drino.service';
-import { DrinoService } from '../fixtures/drino.service';
+import type { TestItem } from '../fixtures/services/item-service';
+import { ItemService } from '../fixtures/services/item-service';
 import { expectProperty, expectToBeCalled, expectToBeCalledWith, expectType } from '../fixtures/utils/expect-util';
 
 describe('Drino - Pipe Methods', () => {
   const sandbox: SinonSandbox = sinon.createSandbox();
+  const service = new ItemService();
 
-  const client: DrinoInstance = drino.create({
-    baseUrl: 'http://localhost:8080/item'
+  let instance: DrinoInstance;
+
+  beforeEach(() => {
+    instance = drino.create({
+      baseUrl: 'http://localhost:8080/item'
+    });
   });
-
-  const service = new DrinoService();
 
   afterEach(() => {
     sandbox.restore();
@@ -22,7 +25,7 @@ describe('Drino - Pipe Methods', () => {
   describe('transform', () => {
 
     it('should transform result', async () => {
-      const result = await client
+      const result = await instance
         .get<TestItem>('/1')
         .transform(res => res.name)
         .consume();
@@ -38,7 +41,7 @@ describe('Drino - Pipe Methods', () => {
 
       const spy: SinonSpy = sandbox.spy(checkFn);
 
-      const requestCtrl = client
+      const requestCtrl = instance
         .get<TestItem>('/1')
         .check((result) => spy(result.name));
 
@@ -58,8 +61,8 @@ describe('Drino - Pipe Methods', () => {
 
       const spy: SinonSpy = sandbox.spy(reportFn);
 
-      const requestCtrl = client
-        .get('/error/401')
+      const requestCtrl = instance
+        .get('/404')
         .report((error) => spy(error));
 
       expectToBeCalled(spy, 0);
@@ -81,7 +84,7 @@ describe('Drino - Pipe Methods', () => {
 
       const spy: SinonSpy = sandbox.spy(finalizeFn);
 
-      const requestCtrl = client.get('/1')
+      const requestCtrl = instance.get('/1')
         .finalize(() => spy());
 
       expectToBeCalled(spy, 0);

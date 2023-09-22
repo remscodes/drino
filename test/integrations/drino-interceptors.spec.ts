@@ -2,7 +2,7 @@ import type { SinonSandbox, SinonSpy } from 'sinon';
 import sinon from 'sinon';
 import type { DrinoInstance, HttpErrorResponse, HttpRequest, RequestController } from '../../src';
 import drino from '../../src';
-import type { TestItem } from '../fixtures/drino.service';
+import type { TestItem } from '../fixtures/services/item-service';
 import { expectEqual, expectToBeCalled, expectToBeCalledWith } from '../fixtures/utils/expect-util';
 
 describe('Drino - Interceptors', () => {
