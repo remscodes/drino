@@ -15,6 +15,7 @@ export interface RetryConfig {
   useRetryAfter?: boolean;
   /**
    * Specify the time to wait before retry.
+   *
    * Work only if `useRetryAfter` is `false` or if "Retry-After" response header is not present.
    * @default 100ms
    */
@@ -23,18 +24,22 @@ export interface RetryConfig {
    * HTTP response status code to filter which request should be retried on failure.
    * @default [408, 429, 503, 504]
    */
-  onStatusCodes?: OnStatusCodes;
+  onStatus?: OnStatusCodes;
   /**
    * Http method to filter which request should be retried on failure.
    * @default "*"
    */
-  onMethods?: RequestMethodType[] | '*';
+  onMethods?: OnMethods;
 }
 
 export type OnStatusCodes =
   | number[]
   | NumberRange
   | NumberRange[]
+
+export type OnMethods =
+  | RequestMethodType[]
+  | '*'
 
 export interface RetryArgs {
   count: number;

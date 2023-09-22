@@ -34,7 +34,7 @@ export interface RequestConfig<
    * Wrap response body into a specific Object.
    *
    * - 'response' : HttpResponse
-   * - 'none' : nothing
+   * - 'none' : no wrapper
    *
    * @default 'none'
    */

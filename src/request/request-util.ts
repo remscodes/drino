@@ -20,7 +20,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
         max: defaultMax = defaultRetry.max,
         useRetryAfter: defaultUseRetryAfter = defaultRetry.useRetryAfter,
         intervalMs: defaultIntervalMs = defaultRetry.intervalMs,
-        onStatusCodes: defaultOnStatusCodes = defaultRetry.onStatusCodes,
+        onStatus: defaultOnStatus = defaultRetry.onStatus,
         onMethods: defaultOnMethods = defaultRetry.onMethods
       } = {}
     } = {}
@@ -38,7 +38,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       max,
       useRetryAfter,
       intervalMs,
-      onStatusCodes
+      onStatus
     } = {}
   } = requestConfig;
 
@@ -54,7 +54,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       max: max ?? defaultMax,
       useRetryAfter: useRetryAfter ?? defaultUseRetryAfter,
       intervalMs: intervalMs ?? defaultIntervalMs,
-      onStatusCodes: onStatusCodes ?? defaultOnStatusCodes,
+      onStatus: onStatus ?? defaultOnStatus,
       onMethods: defaultOnMethods
     },
     signal: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))

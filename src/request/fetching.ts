@@ -1,19 +1,23 @@
 import { emitError } from 'thror';
 import type { RetryConfig } from '../features';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
+import { RetryController } from '../features/retry/retry-controller';
+import { needRetry } from '../features/retry/retry-util';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
 import { convertBody } from '../response/response-util';
 import { inferContentType } from '../utils/headers-util';
 import type { HttpRequest } from './http-request';
+import type { Observer } from './models/request-controller.model';
 
 export interface FetchTools {
   signal: AbortSignal;
   interceptors: Interceptors;
   retry: Required<RetryConfig>;
+  retryCb?: Observer<unknown>['retry'];
 }
 
-export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTools): Promise<T> {
+export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTools, retried: number = 0): Promise<T> {
   const fetchResponse: Response = await performFetch(request, tools);
 
   tools.interceptors.afterConsume(request, fetchResponse);
@@ -22,6 +26,12 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
 
   if (!ok) {
     const error = await fetchResponse.text();
+
+    if (needRetry(tools.retry, status, request.method, retried)) {
+      tools.retryCb?.({ error, count: retried + 1, rc: new RetryController() });
+      return performHttpRequest(request, tools, retried + 1);
+    }
+
     const errorResponse: HttpErrorResponse = new HttpErrorResponse({
       error,
       headers,
