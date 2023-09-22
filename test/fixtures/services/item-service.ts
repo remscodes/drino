@@ -2,8 +2,8 @@ import type { DrinoInstance, HttpResponse, RequestController } from '../../../sr
 import drino from '../../../src';
 
 export interface TestItem {
-  id?: number;
-  name?: string;
+  id: number;
+  name: string;
 }
 
 export class ItemService {

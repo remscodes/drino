@@ -39,7 +39,7 @@ describe('Drino - Pipe Methods', () => {
     it('should call check callback', async () => {
       function checkFn(_name: string) {}
 
-      const spy: SinonSpy = sandbox.spy(checkFn);
+      const spy: SinonSpy<[name: string], void> = sandbox.spy(checkFn);
 
       const requestCtrl = instance
         .get<TestItem>('/1')
@@ -59,7 +59,7 @@ describe('Drino - Pipe Methods', () => {
     it('should call report callback', async () => {
       function reportFn(_error: any) {}
 
-      const spy: SinonSpy = sandbox.spy(reportFn);
+      const spy: SinonSpy<[error: any], void> = sandbox.spy(reportFn);
 
       const requestCtrl = instance
         .get('/404')
@@ -82,7 +82,7 @@ describe('Drino - Pipe Methods', () => {
     it('should call final callback', async () => {
       function finalizeFn() {}
 
-      const spy: SinonSpy = sandbox.spy(finalizeFn);
+      const spy: SinonSpy<[], void> = sandbox.spy(finalizeFn);
 
       const requestCtrl = instance.get('/1')
         .finalize(() => spy());

@@ -1,4 +1,4 @@
-import type { SinonSandbox, SinonSpy } from 'sinon';
+import type { SinonSandbox, SinonSpy, SinonSpyStatic } from 'sinon';
 import sinon from 'sinon';
 import type { DrinoInstance, HttpErrorResponse, HttpRequest, RequestController } from '../../src';
 import drino from '../../src';
@@ -43,7 +43,7 @@ describe('Drino - Interceptors', () => {
     it('should call function after consume', (done: Mocha.Done) => {
       function handle(_request: HttpRequest): void {}
 
-      const spy: SinonSpy = sandbox.spy(handle);
+      const spy: SinonSpy<[request: HttpRequest], void> = sandbox.spy(handle);
 
       instance.default.interceptors.afterConsume = (request: HttpRequest) => {
         spy(request);
@@ -63,7 +63,7 @@ describe('Drino - Interceptors', () => {
     it('should call function before result', (done: Mocha.Done) => {
       function handle(_result: unknown): void {}
 
-      const spy: SinonSpy = sandbox.spy(handle);
+      const spy: SinonSpy<[result: unknown], void> = sandbox.spy(handle);
 
       instance.default.interceptors.beforeResult = (result: any) => {
         spy(result);
@@ -83,7 +83,7 @@ describe('Drino - Interceptors', () => {
     it('should call function before error', (done: Mocha.Done) => {
       function handleError(_errorResponse: HttpErrorResponse): void {}
 
-      const spy: SinonSpy = sandbox.spy(handleError);
+      const spy: SinonSpy<[errorResponse: HttpErrorResponse], void> = sandbox.spy(handleError);
 
       instance.default.interceptors.beforeError = (errorResponse: HttpErrorResponse) => {
         spy(errorResponse);
@@ -103,7 +103,7 @@ describe('Drino - Interceptors', () => {
     it('should call function before finish', (done: Mocha.Done) => {
       function handle(): void {}
 
-      const spy: SinonSpy = sandbox.spy(handle);
+      const spy: SinonSpy<[], void> = sandbox.spy(handle);
 
       instance.default.interceptors.beforeFinish = () => {
         spy();

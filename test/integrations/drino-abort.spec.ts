@@ -44,7 +44,7 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort with timeout', (done: Mocha.Done) => {
-    service['client'].head('/408/3000', { timeoutMs: 100 }).consume()
+    drino.head('http://localhost:8080/error/408/3000', { timeoutMs: 100 }).consume()
       .catch((err: any) => {
           expectEqual(err.name, 'TimeoutError');
           done();

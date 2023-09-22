@@ -4,11 +4,9 @@ import { ItemService } from '../fixtures/services/item-service';
 import { expectEqual, expectProperty, expectType } from '../fixtures/utils/expect-util';
 
 describe('Drino - Requests', () => {
-
   const service: ItemService = new ItemService();
 
   describe('GET', () => {
-
     const id: number = 1;
 
     it('should retrieve result from Observer', (done: Mocha.Done) => {

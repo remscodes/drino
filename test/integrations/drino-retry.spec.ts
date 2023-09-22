@@ -3,7 +3,6 @@ import drino from '../../src';
 import { expectEqual } from '../fixtures/utils/expect-util';
 
 describe('Drino - Retry', () => {
-
   let instance: DrinoInstance;
 
   beforeEach(() => {
@@ -38,9 +37,7 @@ describe('Drino - Retry', () => {
         // console.log(error);
         // console.log(`Failed. Will retry for the ${count} time(s)`);
       },
-      error: (e) => {
-        // console.log(e);
-      },
+      // error: (e) => console.log(e),
       finish: () => {
         expectEqual(finalCount, 3);
         done();
