@@ -1,10 +1,8 @@
 import type { HeadersType } from '../models/http.model';
+import { mergeMapsLike } from './map-util';
 
 export function mergeHeaders(...manyHeaders: HeadersType[]): Headers {
-  return manyHeaders.reduce((finalHeaders: Headers, headers: HeadersType) => {
-    new Headers(headers).forEach((value: string, key: string) => finalHeaders.set(key, value));
-    return finalHeaders;
-  }, new Headers());
+  return mergeMapsLike(Headers, ...manyHeaders);
 }
 
 export function inferContentType(body: unknown): string {

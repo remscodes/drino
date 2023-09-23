@@ -46,7 +46,8 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
   const isHeadOrOptions: boolean = (request.method === 'HEAD' || request.method === 'OPTIONS');
 
   try {
-    const body = (isHeadOrOptions) ? headers : await convertBody<T>(fetchResponse, request.read);
+    const body = (isHeadOrOptions) ? headers
+      : await convertBody<T>(fetchResponse, request.read);
 
     const result = (request.wrapper === 'response')
       ? new HttpResponse<UnwrapHttpResponse<T>>({

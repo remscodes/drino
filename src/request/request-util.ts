@@ -1,4 +1,5 @@
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
+import { defaultTimeout } from '../features/abort/abort.constants';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
 import { defaultRetry } from '../features/retry/retry.constants';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
@@ -7,22 +8,23 @@ import { mergeQueryParams } from '../utils/params-util';
 import { createUrl } from '../utils/url-util';
 import type { RequestConfig } from './models';
 import type { RequestControllerConfig } from './models/request-config.model';
+import { defaultBaseUrl, defaultPrefix, defaultRead, defaultWrapper } from './request.constants';
 
 export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): RequestControllerConfig {
   const {
-    baseUrl = 'http://localhost',
-    interceptors: defaultInterceptors = {},
+    baseUrl = defaultBaseUrl,
+    interceptors: instanceInterceptors = {},
     requestsConfig: {
-      prefix: defaultPrefix = '/',
-      headers: defaultHeaders = {},
-      queryParams: defaultQueryParams = {},
-      timeoutMs: defaultTimeoutMs = 0,
+      prefix: instancePrefix = defaultPrefix,
+      headers: instanceHeaders = {},
+      queryParams: instanceQueryParams = {},
+      timeoutMs: instanceTimeoutMs = defaultTimeout,
       retry: {
-        max: defaultMax = defaultRetry.max,
-        useRetryAfter: defaultUseRetryAfter = defaultRetry.useRetryAfter,
-        intervalMs: defaultIntervalMs = defaultRetry.intervalMs,
-        onStatus: defaultOnStatus = defaultRetry.onStatus,
-        onMethods: defaultOnMethods = defaultRetry.onMethods
+        max: instanceMax = defaultRetry.max,
+        useRetryAfter: instanceUseRetryAfter = defaultRetry.useRetryAfter,
+        intervalMs: instanceIntervalMs = defaultRetry.intervalMs,
+        onStatus: instanceOnStatus = defaultRetry.onStatus,
+        onMethods: instanceOnMethods = defaultRetry.onMethods
       } = {}
     } = {}
   } = defaultConfig;
@@ -31,8 +33,8 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     prefix,
     headers = {},
     queryParams = {},
-    read = 'object',
-    wrapper = 'none',
+    read = defaultRead,
+    wrapper = defaultWrapper,
     timeoutMs,
     signal = defaultSignal(),
     retry: {
@@ -47,23 +49,23 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     signal: mergedSignal,
     abortCtrl: mergedAbortCtrl
   } = (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
-    : (defaultTimeoutMs) ? mergeSignals(signal, timedSignal(defaultTimeoutMs))
+    : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))
       : mergeSignals(signal);
 
   return {
     baseUrl: createUrl(baseUrl),
-    prefix: prefix || defaultPrefix,
-    headers: mergeHeaders(defaultHeaders, headers),
-    queryParams: mergeQueryParams(defaultQueryParams, queryParams),
+    prefix: prefix || instancePrefix,
+    headers: mergeHeaders(instanceHeaders, headers),
+    queryParams: mergeQueryParams(instanceQueryParams, queryParams),
     read,
     wrapper,
-    interceptors: initInterceptors(defaultInterceptors),
+    interceptors: initInterceptors(instanceInterceptors),
     retry: {
-      max: max ?? defaultMax,
-      useRetryAfter: useRetryAfter ?? defaultUseRetryAfter,
-      intervalMs: intervalMs ?? defaultIntervalMs,
-      onStatus: onStatus ?? defaultOnStatus,
-      onMethods: defaultOnMethods
+      max: max ?? instanceMax,
+      useRetryAfter: useRetryAfter ?? instanceUseRetryAfter,
+      intervalMs: intervalMs ?? instanceIntervalMs,
+      onStatus: onStatus ?? instanceOnStatus,
+      onMethods: instanceOnMethods
     },
     signal: mergedSignal,
     abortCtrl: mergedAbortCtrl

@@ -1,4 +1,4 @@
-import type { SinonSandbox, SinonSpy, SinonSpyStatic } from 'sinon';
+import type { SinonSandbox, SinonSpy } from 'sinon';
 import sinon from 'sinon';
 import type { DrinoInstance, HttpErrorResponse, HttpRequest, RequestController } from '../../src';
 import drino from '../../src';

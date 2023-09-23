@@ -13,7 +13,8 @@ export function needRetry(retryConfig: Required<RetryConfig>, status: number, me
 function isStatusIncluded(onStatus: OnStatusCodes, status: number): boolean {
   if (isNumberRange(onStatus)) {
     const { start, end }: NumberRange = onStatus;
-    return (start <= status) && (status <= end);
+    return (start <= status)
+      && (status <= end);
   }
 
   if (!onStatus.length) return false;

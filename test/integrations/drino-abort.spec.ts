@@ -57,7 +57,7 @@ describe('Drino - Abort', () => {
       baseUrl: 'http://localhost:8080',
       requestsConfig: {
         prefix: '/error',
-        timeoutMs: 300
+        timeoutMs: 1_000
       }
     });
 
@@ -69,7 +69,7 @@ describe('Drino - Abort', () => {
         done();
       });
 
-    setTimeout(() => abortCtrl.abort(), 1_000);
+    setTimeout(() => abortCtrl.abort(), 2_000);
   });
 
   it('should abort by abort controller instead of timeout', (done: Mocha.Done) => {

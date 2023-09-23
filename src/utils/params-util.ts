@@ -1,8 +1,6 @@
 import type { QueryParamsType } from '../models/http.model';
+import { mergeMapsLike } from './map-util';
 
 export function mergeQueryParams(...manyQueryParams: QueryParamsType[]): URLSearchParams {
-  return manyQueryParams.reduce((finalQueryParams: URLSearchParams, queryParams: QueryParamsType) => {
-    new URLSearchParams(queryParams).forEach((value: string, key: string) => finalQueryParams.set(key, value));
-    return finalQueryParams;
-  }, new URLSearchParams());
+  return mergeMapsLike(URLSearchParams, ...manyQueryParams);
 }

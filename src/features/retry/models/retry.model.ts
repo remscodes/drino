@@ -16,7 +16,7 @@ export interface RetryConfig {
    * Specify the time to wait before retry.
    *
    * Work only if `useRetryAfter` is `false` or if "Retry-After" response header is not present.
-   * @default 0ms
+   * @default 0
    */
   intervalMs?: number;
   /**

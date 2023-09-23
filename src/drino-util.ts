@@ -1,19 +1,21 @@
 import type { RetryConfig } from './features';
+import { defaultTimeout } from './features/abort/abort.constants';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
 import { defaultRetry } from './features/retry/retry.constants';
 import type { DrinoDefaultConfig, DrinoDefaultConfigInit, DrinoDefaultRequestsConfig, DrinoRequestsConfigInit } from './models/drino.model';
+import { defaultBaseUrl, defaultPrefix } from './request/request.constants';
 import { mergeHeaders } from './utils/headers-util';
 import { mergeQueryParams } from './utils/params-util';
 
 export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, parentDefaultConfig?: DrinoDefaultConfig): DrinoDefaultConfig {
   const {
-    baseUrl: parentBaseUrl = 'http://localhost',
+    baseUrl: parentBaseUrl = defaultBaseUrl,
     interceptors: parentInterceptors = {},
     requestsConfig: {
-      prefix: parentPrefix = '/',
+      prefix: parentPrefix = defaultPrefix,
       headers: parentHeaders = {},
       queryParams: parentQueryParams = {},
-      timeoutMs: parentTimeoutMs = 0,
+      timeoutMs: parentTimeoutMs = defaultTimeout,
       retry: {
         max: parentMax = defaultRetry.max,
         useRetryAfter: parentUseRetryAfter = defaultRetry.useRetryAfter,
