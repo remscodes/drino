@@ -16,7 +16,7 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort with controller and retrieve reason from Observer', (done: Mocha.Done) => {
-    service.get408(3_000, signal).consume({
+    service.get408(3000, signal).consume({
       result: () => {
         done('Test failed');
       },
@@ -30,7 +30,7 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort with controller and retrieve reason from Promise', (done: Mocha.Done) => {
-    service.get408(3_000, signal).consume()
+    service.get408(3000, signal).consume()
       .then(() => done('Test Failed'))
       .catch((err: any) => {
         if (!signal.aborted) return done('Test Failed');
@@ -57,7 +57,7 @@ describe('Drino - Abort', () => {
       baseUrl: 'http://localhost:8080',
       requestsConfig: {
         prefix: '/error',
-        timeoutMs: 1_000
+        timeoutMs: 1000
       }
     });
 
@@ -69,14 +69,14 @@ describe('Drino - Abort', () => {
         done();
       });
 
-    setTimeout(() => abortCtrl.abort(), 2_000);
+    setTimeout(() => abortCtrl.abort(), 2000);
   });
 
   it('should abort by abort controller instead of timeout', (done: Mocha.Done) => {
     const abortCtrl: AbortController = new AbortController();
 
     drino.head('http://localhost:8080/error/408/3000', {
-      timeoutMs: 1_000,
+      timeoutMs: 1000,
       signal: abortCtrl.signal
     }).consume().catch((err: any) => {
         expectEqual(err.name, 'AbortError');
