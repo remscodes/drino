@@ -73,4 +73,5 @@ export interface RequestControllerConfig extends Required<Omit<RequestConfig<any
   queryParams: URLSearchParams;
   interceptors: Interceptors;
   retry: Required<RetryConfig>;
+  abortCtrl: AbortController;
 }

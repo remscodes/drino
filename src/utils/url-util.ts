@@ -1,5 +1,6 @@
 import { emitError } from 'thror';
 import type { Url } from '../models/http.model';
+import type { Prefix } from '../models/shared.model';
 import type { RequestControllerConfig } from '../request/models/request-config.model';
 
 interface BuildUrlArgs extends Pick<RequestControllerConfig, 'baseUrl' | 'prefix' | 'queryParams'> {
@@ -11,7 +12,7 @@ export function buildUrl(args: BuildUrlArgs): URL {
     baseUrl,
     prefix,
     url,
-    queryParams = {}
+    queryParams
   } = args;
 
   let finalUrl: URL;
@@ -28,7 +29,7 @@ export function buildUrl(args: BuildUrlArgs): URL {
     buildPathname(finalUrl, `${prefix}/${url}`);
   }
 
-  new URLSearchParams(queryParams).forEach((value: string, key: string) => {
+  queryParams.forEach((value: string, key: string) => {
     finalUrl.searchParams.set(key, value);
   });
 
@@ -39,7 +40,7 @@ function buildPathname(finalUrl: URL, postPathname: Url): void {
   finalUrl.pathname = `${finalUrl.pathname}/${postPathname}`.replace(/\/{2,}/g, '/');
 }
 
-function createUrl(url: Url | string): URL {
+export function createUrl(url: Url): URL {
   try {
     return new URL(url);
   }
@@ -51,7 +52,7 @@ function createUrl(url: Url | string): URL {
   }
 }
 
-function hasOrigin(url: Url): boolean {
+function hasOrigin(url: Url): url is URL | Prefix<string, `http${'s' | ''}://`> {
   if (url instanceof URL) return true;
   return !!url.match(/http(s)?:\/\/[a-z0-9.]+(:\d{0,5})?/)?.length;
 }

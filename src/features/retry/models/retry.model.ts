@@ -1,6 +1,5 @@
 import type { RequestMethodType } from '../../../models/http.model';
 import type { NumberRange } from '../../../models/shared.model';
-import type { RetryController } from '../retry-controller';
 
 export interface RetryConfig {
   /**
@@ -17,7 +16,7 @@ export interface RetryConfig {
    * Specify the time to wait before retry.
    *
    * Work only if `useRetryAfter` is `false` or if "Retry-After" response header is not present.
-   * @default 100ms
+   * @default 0ms
    */
   intervalMs?: number;
   /**
@@ -42,7 +41,18 @@ export type OnMethods =
   | '*'
 
 export interface RetryArgs {
+  /**
+   * Current retry count.
+   */
   count: number;
+  /**
+   * Error which causes the retry.
+   */
   error: any;
-  rc: RetryController;
+  /**
+   * Function to abort retrying.
+   */
+  abort: RetryAbortFn;
 }
+
+type RetryAbortFn = (reason?: any) => void;

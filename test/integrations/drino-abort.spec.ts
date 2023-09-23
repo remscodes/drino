@@ -44,7 +44,7 @@ describe('Drino - Abort', () => {
   });
 
   it('should abort with timeout', (done: Mocha.Done) => {
-    drino.head('http://localhost:8080/error/408/3000', { timeoutMs: 100 }).consume()
+    drino.head('http://localhost:8080/error/408/3000', { timeoutMs: 300 }).consume()
       .catch((err: any) => {
           expectEqual(err.name, 'TimeoutError');
           done();
@@ -57,7 +57,7 @@ describe('Drino - Abort', () => {
       baseUrl: 'http://localhost:8080',
       requestsConfig: {
         prefix: '/error',
-        timeoutMs: 100
+        timeoutMs: 300
       }
     });
 
@@ -84,6 +84,6 @@ describe('Drino - Abort', () => {
       }
     );
 
-    setTimeout(() => abortCtrl.abort(), 100);
+    setTimeout(() => abortCtrl.abort(), 300);
   });
 });

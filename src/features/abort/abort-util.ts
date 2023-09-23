@@ -1,4 +1,5 @@
 import { createError } from 'thror';
+import type { AbortTools } from './models/abort.model';
 
 export function defaultSignal(): AbortSignal {
   return new AbortController().signal;
@@ -10,20 +11,20 @@ export function timedSignal(timeoutMs: number): AbortSignal {
   return signal;
 }
 
-export function mergeSignals(...signals: AbortSignal[]): AbortSignal {
+export function mergeSignals(...signals: AbortSignal[]): AbortTools {
   const abortCtrl: AbortController = new AbortController();
 
   for (const signal of signals) {
     if (signal.aborted) {
       checkSignalAndAbort(signal, abortCtrl);
-      return signal;
+      return { signal, abortCtrl };
     }
     signal.addEventListener('abort', function (_ev: Event) {
       checkSignalAndAbort(this, abortCtrl);
     }, { once: true, signal: abortCtrl.signal });
   }
 
-  return abortCtrl.signal;
+  return { signal: abortCtrl.signal, abortCtrl };
 }
 
 function checkSignalAndAbort(signal: AbortSignal, abortCtrl: AbortController): void {

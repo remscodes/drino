@@ -1,7 +1,6 @@
 import { emitError } from 'thror';
 import type { RetryConfig } from '../features';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
-import { RetryController } from '../features/retry/retry-controller';
 import { needRetry } from '../features/retry/retry-util';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
@@ -12,6 +11,7 @@ import type { Observer } from './models/request-controller.model';
 
 export interface FetchTools {
   signal: AbortSignal;
+  abortCtrl: AbortController;
   interceptors: Interceptors;
   retry: Required<RetryConfig>;
   retryCb?: Observer<unknown>['retry'];
@@ -27,8 +27,8 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
   if (!ok) {
     const error = await fetchResponse.text();
 
-    if (needRetry(tools.retry, status, request.method, retried)) {
-      tools.retryCb?.({ error, count: retried + 1, rc: new RetryController() });
+    if (needRetry(tools.retry, status, request.method, retried, tools.abortCtrl)) {
+      tools.retryCb?.({ error, count: retried + 1, abort: (reason?: any) => tools.abortCtrl.abort(reason) });
       return performHttpRequest(request, tools, retried + 1);
     }
 

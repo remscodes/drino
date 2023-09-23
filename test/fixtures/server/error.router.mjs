@@ -3,6 +3,7 @@ import { setTimeout } from "node:timers";
 
 export const errorRouter = Router()
   .get('/401', handle401)
+  .post('/401', handle401)
   .get('/408/:timeout', handle408Timeout)
   .get('/503', handle503)
   .get('/504', handle504);

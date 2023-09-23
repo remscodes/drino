@@ -4,6 +4,7 @@ import { defaultRetry } from '../features/retry/retry.constants';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
+import { createUrl } from '../utils/url-util';
 import type { RequestConfig } from './models';
 import type { RequestControllerConfig } from './models/request-config.model';
 
@@ -42,8 +43,15 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     } = {}
   } = requestConfig;
 
+  const {
+    signal: mergedSignal,
+    abortCtrl: mergedAbortCtrl
+  } = (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
+    : (defaultTimeoutMs) ? mergeSignals(signal, timedSignal(defaultTimeoutMs))
+      : mergeSignals(signal);
+
   return {
-    baseUrl: new URL(baseUrl),
+    baseUrl: createUrl(baseUrl),
     prefix: prefix || defaultPrefix,
     headers: mergeHeaders(defaultHeaders, headers),
     queryParams: mergeQueryParams(defaultQueryParams, queryParams),
@@ -57,8 +65,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       onStatus: onStatus ?? defaultOnStatus,
       onMethods: defaultOnMethods
     },
-    signal: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
-      : (defaultTimeoutMs) ? mergeSignals(signal, timedSignal(defaultTimeoutMs))
-        : signal
+    signal: mergedSignal,
+    abortCtrl: mergedAbortCtrl
   };
 }
