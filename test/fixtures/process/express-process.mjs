@@ -1,13 +1,3 @@
-import { spawn } from 'node:child_process';
+import { spawnCommand } from './process-util.mjs';
 
-spawn(
-  'npm',
-  ['run', 'start-server'],
-  {
-    stdio: [
-      'inherit', // Input channel
-      'inherit', // Output channel
-      'inherit' // Error channel
-    ]
-  }
-);
+spawnCommand('npm', ['run', 'start-server']);

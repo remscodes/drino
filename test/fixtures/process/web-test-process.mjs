@@ -1,15 +1,6 @@
-import { spawn } from 'node:child_process';
+import { spawnCommand } from './process-util.mjs';
 
-spawn(
-  'npm',
-  ['run', 'start-web-runner'],
-  {
-    stdio: [
-      'inherit', // Input channel
-      'inherit', // Output channel
-      'inherit' // Error channel
-    ]
-  }
-).once('close', (code, _signal) => {
-  process.exit(code);
-});
+spawnCommand('npm', ['run', 'start-web-runner'])
+  .once('close', (code, _signal) => {
+    process.exit(code);
+  });
