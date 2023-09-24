@@ -1,17 +1,18 @@
 import { emitError } from 'thror';
 import type { RetryConfig } from '../features';
+import type { AbortTools } from '../features/abort/models/abort.model';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
 import { needRetry } from '../features/retry/retry-util';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
 import { convertBody } from '../response/response-util';
-import { inferContentType } from '../utils/headers-util';
+import { getRetryAfter, inferContentType } from '../utils/headers-util';
+import { sleep } from '../utils/promise-util';
 import type { HttpRequest } from './http-request';
 import type { Observer } from './models/request-controller.model';
 
 export interface FetchTools {
-  signal: AbortSignal;
-  abortCtrl: AbortController;
+  abortTools: AbortTools;
   interceptors: Interceptors;
   retry: Required<RetryConfig>;
   retryCb?: Observer<unknown>['retry'];
@@ -25,11 +26,25 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
   const { headers, status, statusText, ok, url } = fetchResponse;
 
   if (!ok) {
-    const error = await fetchResponse.text();
+    const error: string = headers.get('content-type')?.includes('application/json')
+      ? await fetchResponse.json()
+      : await fetchResponse.text();
 
-    if (needRetry(tools.retry, status, request.method, retried, tools.abortCtrl)) {
-      tools.retryCb?.({ error, count: retried + 1, abort: (reason?: any) => tools.abortCtrl.abort(reason) });
-      return performHttpRequest(request, tools, retried + 1);
+    if (needRetry(tools.retry, status, request.method, retried, tools.abortTools.abortCtrl)) {
+
+      const delay: number = (tools.retry.withRetryAfter && getRetryAfter(headers)) || tools.retry.withDelayMs;
+      if (delay) await sleep(delay);
+
+      retried ++;
+
+      tools.retryCb?.({
+        abort: (reason?: any) => tools.abortTools.abortCtrl.abort(reason),
+        count: retried,
+        delay,
+        error
+      });
+
+      return performHttpRequest(request, tools, retried);
     }
 
     const errorResponse: HttpErrorResponse = new HttpErrorResponse({
@@ -49,8 +64,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
     const body = (isHeadOrOptions) ? headers
       : await convertBody<T>(fetchResponse, request.read);
 
-    const result = (request.wrapper === 'response')
-      ? new HttpResponse<UnwrapHttpResponse<T>>({
+    const result = (request.wrapper === 'response') ? new HttpResponse<UnwrapHttpResponse<T>>({
         body: (isHeadOrOptions) ? undefined : body,
         headers,
         status,
@@ -83,6 +97,6 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
     method,
     headers,
     body: (body !== undefined && body !== null) ? JSON.stringify(body) : undefined,
-    signal: tools.signal
+    signal: tools.abortTools.signal
   });
 }

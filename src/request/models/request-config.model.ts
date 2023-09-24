@@ -1,4 +1,5 @@
 import type { RetryConfig } from '../../features';
+import type { AbortTools } from '../../features/abort/models/abort.model';
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
@@ -67,11 +68,11 @@ export type WrapperType =
   | 'none'
   | 'response'
 
-export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeoutMs' | 'retry'>> {
+export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeoutMs' | 'retry' | 'signal'>> {
   baseUrl: URL;
   headers: Headers;
   queryParams: URLSearchParams;
   interceptors: Interceptors;
   retry: Required<RetryConfig>;
-  abortCtrl: AbortController;
+  abortTools: AbortTools;
 }

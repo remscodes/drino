@@ -85,8 +85,7 @@ export class RequestController<Resource> {
     this.config.interceptors.beforeConsume(this.request);
 
     const tools: FetchTools = {
-      signal: this.config.signal,
-      abortCtrl: this.config.abortCtrl,
+      abortTools: this.config.abortTools,
       interceptors: this.config.interceptors,
       retry: this.config.retry,
       retryCb: observer?.retry
@@ -122,7 +121,7 @@ export class RequestController<Resource> {
         }
       })
       .catch((err: any) => {
-        if (this.config.signal.aborted) return observer.abort?.(this.config.signal.reason);
+        if (this.config.abortTools.signal.aborted) return observer.abort?.(this.config.abortTools.signal.reason);
         observer.error?.(err);
       })
       .finally(() => {
@@ -132,8 +131,8 @@ export class RequestController<Resource> {
   }
 
   private catchable(thrown: any): Promise<any> {
-    const error: any = (this.config.signal.aborted) ?
-      (this.config.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
+    const error: any = (this.config.abortTools.signal.aborted) ?
+      (this.config.abortTools.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)
       : thrown;
 

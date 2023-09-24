@@ -18,8 +18,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       timeoutMs: parentTimeoutMs = defaultTimeout,
       retry: {
         max: parentMax = defaultRetry.max,
-        useRetryAfter: parentUseRetryAfter = defaultRetry.useRetryAfter,
-        intervalMs: parentIntervalMs = defaultRetry.intervalMs,
+        withRetryAfter: parentWithRetryAfter = defaultRetry.withRetryAfter,
+        withDelayMs: parentDelayMs = defaultRetry.withDelayMs,
         onStatus: parentOnStatus = defaultRetry.onStatus,
         onMethods: parentOnMethods = defaultRetry.onMethods
       } = {} as Required<RetryConfig>
@@ -36,8 +36,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       timeoutMs,
       retry: {
         max,
-        useRetryAfter,
-        intervalMs,
+        withRetryAfter,
+        withDelayMs,
         onStatus,
         onMethods
       } = {} as RetryConfig
@@ -54,8 +54,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       timeoutMs: timeoutMs ?? parentTimeoutMs,
       retry: {
         max: max ?? parentMax,
-        useRetryAfter: useRetryAfter ?? parentUseRetryAfter,
-        intervalMs: intervalMs ?? parentIntervalMs,
+        withRetryAfter: withRetryAfter ?? parentWithRetryAfter,
+        withDelayMs: withDelayMs ?? parentDelayMs,
         onStatus: onStatus ?? parentOnStatus,
         onMethods: onMethods ?? parentOnMethods
       }

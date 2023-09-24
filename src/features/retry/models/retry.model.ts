@@ -3,22 +3,22 @@ import type { NumberRange } from '../../../models/shared.model';
 
 export interface RetryConfig {
   /**
-   * Max retry to do on failed request.
+   * Maximum retries to do on failed request.
    * @default 0
    */
   max: number;
   /**
-   * Use the "Retry-After" response Header to know how much time it wait before retry.
+   * Use the "Retry-After" response Header to know how much time it waits before retry.
    * @default true
    */
-  useRetryAfter?: boolean;
+  withRetryAfter?: boolean;
   /**
-   * Specify the time to wait before retry.
+   * Specify the time in millisecond to wait before retry.
    *
-   * Work only if `useRetryAfter` is `false` or if "Retry-After" response header is not present.
+   * Work only if `withRetryAfter` is `false` or if "Retry-After" response header is not present.
    * @default 0
    */
-  intervalMs?: number;
+  withDelayMs?: number;
   /**
    * HTTP response status code to filter which request should be retried on failure.
    * @default [408, 429, 503, 504]
@@ -53,6 +53,10 @@ export interface RetryArgs {
    * Function to abort retrying.
    */
   abort: RetryAbortFn;
+  /**
+   * Current retry delay.
+   */
+  delay: number;
 }
 
 type RetryAbortFn = (reason?: any) => void;

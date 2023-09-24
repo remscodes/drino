@@ -5,12 +5,12 @@ import type { OnMethods, OnStatusCodes } from './models/retry.model';
 
 export function needRetry(retryConfig: Required<RetryConfig>, status: number, method: RequestMethodType, retried: number, abortCtrl: AbortController): boolean {
   return (retried < retryConfig.max)
-    && isStatusIncluded(retryConfig.onStatus, status)
-    && isMethodIncluded(retryConfig.onMethods, method)
+    && matchStatus(retryConfig.onStatus, status)
+    && matchMethod(retryConfig.onMethods, method)
     && !abortCtrl.signal.aborted;
 }
 
-function isStatusIncluded(onStatus: OnStatusCodes, status: number): boolean {
+function matchStatus(onStatus: OnStatusCodes, status: number): boolean {
   if (isNumberRange(onStatus)) {
     const { start, end }: NumberRange = onStatus;
     return (start <= status)
@@ -26,7 +26,7 @@ function isStatusIncluded(onStatus: OnStatusCodes, status: number): boolean {
   return onStatus.includes(status);
 }
 
-function isMethodIncluded(onMethods: OnMethods, method: RequestMethodType): boolean {
+function matchMethod(onMethods: OnMethods, method: RequestMethodType): boolean {
   return (onMethods === '*')
     || onMethods.includes(method);
 }

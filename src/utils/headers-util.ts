@@ -1,4 +1,5 @@
 import type { HeadersType } from '../models/http.model';
+import type { Nullable } from '../models/shared.model';
 import { mergeMapsLike } from './map-util';
 
 export function mergeHeaders(...manyHeaders: HeadersType[]): Headers {
@@ -10,4 +11,15 @@ export function inferContentType(body: unknown): string {
     : (body instanceof Blob) ? 'application/octet-stream'
       : (typeof body === 'string') ? 'text/plain'
         : 'application/json';
+}
+
+export function getRetryAfter(headers: Headers): number {
+  const retryAfter: Nullable<string> = headers.get('retry-after');
+  if (!retryAfter) return 0;
+
+  if (/^(\d*[.,])?\d+$/.test(retryAfter)) return parseFloat(retryAfter) * 1000;
+
+  const delay: number = new Date(retryAfter).getTime() - Date.now();
+  return (delay > 0) ? delay
+    : 0;
 }

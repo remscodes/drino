@@ -21,8 +21,8 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       timeoutMs: instanceTimeoutMs = defaultTimeout,
       retry: {
         max: instanceMax = defaultRetry.max,
-        useRetryAfter: instanceUseRetryAfter = defaultRetry.useRetryAfter,
-        intervalMs: instanceIntervalMs = defaultRetry.intervalMs,
+        withRetryAfter: instanceWithRetryAfter = defaultRetry.withRetryAfter,
+        withDelayMs: instanceWithDelayMs = defaultRetry.withDelayMs,
         onStatus: instanceOnStatus = defaultRetry.onStatus,
         onMethods: instanceOnMethods = defaultRetry.onMethods
       } = {}
@@ -39,18 +39,11 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     signal = defaultSignal(),
     retry: {
       max,
-      useRetryAfter,
-      intervalMs,
+      withRetryAfter,
+      withDelayMs,
       onStatus
     } = {}
   } = requestConfig;
-
-  const {
-    signal: mergedSignal,
-    abortCtrl: mergedAbortCtrl
-  } = (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
-    : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))
-      : mergeSignals(signal);
 
   return {
     baseUrl: createUrl(baseUrl),
@@ -62,12 +55,13 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     interceptors: initInterceptors(instanceInterceptors),
     retry: {
       max: max ?? instanceMax,
-      useRetryAfter: useRetryAfter ?? instanceUseRetryAfter,
-      intervalMs: intervalMs ?? instanceIntervalMs,
+      withRetryAfter: withRetryAfter ?? instanceWithRetryAfter,
+      withDelayMs: withDelayMs ?? instanceWithDelayMs,
       onStatus: onStatus ?? instanceOnStatus,
       onMethods: instanceOnMethods
     },
-    signal: mergedSignal,
-    abortCtrl: mergedAbortCtrl
+    abortTools: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
+      : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))
+        : mergeSignals(signal)
   };
 }
