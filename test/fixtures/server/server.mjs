@@ -19,7 +19,7 @@ express()
     urlencoded({ extended: true }),
     json(),
     helmet(),
-    cors(),
+    cors({ exposedHeaders: '*' }),
     requestInfo()
   )
   .use('/item', itemRouter)

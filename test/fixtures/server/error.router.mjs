@@ -19,7 +19,10 @@ function handle408Timeout({ params: { timeout: rawTimeout } }, res) {
   }, timeout);
 }
 
-function handle503(_, res) {
+function handle503({ query: { format } }, res) {
+  const delay = (format === 'date') ? new Date(new Date().getTime() + 1000)
+    : 0.3
+  res.append('Retry-After', `${delay}`);
   sendError(res, 503, 'Service Unavailable');
 }
 

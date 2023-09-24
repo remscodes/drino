@@ -5,18 +5,23 @@ import { expectEqual } from '../fixtures/utils/expect-util';
 interface ExpectCountArgs {
   request: RequestController<any>;
   expectedRetry: number;
+  expectedDelayMs: number | ((delay: number) => boolean);
   done: Mocha.Done;
 }
 
 function expectRetry(args: ExpectCountArgs): void {
   let finalCount: number = 0;
+  let finalDelayMs: number = 0;
   args.request.consume({
-    retry: ({ count }: RetryArgs) => {
+    retry: ({ count, delay }: RetryArgs) => {
       finalCount = count;
+      finalDelayMs += delay;
       // console.log(`Failed. Will retry for the ${count} time(s)`);
     },
     finish: () => {
       expectEqual(finalCount, args.expectedRetry);
+      (typeof args.expectedDelayMs === 'number') ? expectEqual(finalDelayMs, args.expectedDelayMs)
+        : expectEqual(args.expectedDelayMs(finalDelayMs), true);
       args.done();
     }
   });
@@ -36,8 +41,9 @@ describe('Drino - Retry', () => {
 
   it('should retry twice by instance default config', (done: Mocha.Done) => {
     expectRetry({
-      request: instance.get('/503'),
+      request: instance.get('/504'),
       expectedRetry: 2,
+      expectedDelayMs: 0,
       done
     });
   });
@@ -46,14 +52,16 @@ describe('Drino - Retry', () => {
     expectRetry({
       request: instance.get('/401'),
       expectedRetry: 0,
+      expectedDelayMs: 0,
       done
     });
   });
 
   it('should override retry config and retry three times', (done: Mocha.Done) => {
     expectRetry({
-      request: instance.get('/503', { retry: { max: 3 } }),
+      request: instance.get('/504', { retry: { max: 3 } }),
       expectedRetry: 3,
+      expectedDelayMs: 0,
       done
     });
   });
@@ -61,7 +69,7 @@ describe('Drino - Retry', () => {
   it('should abort retrying at the second time', (done: Mocha.Done) => {
     let finalCount: number = 0;
 
-    instance.get('/503', {
+    instance.get('/504', {
       retry: { max: 10 }
     }).consume({
       retry: ({ count, abort }: RetryArgs) => {
@@ -75,20 +83,7 @@ describe('Drino - Retry', () => {
     });
   });
 
-  it('should retry on 401 status', (done: Mocha.Done) => {
-    instance.get('/503', { retry: { onStatus: [401], max: 1 } }).consume({
-      retry: ({}: RetryArgs) => done(''),
-      finish: () => {
-        expectRetry({
-          request: instance.get('/401', { retry: { onStatus: [401], max: 1 } }),
-          expectedRetry: 1,
-          done
-        });
-      }
-    });
-  });
-
-  it('should retry only on POST method', (done: Mocha.Done) => {
+  it('should not retry on GET method', (done: Mocha.Done) => {
     const mInstance: DrinoInstance = instance.child({
       requestsConfig: {
         retry: { max: 1, onStatus: [401], onMethods: ['POST'] }
@@ -96,8 +91,36 @@ describe('Drino - Retry', () => {
     });
 
     expectRetry({
-      request: mInstance.post('/401', {}),
+      request: mInstance.get('/401'),
+      expectedRetry: 0,
+      expectedDelayMs: 0,
+      done
+    });
+  });
+
+  it('should retry with retry after header (second format)', (done: Mocha.Done) => {
+    expectRetry({
+      request: instance.get('/503', { retry: { max: 1 } }),
       expectedRetry: 1,
+      expectedDelayMs: 300,
+      done
+    });
+  });
+
+  it('should retry with retry after header (date format)', (done: Mocha.Done) => {
+    expectRetry({
+      request: instance.get('/503', { retry: { max: 1 }, queryParams: { format: 'date' } }),
+      expectedRetry: 1,
+      expectedDelayMs: (delay: number) => (delay < 1000),
+      done
+    });
+  });
+
+  it('should retry with delay', (done: Mocha.Done) => {
+    expectRetry({
+      request: instance.get('/503', { retry: { max: 1, withRetryAfter: false, withDelayMs: 200 } }),
+      expectedRetry: 1,
+      expectedDelayMs: 200,
       done
     });
   });
