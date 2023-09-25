@@ -160,7 +160,7 @@ interface DrinoDefaultConfig {
 }
 ```
 
-You can override config applied to a `drino` instance (default import or created instance)
+You can override config applied to a `drino` instance (default import or created instance).
 
 ```ts
 drino.default.baseUrl = 'https://example.com';
@@ -461,6 +461,98 @@ async function getCatInfo() {
     // handle timeout error
   }
 }
+```
+
+### Request retry
+
+You can automatically retry failed request on conditions.
+
+```ts
+interface RetryConfig {
+  // Maximum retries to do on failed request.
+  //
+  // default: 0
+  max: number;
+
+  // Use the "Retry-After" response Header to know how much time it waits before retry.
+  //
+  // default: true
+  withRetryAfter?: boolean;
+
+  // Specify the time in millisecond to wait before retry.
+  //
+  // Work only if `withRetryAfter` is `false` or if "Retry-After" response header is not present.
+  //
+  // default: 0
+  withDelayMs?: number;
+
+  // HTTP response status code to filter which request should be retried on failure.
+  //
+  // default: [408, 429, 503, 504]
+  onStatus?: number[] | { start: number, end: number } | { start: number, end: number }[];
+
+  // Http method to filter which request should be retried on failure.
+  // Can only be used for instance configuration.
+  // 
+  // "*" means all methods.
+  //
+  // Example: ["GET", "POST"]
+  // 
+  // default: "*"
+  onMethods?: '*' | string[];
+}
+```
+
+Example :
+```ts
+const instance = drino.create({
+  requestsConfig: {
+    retry: {
+      max: 2,
+      onMethods: ['GET'],
+    }
+  }
+});
+
+instance.get('/my-failed-api', { 
+  retry: { 
+    max: 1 
+  }
+});
+```
+
+When using Observer you can use the `retry` callback to get info about current retry via `RetryArgs`.
+
+```ts
+export interface RetryArgs {
+  // Current retry count.
+  count: number;
+  
+  // Error that causes the retry.
+  error: any;
+  
+  // Function to abort retrying.
+  abort: (reason?: any) => void;
+  
+  // Current retry delay.
+  delay: number;
+}
+```
+
+Example :
+
+```ts
+import type { RetryArgs } from 'drino';
+
+instance.get('/my-failed-api').consume({
+  retry: ({ count, error, abort }: RetryArgs) => {
+    console.log(`Will retry for the ${count} time caused by the error : ${error}.`);
+    if (count > 2) abort('Too many retries.');
+  },
+  abort: (reason: any) => {
+    console.log(reason); // "Too many retries."
+  }
+});
 ```
 
 ## License
