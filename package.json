@@ -8,7 +8,7 @@
     "url": "https://github.com/remscodes"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rollup -c",
     "test": "node ./tests/fixtures/process/test.mjs",
     "types": "tsc --noEmit",
     "types:spec": "npm run types -- -p ./tsconfig.spec.json",
@@ -22,8 +22,18 @@
     "pretest": "npm run types:all"
   },
   "type": "module",
-  "main": "./dist/mjs/index.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "node": "./dist/index.cjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
