@@ -1,11 +1,9 @@
 import { fork, spawn } from 'node:child_process';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
+import { FIXTURES_ROOT_PATH } from '../fixtures.constants.mjs';
 
 export function forkModule(relativeModulePath) {
-  return fork(join(__dirname, relativeModulePath), [], {
+  return fork(join(FIXTURES_ROOT_PATH, relativeModulePath), [], {
     stdio: [
       'inherit', // Input channel
       'inherit', // Output channel
@@ -23,4 +21,8 @@ export function spawnCommand(command, args) {
       'inherit' // Error channel
     ]
   });
+}
+
+export function loadModule(relativeModulePath) {
+  return import(join(FIXTURES_ROOT_PATH, relativeModulePath));
 }

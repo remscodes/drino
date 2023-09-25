@@ -1,12 +1,16 @@
+import { SERVER_READY } from '../fixtures.constants.mjs';
 import { forkModule } from './process-util.mjs';
 
-const testServerProcess = forkModule('express-process.mjs')
+const testServerProcess = forkModule('process/express-process.mjs')
+  .on('message', (message) => {
+    if (message !== SERVER_READY) return;
 
-forkModule('web-test-process.mjs')
-  .once('close', (code, _signal) => {
-    testServerProcess.kill('SIGTERM');
-    console.info('Test server closed.');
+    forkModule('process/web-test-process.mjs')
+      .once('close', (code) => {
+        testServerProcess.kill('SIGTERM');
+        console.info('Test server closed.');
 
-    // If failed, terminate
-    if (code === 1) process.exit(code);
+        // If failed, terminate
+        if (code === 1) process.exit(code);
+      });
   });
