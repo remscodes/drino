@@ -2,8 +2,8 @@ import { fork, spawn } from 'node:child_process';
 import { join } from 'node:path';
 import { FIXTURES_ROOT_PATH } from '../fixtures.constants.mjs';
 
-export function forkModule(relativeModulePath) {
-  return fork(join(FIXTURES_ROOT_PATH, relativeModulePath), [], {
+export function forkModule(pathFromFixtures) {
+  return fork(join(FIXTURES_ROOT_PATH, pathFromFixtures), [], {
     stdio: [
       'inherit', // Input channel
       'inherit', // Output channel
