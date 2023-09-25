@@ -6,7 +6,6 @@ import esbuild from 'rollup-plugin-esbuild';
 /** @typedef {import('rollup').OutputOptions} OutputOptions */
 
 const fileName = 'index';
-const outputPrefix = `./dist/${fileName}`;
 
 /**
  * @param options {RollupOptions}
@@ -25,13 +24,13 @@ export default [
     plugins: [esbuild(), terser()],
     output: [
       {
-        file: `${outputPrefix}.cjs`,
+        file: `./dist/cjs/${fileName}.cjs`,
         format: 'cjs',
         exports: 'named',
         sourcemap: true
       },
       {
-        file: `${outputPrefix}.mjs`,
+        file: `./dist/esm/${fileName}.mjs`,
         format: 'es',
         exports: 'named',
         sourcemap: true
@@ -41,7 +40,7 @@ export default [
   bundle({
     plugins: [dts()],
     output: {
-      file: `${outputPrefix}.d.ts`,
+      file: `./dist/types/${fileName}.d.ts`,
       format: 'es'
     }
   })

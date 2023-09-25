@@ -22,16 +22,16 @@
     "pretest": "npm run types:all"
   },
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "node": "./dist/index.cjs",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/esm/index.mjs",
+      "node": "./dist/cjs/index.cjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.mjs",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "files": [
