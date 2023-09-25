@@ -1,6 +1,6 @@
 {
   "name": "drino",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Modern and Typed HTTP Client",
   "license": "MIT",
   "author": {
@@ -65,6 +65,6 @@
     "promise",
     "callback"
   ],
-  "packageManager": "pnpm@8.7.5",
+  "packageManager": "pnpm@8.7.6",
   "sideEffects": false
 }
