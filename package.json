@@ -9,11 +9,11 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "node ./test/fixtures/process/test.mjs",
+    "test": "node ./tests/fixtures/process/test.mjs",
     "types": "tsc --noEmit",
     "types:spec": "npm run types -- -p ./tsconfig.spec.json",
     "types:all": "npm run types & npm run types:spec",
-    "start-server": "node ./test/fixtures/server/server.mjs",
+    "start-server": "node ./tests/fixtures/server/server.mjs",
     "start-web-runner": "wait-on tcp:8080 && web-test-runner",
     "rm-dist": "node ./scripts/rm-dist.cjs",
     "playwright": "node ./node_modules/.pnpm/playwright@1.38.0/node_modules/playwright/cli.js",
@@ -22,7 +22,7 @@
     "pretest": "npm run types:all"
   },
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/mjs/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
