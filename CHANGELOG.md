@@ -1,3 +1,11 @@
+# 1.5.0 (2023-09-25)
+
+### Features
+
+- Request retry.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.5.0
+
 # 1.4.0 (2023-09-18)
 
 ### Features
