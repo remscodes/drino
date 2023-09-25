@@ -9,13 +9,10 @@
     "allowJs": true
   },
   "include": [
-    "test",
-    "typings"
+    "./tests",
+    "./typings"
   ],
   "exclude": [
-    "node_modules",
-    "dist",
-    "src",
-    "scripts"
+    "./src"
   ]
 }

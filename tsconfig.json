@@ -8,7 +8,7 @@
       "DOM"
     ],
     "baseUrl": "./",
-    "outDir": "./dist",
+    "outDir": "./dist/mjs",
     "declarationDir": "./dist/types",
     "sourceMap": true,
     "declaration": true,
@@ -34,10 +34,8 @@
       "./typings"
     ]
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "test",
-    "scripts"
+  "include": [
+    "./src",
+    "./typings"
   ]
 }
