@@ -1,3 +1,3 @@
-import { spawnCommand } from './process-util.mjs';
+import { loadModule } from './process-util.mjs';
 
-spawnCommand('npm', ['run', 'start-server']);
+await loadModule('server/server.mjs');
