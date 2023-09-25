@@ -39,7 +39,7 @@ class ItemService {
     return Array.from(this.#itemMap.values());
   }
 
-  delete(id) {
+  delete(_id) {
     // return this.#itemMap.delete(id);
     return true;
   }
