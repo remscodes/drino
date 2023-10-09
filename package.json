@@ -68,7 +68,7 @@
     "helmet": "^7.0.0",
     "rollup": "^3.29.4",
     "rollup-plugin-dts": "^6.0.2",
-    "rollup-plugin-esbuild": "^6.0.2",
+    "rollup-plugin-esbuild": "^6.1.0",
     "sinon": "^16.1.0",
     "typescript": "^5.2.2"
   },
