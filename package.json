@@ -55,7 +55,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@types/chai": "^4.3.8",
     "@types/cors": "^2.8.14",
-    "@types/express": "^4.17.19",
+    "@types/express": "^4.17.20",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.8.6",
     "@types/sinon": "^10.0.19",
