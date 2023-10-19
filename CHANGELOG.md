@@ -1,3 +1,15 @@
+# 1.6.0 (2023-10-19)
+
+### Features
+
+- Download progress.
+
+### Improvements
+
+- Bundled with Rollup.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.6.0
+
 # 1.5.0 (2023-09-25)
 
 ### Features
