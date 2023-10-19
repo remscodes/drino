@@ -1,7 +1,7 @@
 import { emitError } from 'thror';
 import type { Url } from '../models/http.model';
 import type { Prefix } from '../models/shared.model';
-import type { RequestControllerConfig } from '../request/models/request-config.model';
+import type { RequestControllerConfig } from '../request/models/request-controller.model';
 
 interface BuildUrlArgs extends Pick<RequestControllerConfig, 'baseUrl' | 'prefix' | 'queryParams'> {
   url: Url;
