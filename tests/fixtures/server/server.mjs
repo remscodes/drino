@@ -3,6 +3,7 @@ import express, { json, urlencoded } from 'express';
 import helmet from 'helmet';
 import { SERVER_READY } from '../fixtures.constants.mjs';
 import { errorRouter } from './error.router.mjs';
+import { fileRouter } from "./file.router.mjs";
 import { itemRouter } from './item.router.mjs';
 
 const hostname = 'localhost';
@@ -24,6 +25,7 @@ express()
     requestInfo()
   )
   .use('/item', itemRouter)
+  .use('/file', fileRouter)
   .use('/error', errorRouter)
   .listen(port, hostname, () => {
     console.info(`Test server running on : http://${hostname}:${port}`);

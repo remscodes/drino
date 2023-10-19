@@ -16,8 +16,8 @@ function handleCreate({ body: item }, res) {
 }
 
 function handleGetOne({ params: { id: rawId } }, res) {
+  if (!rawId) return res.status(400).send(`Missing id path parameter !`);
   const id = parseInt(rawId, 10);
-  if (!id) return res.status(400).send(`Missing id path parameter !`);
 
   const item = service.findById(id);
   if (!item) return res.status(404).send(`Could not find item with id=${id}.`);
@@ -30,10 +30,10 @@ function handleGetAll(_, res) {
 }
 
 function handleUpdate({ body: updatedItem, params: { id: rawId } }, res) {
-  const id = parseInt(rawId, 10);
-  if (!id) return res.status(400).send(`Missing id path parameter !`);
-
   if (!updatedItem) return res.status(400).send(`Missing item body !`);
+
+  if (!rawId) return res.status(400).send(`Missing id path parameter !`);
+  const id = parseInt(rawId, 10);
 
   const item = service.update(id, updatedItem);
   if (!item) return res.status(404).send(`Could not find item with id=${id}.`);
@@ -42,8 +42,8 @@ function handleUpdate({ body: updatedItem, params: { id: rawId } }, res) {
 }
 
 function handleDelete({ params: { id: rawId } }, res) {
+  if (!rawId) return res.status(400).send(`Missing id path parameter !`);
   const id = parseInt(rawId, 10);
-  if (!id) return res.status(400).send(`Missing id path parameter !`);
 
   const deleted = service.delete(id);
   if (!deleted) return res.status(404).send(`Could not find item with id=${id}.`);

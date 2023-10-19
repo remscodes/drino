@@ -33,6 +33,11 @@ const config = {
       lines: 80,
       statements: 80
     }
+  },
+  testFramework: {
+    config: {
+      timeout: '1500'
+    }
   }
 };
 
