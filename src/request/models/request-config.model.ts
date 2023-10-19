@@ -1,8 +1,5 @@
 import type { ProgressConfig, RetryConfig } from '../../features';
-import type { AbortTools } from '../../features/abort/models/abort.model';
-import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
-import type { DeepRequired } from '../../models/shared.model';
 
 export interface RequestConfig<
   Read extends ReadType = 'object',
@@ -27,7 +24,7 @@ export interface RequestConfig<
    *  - result() callback when using Observer.
    *  - then() callback when using Promise.
    *
-   * If 'auto' is specified, read will be infered from "content-type" response header.
+   * If 'auto' is specified, read will be inferred from "content-type" response header.
    *
    * @default 'object'
    */
@@ -74,12 +71,4 @@ export type WrapperType =
   | 'none'
   | 'response'
 
-export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeoutMs' | 'retry' | 'signal' | 'progress'>> {
-  baseUrl: URL;
-  headers: Headers;
-  queryParams: URLSearchParams;
-  interceptors: Interceptors;
-  retry: Required<RetryConfig>;
-  progress: DeepRequired<ProgressConfig>;
-  abortTools: AbortTools;
-}
+

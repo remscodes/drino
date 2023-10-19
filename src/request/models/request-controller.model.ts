@@ -1,6 +1,20 @@
-import type { RetryArgs } from '../../features';
+import type { DrinoProgressEvent, ProgressConfig, RetryArgs, RetryConfig } from '../../features';
+import type { AbortTools } from '../../features/abort/models/abort.model';
+import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
+import type { DeepRequired } from '../../models/shared.model';
 import type { HttpResponse } from '../../response';
 import type { RequestController } from '../request-controller';
+import type { RequestConfig } from './request-config.model';
+
+export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeoutMs' | 'retry' | 'signal' | 'progress'>> {
+  baseUrl: URL;
+  headers: Headers;
+  queryParams: URLSearchParams;
+  interceptors: Interceptors;
+  retry: Required<RetryConfig>;
+  progress: DeepRequired<ProgressConfig>;
+  abortTools: AbortTools;
+}
 
 export type ObjectBody<T> = Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | HttpResponse<any>>
 export type StringBody<T> = Extract<T, string>
@@ -15,33 +29,6 @@ export type CheckCallback<T> = (result: T) => void
 export type ReportCallback = (error: any) => void
 export type FinalCallback = () => void
 export type FollowCallback<A, B> = (result: A) => RequestController<B>
-
-export interface DrinoProgressEvent {
-  /**
-   * Total bytes to be received or to be sent;
-   */
-  readonly total: number;
-  /**
-   * Current bytes received or sent.
-   */
-  readonly loaded: number;
-  /**
-   * Current received or sent chunk.
-   */
-  readonly chunk: Uint8Array;
-  /**
-   * Current iteration number of the progress.
-   */
-  readonly iteration: number;
-  /**
-   * Current speed in Kb/s.
-   */
-  // rate: number;
-  /**
-   * Estimated time in milliseconds to complete the progress.
-   */
-  // estimatedMs: number;
-}
 
 export interface Observer<T> {
   result?: (result: T) => void;

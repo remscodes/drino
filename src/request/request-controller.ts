@@ -4,8 +4,8 @@ import type { RequestMethodType, Url } from '../models/http.model';
 import type { FetchTools } from './fetching';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
-import type { RequestConfig, RequestControllerConfig } from './models/request-config.model';
-import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback } from './models/request-controller.model';
+import type { RequestConfig } from './models';
+import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback, RequestControllerConfig } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
 interface DrinoRequestInit {

@@ -1,3 +1,4 @@
+import type { Nullable } from '../../models/shared.model';
 import type { FetchTools } from '../../request/fetching';
 
 export function inspectUploadProgress(body: any, tools: FetchTools): ReadableStream {
@@ -20,7 +21,7 @@ export function inspectUploadProgress(body: any, tools: FetchTools): ReadableStr
 }
 
 export async function inspectDownloadProgress(response: Response, tools: FetchTools): Promise<void> {
-  const body = response.clone().body;
+  const body: Nullable<ReadableStream<Uint8Array>> = response.clone().body;
   if (!body) return;
 
   const contentLength: string = response.headers.get('content-length') ?? '0';

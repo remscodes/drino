@@ -9,7 +9,7 @@ import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
 import { createUrl } from '../utils/url-util';
 import type { RequestConfig } from './models';
-import type { RequestControllerConfig } from './models/request-config.model';
+import type { RequestControllerConfig } from './models/request-controller.model';
 import { defaultBaseUrl, defaultPrefix, defaultRead, defaultWrapper } from './request.constants';
 
 export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): RequestControllerConfig {
@@ -24,7 +24,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       progress: {
         download: {
           inspect: instanceDownloadInspect = defaultProgress.download.inspect,
-          // intervalMs: instanceDownloadInstervalMs = defaultProgress.download.intervalMs,
+          // intervalMs: instanceDownloadIntervalMs = defaultProgress.download.intervalMs,
         } = {} as ProgressInspectionConfig,
       } = {},
       retry: {
