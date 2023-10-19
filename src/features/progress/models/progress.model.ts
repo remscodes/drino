@@ -11,6 +11,11 @@ export interface ProgressConfig {
 }
 
 export interface ProgressInspectionConfig {
+  /**
+   * Enable download progress.
+   *
+   * @default true
+   */
   inspect?: boolean;
   // intervalMs?: number;
 }

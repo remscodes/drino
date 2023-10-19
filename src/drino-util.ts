@@ -1,7 +1,6 @@
-import type { RetryConfig } from './features';
+import type { ProgressConfig, ProgressInspectionConfig, RetryConfig } from './features';
 import { defaultTimeout } from './features/abort/abort.constants';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
-import type { ProgressConfig, ProgressInspectionConfig } from './features/progress/models/progress.model';
 import { defaultProgress } from './features/progress/progress.constants';
 import { defaultRetry } from './features/retry/retry.constants';
 import type { DrinoDefaultConfig, DrinoDefaultConfigInit, DrinoRequestsConfigInit } from './models/drino.model';

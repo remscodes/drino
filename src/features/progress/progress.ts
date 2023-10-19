@@ -29,11 +29,11 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
 
   const reader: ReadableStreamDefaultReader<Uint8Array> = body.getReader();
 
-  while (true) {
-    const { done, value }: ReadableStreamReadResult<Uint8Array> = await reader.read();
+  for (let i = 1; ; i ++) {
+    const { done, value = new Uint8Array(0) }: ReadableStreamReadResult<Uint8Array> = await reader.read();
     if (done) break;
 
     loaded += value.byteLength;
-    tools.dlCb?.({ loaded, total });
+    tools.dlCb?.({ loaded, total, chunk: value, iteration: i });
   }
 }

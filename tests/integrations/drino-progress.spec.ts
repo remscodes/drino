@@ -21,8 +21,8 @@ describe('Drino - Progress', () => {
 
     it('should inspect download progress', (done: Mocha.Done) => {
       instance.get('/download', { progress: { download: { inspect: true } } }).consume({
-        downloadProgress: ({ loaded, total }: DrinoProgressEvent) => {
-          // console.log(`Received ${loaded} of ${total}.`);
+        downloadProgress: ({ loaded, total, iteration }: DrinoProgressEvent) => {
+          // console.log(`Received ${loaded} of ${total}. Iteration ${iteration}`);
           if (loaded === total) done();
         },
       });
