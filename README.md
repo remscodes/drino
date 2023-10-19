@@ -102,9 +102,24 @@ interface RequestConfig {
   // default: 'none'
   wrapper?: 'none' | 'response';
 
-  // AbortSignal to cancel HTTP Request with an AbortController
-  // See below in section 'Abort Request'
+  // AbortSignal to cancel HTTP Request with an AbortController.
+  // See below in section 'Abort Request'.
   signal?: AbortSignal;
+
+  // Time limit from which the request is aborted.
+  //
+  // default: 0 (= meaning disabled)
+  //
+  // See below in section 'Timeout'.
+  timeoutMs?: number;
+
+  // Retry a failed request a certain number of times on a specific http status.
+  // See below in section 'Request retry'.
+  retry?: RetryConfig;
+
+  // Config to inspect download progress.
+  // See below in section 'Progress capturing'.
+  progress?: ProgressConfig;
 }
 ```
 
@@ -191,8 +206,6 @@ Change the result value.
 Example :
 
 ```ts
-type Cat = { name: string }
-
 drino.get<Cat>('/cat/meow')
   .transform((res: Cat) => res.name)
   .consume({
@@ -260,7 +273,7 @@ Example :
 
 ```ts
 drino.get<Cat>('/cat/meow')
-  .follow((cat: Cat) => drino.get<Dog>(`/dog/wouaf/cat-friend/${cat.name}`)) 
+  .follow((cat: Cat) => drino.get<Dog>(`/dog/wouaf/cat-friend/${cat.name}`))
   .consume({
     result: (res: Dog) => {
       // handle value
@@ -390,6 +403,39 @@ const instance: DrinoInstance = drino.create({
 });
 ```
 
+### Progress capturing
+
+You can inspect download progress with `downloadProgress` observer's callback.
+
+Progress capturing can be disabled for the instance or for the request by set `inspect: false` into ProgressConfig in RequestConfig.
+
+```ts
+interface ProgressConfig {
+  download?: {
+    // Enable download progress.
+    //
+    // default : true
+    inspect?: boolean;
+  };
+}
+```
+
+Example : 
+
+```ts
+import type { DrinoProgressEvent } from 'drino';
+
+drino.get('/cat/image').consume({
+  downloadProgress: ({ loaded, total, iteration }: DrinoProgressEvent) => {
+    console.info(`(Iteration n°${iteration}) Received ${loaded} bytes of ${total}.`);
+    if (loaded === total) console.info('Done.')
+  },
+  result: (res) => {
+    // handle result
+  },
+});
+```
+
 ### Request annulation
 
 #### AbortController
@@ -504,20 +550,16 @@ interface RetryConfig {
 ```
 
 Example :
+
 ```ts
 const instance = drino.create({
   requestsConfig: {
-    retry: {
-      max: 2,
-      onMethods: ['GET'],
-    }
+    retry: { max: 2, onMethods: ['GET'] }
   }
 });
 
-instance.get('/my-failed-api', { 
-  retry: { 
-    max: 1 
-  }
+instance.get('/my-failed-api', {
+  retry: { max: 1 }
 });
 ```
 
@@ -527,13 +569,13 @@ When using Observer you can use the `retry` callback to get info about current r
 export interface RetryArgs {
   // Current retry count.
   count: number;
-  
+
   // Error that causes the retry.
   error: any;
-  
+
   // Function to abort retrying.
   abort: (reason?: any) => void;
-  
+
   // Current retry delay.
   delay: number;
 }
