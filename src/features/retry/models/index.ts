@@ -1,1 +1,1 @@
-export type { RetryConfig, RetryArgs } from './retry.model';
+export type { RetryConfig, OnMethods, OnStatusCodes, RetryArgs } from './retry.model';

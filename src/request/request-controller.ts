@@ -1,10 +1,10 @@
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
-import type { DrinoDefaultConfigInit } from '../models/drino.model';
+import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import type { FetchTools } from './fetching';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
-import type { RequestControllerConfig, RequestConfig } from './models/request-config.model';
+import type { RequestConfig, RequestControllerConfig } from './models/request-config.model';
 import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
@@ -17,7 +17,7 @@ interface DrinoRequestInit {
 
 export class RequestController<Resource> {
 
-  public constructor(init: DrinoRequestInit, defaultConfig: DrinoDefaultConfigInit) {
+  public constructor(init: DrinoRequestInit, defaultConfig: DrinoDefaultConfig) {
     const { method, url, body, config = {} } = init;
 
     this.config = mergeRequestConfigs(config, defaultConfig);
@@ -88,7 +88,10 @@ export class RequestController<Resource> {
       abortTools: this.config.abortTools,
       interceptors: this.config.interceptors,
       retry: this.config.retry,
-      retryCb: observer?.retry
+      retryCb: observer?.retry,
+      progress: this.config.progress,
+      dlCb: observer?.downloadProgress,
+      // ulCb: observer?.uploadProgress,
     };
 
     if (!observer) return this.thenable(tools);

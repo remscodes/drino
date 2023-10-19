@@ -1,8 +1,10 @@
 import type { RetryConfig } from './features';
 import { defaultTimeout } from './features/abort/abort.constants';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
+import type { ProgressConfig, ProgressInspectionConfig } from './features/progress/models/progress.model';
+import { defaultProgress } from './features/progress/progress.constants';
 import { defaultRetry } from './features/retry/retry.constants';
-import type { DrinoDefaultConfig, DrinoDefaultConfigInit, DrinoDefaultRequestsConfig, DrinoRequestsConfigInit } from './models/drino.model';
+import type { DrinoDefaultConfig, DrinoDefaultConfigInit, DrinoRequestsConfigInit } from './models/drino.model';
 import { defaultBaseUrl, defaultPrefix } from './request/request.constants';
 import { mergeHeaders } from './utils/headers-util';
 import { mergeQueryParams } from './utils/params-util';
@@ -21,10 +23,16 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         withRetryAfter: parentWithRetryAfter = defaultRetry.withRetryAfter,
         withDelayMs: parentDelayMs = defaultRetry.withDelayMs,
         onStatus: parentOnStatus = defaultRetry.onStatus,
-        onMethods: parentOnMethods = defaultRetry.onMethods
-      } = {} as Required<RetryConfig>
-    } = {} as DrinoDefaultRequestsConfig
-  } = parentDefaultConfig ?? {} as DrinoDefaultConfig;
+        onMethods: parentOnMethods = defaultRetry.onMethods,
+      } = {} as Required<RetryConfig>,
+      progress: {
+        download: {
+          inspect: parentDownloadInspect = defaultProgress.download.inspect,
+          // intervalMs: parentDownloadIntervalMs = defaultProgress.download.intervalMs,
+        } = {} as ProgressInspectionConfig,
+      } = {},
+    } = {},
+  } = parentDefaultConfig ?? {};
 
   const {
     baseUrl,
@@ -39,9 +47,15 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         withRetryAfter,
         withDelayMs,
         onStatus,
-        onMethods
-      } = {} as RetryConfig
-    } = {} as DrinoRequestsConfigInit
+        onMethods,
+      } = {} as RetryConfig,
+      progress: {
+        download: {
+          inspect: downloadInspect,
+          // intervalMs: downloadIntervalMs,
+        } = {} as ProgressInspectionConfig,
+      } = {} as ProgressConfig,
+    } = {} as DrinoRequestsConfigInit,
   } = defaultConfig;
 
   return {
@@ -52,13 +66,19 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       headers: mergeHeaders(headers, parentHeaders),
       queryParams: mergeQueryParams(queryParams, parentQueryParams),
       timeoutMs: timeoutMs ?? parentTimeoutMs,
+      progress: {
+        download: {
+          inspect: downloadInspect ?? parentDownloadInspect,
+          // intervalMs: downloadIntervalMs ?? parentDownloadIntervalMs,
+        },
+      },
       retry: {
         max: max ?? parentMax,
         withRetryAfter: withRetryAfter ?? parentWithRetryAfter,
         withDelayMs: withDelayMs ?? parentDelayMs,
         onStatus: onStatus ?? parentOnStatus,
-        onMethods: onMethods ?? parentOnMethods
-      }
-    }
+        onMethods: onMethods ?? parentOnMethods,
+      },
+    },
   };
 }

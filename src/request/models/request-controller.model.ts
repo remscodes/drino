@@ -10,15 +10,37 @@ export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
 export type Modifier<I, O> = (value: I) => O
+
 export type CheckCallback<T> = (result: T) => void
 export type ReportCallback = (error: any) => void
 export type FinalCallback = () => void
 export type FollowCallback<A, B> = (result: A) => RequestController<B>
 
+export interface DrinoProgressEvent {
+  /**
+   * Total bytes to be received or to be sent;
+   */
+  total: number;
+  /**
+   * Current bytes received or sent.
+   */
+  loaded: number;
+  /**
+   * Current speed in Kb/s.
+   */
+  // rate: number;
+  /**
+   * Estimated time in milliseconds to complete the progress.
+   */
+  // estimatedMs: number;
+}
+
 export interface Observer<T> {
   result?: (result: T) => void;
   error?: (error: any) => void;
   finish?: () => void;
-  retry?: (args: RetryArgs) => void;
   abort?: (reason: any) => void;
+  retry?: (args: RetryArgs) => void;
+  downloadProgress?: (event: DrinoProgressEvent) => void;
+  // uploadProgress?: (event: DrinoProgressEvent) => void;
 }
