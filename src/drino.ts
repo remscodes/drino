@@ -38,12 +38,33 @@ export class Drino {
     return new RequestController<T>({ method, url, body, config }, this.default);
   }
 
+  /**
+   * Builds a `GET` request controller that interprets the response body as an `object` and returns it.
+   */
   public get<T>(url: Url, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  /**
+   * Builds a `GET` request controller that interprets the response body as an `string` and returns it.
+   */
   public get<T>(url: Url, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
+  /**
+   * Builds a `GET` request controller that interprets the response body as `void` and returns it.
+   */
   public get<T>(url: Url, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  /**
+   * Builds a `GET` request controller that interprets the response body as an `Blob` and returns it.
+   */
   public get<T>(url: Url, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
+  /**
+   * Builds a `GET` request controller that interprets the response body as an `ArrayBuffer` and returns it.
+   */
   public get<T>(url: Url, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
+  /**
+   * Builds a `GET` request controller that interprets the response body as an `FormData` and returns it.
+   */
   public get<T>(url: Url, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
+  /**
+   * Builds a `GET` request controller that interprets the response body according to the response "content-type" header and returns it.
+   */
   public get<T>(url: Url, config?: RequestConfig<'auto'>): RequestController<T>;
   public get<T>(url: Url, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
   public get<T>(url: Url, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;

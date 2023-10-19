@@ -1,10 +1,20 @@
+import { emitError } from 'thror';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import type { Nullable } from '../models/shared.model';
 import type { ReadType } from '../request/models/request-config.model';
 
 export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise<UnwrapHttpResponse<T>> {
-  return (read === 'auto') ? inferBody(fetchResponse)
-    : bodyFromReadType(fetchResponse, read);
+  try {
+    return (read === 'auto') ? inferBody(fetchResponse)
+      : bodyFromReadType(fetchResponse, read);
+  }
+  catch (err: any) {
+    emitError('Fetch Response', `Cannot parse body because RequestConfig 'read' value (='${read}') is incompatible with 'content-type' response header (='${fetchResponse.headers.get('content-type')}').`, {
+      withStack: true,
+      original: err,
+    });
+  }
+
 }
 
 export function inferBody(fetchResponse: Response): Promise<any> {

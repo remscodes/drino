@@ -1,7 +1,8 @@
-import type { RetryConfig } from '../../features';
+import type { ProgressConfig, RetryConfig } from '../../features';
 import type { AbortTools } from '../../features/abort/models/abort.model';
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
+import type { DeepRequired } from '../../models/shared.model';
 
 export interface RequestConfig<
   Read extends ReadType = 'object',
@@ -46,13 +47,18 @@ export interface RequestConfig<
   signal?: AbortSignal;
   /**
    * Time limit from which the request is aborted.
+   *
+   * @default 0 (= meaning disabled)
    */
   timeoutMs?: number;
   /**
    * Retry a failed request a certain number of times on a specific http status.
    */
   retry?: Omit<RetryConfig, 'onMethods'>;
-  // withCredentials?: boolean;
+  /**
+   * Config to inspect download progress.
+   */
+  progress?: ProgressConfig;
 }
 
 export type ReadType =
@@ -68,11 +74,12 @@ export type WrapperType =
   | 'none'
   | 'response'
 
-export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeoutMs' | 'retry' | 'signal'>> {
+export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeoutMs' | 'retry' | 'signal' | 'progress'>> {
   baseUrl: URL;
   headers: Headers;
   queryParams: URLSearchParams;
   interceptors: Interceptors;
   retry: Required<RetryConfig>;
+  progress: DeepRequired<ProgressConfig>;
   abortTools: AbortTools;
 }

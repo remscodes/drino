@@ -1,7 +1,7 @@
-import { emitError } from 'thror';
-import type { RetryConfig } from '../features';
+import type { ProgressConfig, RetryConfig } from '../features';
 import type { AbortTools } from '../features/abort/models/abort.model';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
+import { inspectDownloadProgress } from '../features/progress/progress';
 import { needRetry } from '../features/retry/retry-util';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
@@ -16,12 +16,17 @@ export interface FetchTools {
   interceptors: Interceptors;
   retry: Required<RetryConfig>;
   retryCb?: Observer<unknown>['retry'];
+  progress: Required<ProgressConfig>;
+  dlCb?: Observer<unknown>['downloadProgress'];
+  // ulCb?: Observer<unknown>['uploadProgress'];
 }
 
 export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTools, retried: number = 0): Promise<T> {
   const fetchResponse: Response = await performFetch(request, tools);
 
   tools.interceptors.afterConsume(request, fetchResponse);
+
+  if (tools.progress.download.inspect) await inspectDownloadProgress(fetchResponse, tools);
 
   const { headers, status, statusText, ok, url } = fetchResponse;
 
@@ -41,7 +46,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
         abort: (reason?: any) => tools.abortTools.abortCtrl.abort(reason),
         count: retried,
         delay,
-        error
+        error,
       });
 
       return performHttpRequest(request, tools, retried);
@@ -52,7 +57,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
       headers,
       status,
       statusText,
-      url
+      url,
     });
     tools.interceptors.beforeError(errorResponse);
     return Promise.reject(errorResponse);
@@ -60,38 +65,34 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
 
   const isHeadOrOptions: boolean = (request.method === 'HEAD' || request.method === 'OPTIONS');
 
-  try {
-    const body = (isHeadOrOptions) ? headers
-      : await convertBody<T>(fetchResponse, request.read);
+  const body: Headers | Awaited<UnwrapHttpResponse<T>> = (isHeadOrOptions) ? headers
+    : await convertBody<T>(fetchResponse, request.read);
 
-    const result = (request.wrapper === 'response') ? new HttpResponse<UnwrapHttpResponse<T>>({
-        body: (isHeadOrOptions) ? undefined : body,
-        headers,
-        status,
-        statusText,
-        url
-      })
-      : body as any;
+  const result = (request.wrapper === 'response') ? new HttpResponse<UnwrapHttpResponse<T>>({
+      body: (isHeadOrOptions) ? undefined : body,
+      headers,
+      status,
+      statusText,
+      url,
+    })
+    : body as any;
 
-    tools.interceptors.beforeResult(result);
+  tools.interceptors.beforeResult(result);
 
-    return result;
-  }
-  catch (err: any) {
-    emitError('Fetch Response', `Cannot parse body because RequestConfig 'read' value (='${request.read}') is incompatible with 'content-type' response header (='${headers.get('content-type')}').`, {
-      withStack: true,
-      original: err
-    });
-  }
+  return result;
 }
 
 function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response> {
-  const { headers, method, url, body } = request;
+  const { headers, method, url, body: requestBody } = request;
+
+  let body: any = requestBody;
 
   if (body) {
     const contentType: string = inferContentType(body);
     headers.set('Content-Type', contentType);
   }
+
+  // if (tools.inspectProgress) body = inspectUploadProgress(body, tools);
 
   return fetch(url, {
     method,

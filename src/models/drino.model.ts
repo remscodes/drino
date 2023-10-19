@@ -1,9 +1,9 @@
 import type { Drino } from '../drino';
-import type { RetryConfig } from '../features';
+import type { ProgressConfig, RetryConfig } from '../features';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
 import type { RequestConfig } from '../request';
 import type { Url } from './http.model';
-import type { Prefix } from './shared.model';
+import type { DeepRequired, Prefix } from './shared.model';
 
 export type DrinoInstance = Omit<Drino, 'create' | 'use'>
 
@@ -21,6 +21,7 @@ export interface DrinoDefaultConfig extends Required<Omit<DrinoDefaultConfigInit
   requestsConfig: DrinoDefaultRequestsConfig;
 }
 
-export interface DrinoDefaultRequestsConfig extends Required<Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal' | 'retry'>> {
+export interface DrinoDefaultRequestsConfig extends Required<Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal' | 'retry' | 'progress'>> {
   retry: Required<RetryConfig>;
+  progress: DeepRequired<ProgressConfig>;
 }
