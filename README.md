@@ -1,6 +1,6 @@
 <div align="center">
     <h1>Drino</h1>
-    <p>Modern and Typed HTTP Client</p>
+    <p>Modern and Reactive HTTP Client</p>
 </div>
 
 <div align="center">
