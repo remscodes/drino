@@ -12,14 +12,9 @@
     "declarationDir": "./dist/types",
     "sourceMap": true,
     "declaration": true,
-    "downlevelIteration": true,
-    "importHelpers": false,
     "moduleResolution": "node",
     "isolatedModules": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": false,
     "useDefineForClassFields": true,
-    "alwaysStrict": true,
     "strict": true,
     "noImplicitOverride": true,
     "pretty": true,
@@ -29,6 +24,7 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "stripInternal": true,
+    "verbatimModuleSyntax": false,
     "typeRoots": [
       "./node_modules/@types",
       "./typings"
