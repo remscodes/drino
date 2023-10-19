@@ -54,7 +54,7 @@
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/chai": "^4.3.8",
-    "@types/cors": "^2.8.14",
+    "@types/cors": "^2.8.15",
     "@types/express": "^4.17.20",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.8.6",
