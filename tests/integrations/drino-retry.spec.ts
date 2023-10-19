@@ -23,7 +23,7 @@ function expectRetry(args: ExpectCountArgs): void {
       (typeof args.expectedDelayMs === 'number') ? expectEqual(finalDelayMs, args.expectedDelayMs)
         : expectEqual(args.expectedDelayMs(finalDelayMs), true);
       args.done();
-    }
+    },
   });
 }
 
@@ -34,8 +34,8 @@ describe('Drino - Retry', () => {
     instance = drino.create({
       baseUrl: 'http://localhost:8080/error',
       requestsConfig: {
-        retry: { max: 2 }
-      }
+        retry: { max: 2 },
+      },
     });
   });
 
@@ -44,7 +44,7 @@ describe('Drino - Retry', () => {
       request: instance.get('/504'),
       expectedRetry: 2,
       expectedDelayMs: 0,
-      done
+      done,
     });
   });
 
@@ -53,7 +53,7 @@ describe('Drino - Retry', () => {
       request: instance.get('/401'),
       expectedRetry: 0,
       expectedDelayMs: 0,
-      done
+      done,
     });
   });
 
@@ -62,7 +62,7 @@ describe('Drino - Retry', () => {
       request: instance.get('/504', { retry: { max: 3 } }),
       expectedRetry: 3,
       expectedDelayMs: 0,
-      done
+      done,
     });
   });
 
@@ -70,7 +70,7 @@ describe('Drino - Retry', () => {
     let finalCount: number = 0;
 
     instance.get('/504', {
-      retry: { max: 10 }
+      retry: { max: 10 },
     }).consume({
       retry: ({ count, abort }: RetryArgs) => {
         finalCount = count;
@@ -79,22 +79,22 @@ describe('Drino - Retry', () => {
       finish: () => {
         expectEqual(finalCount, 2);
         done();
-      }
+      },
     });
   });
 
   it('should not retry on GET method', (done: Mocha.Done) => {
     const mInstance: DrinoInstance = instance.child({
       requestsConfig: {
-        retry: { max: 1, onStatus: [401], onMethods: ['POST'] }
-      }
+        retry: { max: 1, onStatus: [401], onMethods: ['POST'] },
+      },
     });
 
     expectRetry({
       request: mInstance.get('/401'),
       expectedRetry: 0,
       expectedDelayMs: 0,
-      done
+      done,
     });
   });
 
@@ -103,7 +103,7 @@ describe('Drino - Retry', () => {
       request: instance.get('/503', { retry: { max: 1 } }),
       expectedRetry: 1,
       expectedDelayMs: 300,
-      done
+      done,
     });
   });
 
@@ -112,7 +112,7 @@ describe('Drino - Retry', () => {
       request: instance.get('/503', { retry: { max: 1 }, queryParams: { format: 'date' } }),
       expectedRetry: 1,
       expectedDelayMs: (delay: number) => (delay < 1000),
-      done
+      done,
     });
   });
 
@@ -121,7 +121,7 @@ describe('Drino - Retry', () => {
       request: instance.get('/503', { retry: { max: 1, withRetryAfter: false, withDelayMs: 200 } }),
       expectedRetry: 1,
       expectedDelayMs: 200,
-      done
+      done,
     });
   });
 });

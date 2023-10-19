@@ -4,7 +4,7 @@ import { setTimeout } from "node:timers";
 export const errorRouter = Router()
   .get('/401', handle401)
   .post('/401', handle401)
-  .get('/408/:timeout', handle408Timeout)
+  .get('/408/:timeout', handle408)
   .get('/503', handle503)
   .get('/504', handle504);
 
@@ -12,8 +12,10 @@ function handle401(_, res) {
   sendError(res, 401, 'Unauthorized');
 }
 
-function handle408Timeout({ params: { timeout: rawTimeout } }, res) {
+function handle408({ params: { timeout: rawTimeout } }, res) {
+  if (!rawTimeout) return res.status(400).send(`Missing timeout path parameter !`);
   const timeout = parseInt(rawTimeout, 10);
+
   setTimeout(() => {
     sendError(res, 408, 'Request Timeout');
   }, timeout);
