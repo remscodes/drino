@@ -1,2 +1,2 @@
-export type { ProgressConfig, ProgressInspectionConfig } from './progress.model';
-export type { DrinoProgressEvent } from './event-progress.model';
+export type { ProgressConfig, ProgressInspectionConfig } from './progress-config.model';
+export type { StreamProgressEvent } from './progress-event.model';

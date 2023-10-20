@@ -50,24 +50,3 @@ export type OnStatusCodes =
 export type OnMethods =
   | RequestMethodType[]
   | '*'
-
-export interface RetryArgs {
-  /**
-   * Current retry count.
-   */
-  count: number;
-  /**
-   * Error which causes the retry.
-   */
-  error: any;
-  /**
-   * Function to abort retrying.
-   */
-  abort: RetryAbortFn;
-  /**
-   * Current retry delay.
-   */
-  delay: number;
-}
-
-type RetryAbortFn = (reason?: any) => void;
