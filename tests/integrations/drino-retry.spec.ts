@@ -1,4 +1,4 @@
-import type { DrinoInstance, RequestController, RetryArgs } from '../../src';
+import type { DrinoInstance, RequestController, RetryEvent } from '../../src';
 import drino from '../../src';
 import { expectEqual } from '../fixtures/utils/expect-util';
 
@@ -13,7 +13,7 @@ function expectRetry(args: ExpectCountArgs): void {
   let finalCount: number = 0;
   let finalDelayMs: number = 0;
   args.request.consume({
-    retry: ({ count, delay }: RetryArgs) => {
+    retry: ({ count, delay }: RetryEvent) => {
       finalCount = count;
       finalDelayMs += delay;
       // console.log(`Failed. Will retry for the ${count} time(s)`);
@@ -72,7 +72,7 @@ describe('Drino - Retry', () => {
     instance.get('/504', {
       retry: { max: 10 },
     }).consume({
-      retry: ({ count, abort }: RetryArgs) => {
+      retry: ({ count, abort }: RetryEvent) => {
         finalCount = count;
         if (finalCount === 2) abort();
       },

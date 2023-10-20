@@ -1,4 +1,4 @@
-import type { DrinoProgressEvent, ProgressConfig, RetryArgs, RetryConfig } from '../../features';
+import type { StreamProgressEvent, ProgressConfig, RetryEvent, RetryConfig } from '../../features';
 import type { AbortTools } from '../../features/abort/models/abort.model';
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
 import type { DeepRequired } from '../../models/shared.model';
@@ -35,7 +35,7 @@ export interface Observer<T> {
   error?: (error: any) => void;
   finish?: () => void;
   abort?: (reason: any) => void;
-  retry?: (args: RetryArgs) => void;
-  downloadProgress?: (event: DrinoProgressEvent) => void;
+  retry?: (args: RetryEvent) => void;
+  downloadProgress?: (event: StreamProgressEvent) => void;
   // uploadProgress?: (event: DrinoProgressEvent) => void;
 }

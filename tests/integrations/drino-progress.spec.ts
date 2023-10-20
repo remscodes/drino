@@ -1,4 +1,4 @@
-import type { DrinoInstance, DrinoProgressEvent } from '../../src';
+import type { DrinoInstance, StreamProgressEvent } from '../../src';
 import drino from '../../src/drino';
 
 describe('Drino - Progress', () => {
@@ -20,12 +20,13 @@ describe('Drino - Progress', () => {
   describe('Download', () => {
 
     it('should inspect download progress', (done: Mocha.Done) => {
-      instance.get('/download', { progress: { download: { inspect: true } } }).consume({
-        downloadProgress: ({ loaded, total, iteration }: DrinoProgressEvent) => {
-          // console.log(`Received ${loaded} of ${total}. Iteration ${iteration}`);
+      instance.get('/download').consume({
+        downloadProgress: ({ loaded, total, percent, speed, estimatedMs }: StreamProgressEvent) => {
+          // console.log(`Received ${loaded} bytes of ${total} bytes (${percent} %)`);
+          // console.log(`${percent} % | ${speed.toFixed()} B/ms | ${(speed / 1024 * 1000).toFixed()} KB/s | ${(speed / 1024 / 1024 * 1000).toFixed(2)} MB/s | ${estimatedMs.toFixed()} ms remaining.`);
           if (loaded === total) done();
         },
       });
-    }).timeout(4000);
+    }).timeout(4_000);
   });
 });
