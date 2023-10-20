@@ -19,6 +19,21 @@
 npm install drino
 ```
 
+## Table of contents
+
+- [Basic Usage](#basic-usage)
+  - [Example](#example)
+  - [Request Methods](#request-methods)
+  - [Request Config](#request-config)
+  - [Instance](#instance)
+  - [Plugin](#plugin)
+- [Advanced Usage](#advanced-usage)
+  - [Pipe Methods](#pipe-methods)
+  - [Interceptors](#interceptors)
+  - [Progress Capturing](#progress-capturing)
+  - [Request Annulation](#request-annulation)
+  - [Request Retry](#request-retry)
+
 ## Basic Usage
 
 ### Example
@@ -148,7 +163,7 @@ const child: DrinoInstance = instance.child({
 child.get('/meow').consume() // GET -> http://localhost:8080/cat/meow
 ```
 
-### Instance Config
+#### Instance Config
 
 ```ts
 interface DrinoDefaultConfig {
@@ -192,9 +207,11 @@ You can use third-party plugin to add more features.
 drino.use(myPlugin);
 ```
 
+Plugin example : [drino-rx](https://github.com/remscodes/drino-rx)
+
 ## Advanced Usage
 
-### Pipe methods
+### Pipe Methods
 
 Before calling `consume()` method, you can chain call methods to modify or inspect the current value before being passed
 into final callbacks.
@@ -403,7 +420,7 @@ const instance: DrinoInstance = drino.create({
 });
 ```
 
-### Progress capturing
+### Progress Capturing
 
 You can inspect download progress with `downloadProgress` observer's callback.
 
@@ -420,23 +437,59 @@ interface ProgressConfig {
 }
 ```
 
-Example : 
+A `StreamProgressEvent` is passed to `downloadProgress` callback for each progress iteration.
 
 ```ts
-import type { DrinoProgressEvent } from 'drino';
+export interface StreamProgressEvent {
+  // Total bytes to be received or to be sent;
+  total: number;
+
+  // Total bytes received or sent.
+  loaded: number;
+
+  // Current percentage received or sent.
+  // Between 0 and 100.
+  percent: number;
+
+  // Current speed in bytes/ms.
+  // Equals to `0` for the first `iteration`.
+  speed: number;
+
+  // Estimated remaining time in milliseconds to complete the progress.
+  // Equals to `0` for the first `iteration`.
+  remainingTimeMs: number;
+
+  // Current chunk received or sent.
+  chunk: Uint8Array;
+  
+  // Current iteration number of the progress.
+  iteration: number;
+}
+
+```
+
+Example :
+
+```ts
+import type { StreamProgressEvent } from 'drino';
 
 drino.get('/cat/image').consume({
-  downloadProgress: ({ loaded, total, iteration }: DrinoProgressEvent) => {
-    console.info(`(Iteration n°${iteration}) Received ${loaded} bytes of ${total}.`);
-    if (loaded === total) console.info('Done.')
+  downloadProgress: ({ loaded, total, percent, speed, remainingTimeMs }: StreamProgressEvent) => {
+    const remainingSeconds = (remainingTimeMs / 1000).toFixed(2);
+    const speedKBs = speed / 1024 * 1000;
+
+    console.info(`Received ${loaded} of ${total} bytes (${Math.floor(percent * 100)} %).`);
+    console.info(`Speed ${speedKBs} KB/s | ${remainingSeconds} seconds remaining.`);
+
+    if (loaded === total) console.info('Download completed.');
   },
   result: (res) => {
     // handle result
-  },
+  }
 });
 ```
 
-### Request annulation
+### Request Annulation
 
 #### AbortController
 
@@ -509,7 +562,7 @@ async function getCatInfo() {
 }
 ```
 
-### Request retry
+### Request Retry
 
 You can automatically retry failed request on conditions.
 
@@ -563,10 +616,10 @@ instance.get('/my-failed-api', {
 });
 ```
 
-When using Observer you can use the `retry` callback to get info about current retry via `RetryArgs`.
+When using Observer you can use the `retry` callback to get info about current retry via `RetryEvent`.
 
 ```ts
-export interface RetryArgs {
+export interface RetryEvent {
   // Current retry count.
   count: number;
 
@@ -584,10 +637,10 @@ export interface RetryArgs {
 Example :
 
 ```ts
-import type { RetryArgs } from 'drino';
+import type { RetryEvent } from 'drino';
 
 instance.get('/my-failed-api').consume({
-  retry: ({ count, error, abort }: RetryArgs) => {
+  retry: ({ count, error, abort }: RetryEvent) => {
     console.log(`Will retry for the ${count} time caused by the error : ${error}.`);
     if (count > 2) abort('Too many retries.');
   },
