@@ -9,7 +9,7 @@ export interface StreamProgressEvent {
   readonly loaded: number;
   /**
    * Current percentage received or sent.
-   * Between 0 and 100.
+   * Between 0 and 1.
    */
   readonly percent: number;
   /**
@@ -18,12 +18,12 @@ export interface StreamProgressEvent {
    */
   readonly speed: number;
   /**
-   * Estimated time in milliseconds to complete the progress.
+   * Estimated remaining time in milliseconds to complete the progress.
    * Equals to `0` for the first `iteration`.
    */
-  readonly estimatedMs: number;
+  readonly remainingTimeMs: number;
   /**
-   * Current received or sent chunk.
+   * Current chunk received or sent.
    */
   readonly chunk: Uint8Array;
   /**
