@@ -1,8 +1,9 @@
 import type { RequestMethodType } from '../../models/http.model';
 import type { NumberRange } from '../../models/shared.model';
-import type { OnMethods, OnStatusCodes, RetryConfig } from './models';
+import type { OnMethods, OnStatusCodes } from './models';
+import type { InstanceRetryConfig } from './models/retry-config.model';
 
-export function needRetry(retryConfig: Required<RetryConfig>, status: number, method: RequestMethodType, retried: number, abortCtrl: AbortController): boolean {
+export function needRetry(retryConfig: Required<InstanceRetryConfig>, status: number, method: RequestMethodType, retried: number, abortCtrl: AbortController): boolean {
   return (retried < retryConfig.max)
     && matchStatus(retryConfig.onStatus, status)
     && matchMethod(retryConfig.onMethods, method)
@@ -31,8 +32,8 @@ function matchMethod(onMethods: OnMethods, method: RequestMethodType): boolean {
 }
 
 function isNumberRange(value: any): value is NumberRange {
-  return (!!value.min)
-    && (!!value.max);
+  return (!!value.start)
+    && (!!value.end);
 }
 
 function isNumberRangeArray(value: any[]): value is NumberRange[] {

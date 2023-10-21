@@ -14,12 +14,12 @@ export interface StreamProgressEvent {
   readonly percent: number;
   /**
    * Current speed in bytes/ms.
-   * Equals to `0` for the first `iteration`.
+   * Equals to 0 for the first `iteration`.
    */
   readonly speed: number;
   /**
    * Estimated remaining time in milliseconds to complete the progress.
-   * Equals to `0` for the first `iteration`.
+   * Equals to 0 for the first `iteration`.
    */
   readonly remainingTimeMs: number;
   /**

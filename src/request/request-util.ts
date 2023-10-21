@@ -1,4 +1,3 @@
-import type { ProgressInspectionConfig } from '../features';
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
 import { defaultTimeout } from '../features/abort/abort.constants';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
@@ -24,8 +23,10 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       progress: {
         download: {
           inspect: instanceDownloadInspect = defaultProgress.download.inspect,
-          // intervalMs: instanceDownloadIntervalMs = defaultProgress.download.intervalMs,
-        } = {} as ProgressInspectionConfig,
+        } = {},
+        // upload: {
+        //   inspect: instanceUploadInspect = defaultProgress.upload.inspect,
+        // } = {},
       } = {},
       retry: {
         max: instanceMax = defaultRetry.max,
@@ -47,9 +48,11 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     signal = defaultSignal(),
     progress: {
       download: {
-        inspect: downloadInspect,
-        // intervalMs: downloadIntervalMs,
-      } = {} as ProgressInspectionConfig,
+        inspect: downloadInspect = undefined,
+      } = {},
+      // upload: {
+      //   inspect: uploadInspect = undefined,
+      // } = {},
     } = {},
     retry: {
       max,
@@ -70,8 +73,10 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     progress: {
       download: {
         inspect: downloadInspect ?? instanceDownloadInspect,
-        // intervalMs: downloadIntervalMs ?? instanceDownloadInstervalMs,
       },
+      // upload: {
+      //   inspect: uploadInspect ?? instanceUploadInspect,
+      // },
     },
     retry: {
       max: max ?? instanceMax,

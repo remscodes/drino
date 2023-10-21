@@ -28,6 +28,9 @@ export interface RetryConfig {
    * @default [408, 429, 503, 504]
    */
   onStatus?: OnStatusCodes;
+}
+
+export interface InstanceRetryConfig extends RetryConfig {
   /**
    * Http method to filter which request should be retried on failure.
    *

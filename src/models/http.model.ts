@@ -4,13 +4,13 @@ import type { PlainObject, Prefix } from './shared.model';
 export type RequestMethodType =
   | 'GET'
   | 'HEAD'
+  | 'DELETE'
+  | 'OPTIONS'
   | 'POST'
   | 'PUT'
-  | 'DELETE'
+  | 'PATCH'
   // | 'CONNECT'
-  | 'OPTIONS'
   // | 'TRACE'
-  | 'PATCH';
 
 export type HeadersType =
   | Headers

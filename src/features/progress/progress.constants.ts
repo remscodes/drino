@@ -4,6 +4,8 @@ import type { ProgressConfig } from './models';
 export const defaultProgress: DeepRequired<ProgressConfig> = {
   download: {
     inspect: true,
-    // intervalMs: 0,
   },
+  // upload: {
+  //   inspect: true,
+  // },
 };
