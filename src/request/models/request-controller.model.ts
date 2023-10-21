@@ -1,6 +1,7 @@
-import type { StreamProgressEvent, ProgressConfig, RetryEvent, RetryConfig } from '../../features';
+import type { ProgressConfig, RetryEvent, StreamProgressEvent } from '../../features';
 import type { AbortTools } from '../../features/abort/models/abort.model';
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
+import type { InstanceRetryConfig } from '../../features/retry/models/retry-config.model';
 import type { DeepRequired } from '../../models/shared.model';
 import type { HttpResponse } from '../../response';
 import type { RequestController } from '../request-controller';
@@ -11,7 +12,7 @@ export interface RequestControllerConfig extends Required<Omit<RequestConfig<any
   headers: Headers;
   queryParams: URLSearchParams;
   interceptors: Interceptors;
-  retry: Required<RetryConfig>;
+  retry: Required<InstanceRetryConfig>;
   progress: DeepRequired<ProgressConfig>;
   abortTools: AbortTools;
 }
@@ -37,5 +38,5 @@ export interface Observer<T> {
   abort?: (reason: any) => void;
   retry?: (args: RetryEvent) => void;
   downloadProgress?: (event: StreamProgressEvent) => void;
-  // uploadProgress?: (event: DrinoProgressEvent) => void;
+  // uploadProgress?: (event: StreamProgressEvent) => void;
 }

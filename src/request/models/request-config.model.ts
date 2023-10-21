@@ -51,7 +51,7 @@ export interface RequestConfig<
   /**
    * Retry a failed request a certain number of times on a specific http status.
    */
-  retry?: Omit<RetryConfig, 'onMethods'>;
+  retry?: RetryConfig;
   /**
    * Config to inspect download progress.
    */

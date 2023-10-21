@@ -6,16 +6,19 @@ export interface ProgressConfig {
 
   /**
    * Upload progress inspection config.
+   *
+   * Only for POST, PUT and PATCH methods.
+   *
+   * **[Beta] Chrome only**
    */
   // upload?: ProgressInspectionConfig;
 }
 
 export interface ProgressInspectionConfig {
   /**
-   * Enable download progress.
+   * Enable progress inspection.
    *
    * @default true
    */
   inspect?: boolean;
-  // intervalMs?: number;
 }

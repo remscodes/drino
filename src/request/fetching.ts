@@ -1,7 +1,8 @@
-import type { ProgressConfig, RetryConfig } from '../features';
+import type { ProgressConfig } from '../features';
 import type { AbortTools } from '../features/abort/models/abort.model';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
-import { inspectDownloadProgress } from '../features/progress/progress';
+import { inspectDownloadProgress } from '../features/progress/download-progress';
+import type { InstanceRetryConfig } from '../features/retry/models/retry-config.model';
 import { needRetry } from '../features/retry/retry-util';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
@@ -14,7 +15,7 @@ import type { Observer } from './models/request-controller.model';
 export interface FetchTools {
   abortTools: AbortTools;
   interceptors: Interceptors;
-  retry: Required<RetryConfig>;
+  retry: Required<InstanceRetryConfig>;
   retryCb?: Observer<unknown>['retry'];
   progress: Required<ProgressConfig>;
   dlCb?: Observer<unknown>['downloadProgress'];
@@ -25,8 +26,6 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
   const fetchResponse: Response = await performFetch(request, tools);
 
   tools.interceptors.afterConsume(request, fetchResponse);
-
-  if (tools.progress.download.inspect) await inspectDownloadProgress(fetchResponse, tools);
 
   const { headers, status, statusText, ok, url } = fetchResponse;
 
@@ -63,6 +62,9 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
     return Promise.reject(errorResponse);
   }
 
+  if (tools.progress.download.inspect && fetchResponse.status !== 204)
+    await inspectDownloadProgress(fetchResponse, tools).catch(console.error);
+
   const isHeadOrOptions: boolean = (request.method === 'HEAD' || request.method === 'OPTIONS');
 
   const body: Headers | Awaited<UnwrapHttpResponse<T>> = (isHeadOrOptions) ? headers
@@ -85,19 +87,28 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
 function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response> {
   const { headers, method, url, body: requestBody } = request;
 
-  let body: any = requestBody;
+  let body: any;
 
-  if (body) {
-    const contentType: string = inferContentType(body);
-    headers.set('Content-Type', contentType);
-  }
-
-  // if (tools.inspectProgress) body = inspectUploadProgress(body, tools);
-
-  return fetch(url, {
+  const fetchOptions: RequestInit & { duplex?: 'half' } = {
     method,
     headers,
-    body: (body !== undefined && body !== null) ? JSON.stringify(body) : undefined,
-    signal: tools.abortTools.signal
-  });
+    signal: tools.abortTools.signal,
+  };
+
+  if (requestBody) {
+    const contentType: string = inferContentType(requestBody);
+    headers.set('Content-Type', contentType);
+
+    // if (tools.progress.upload.inspect) {
+    //   fetchOptions.duplex = 'half';
+    //   body = inspectUploadProgress(requestBody, tools, contentType);
+    // }
+    // else {
+    body = JSON.stringify(requestBody);
+    // }
+  }
+
+  fetchOptions.body = body;
+
+  return fetch(url, fetchOptions);
 }

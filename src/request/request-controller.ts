@@ -22,6 +22,9 @@ export class RequestController<Resource> {
 
     this.config = mergeRequestConfigs(config, defaultConfig);
 
+    // Disable upload for http methods without body
+    // if (!method.startsWith('P')) this.config.progress.upload.inspect = false;
+
     this.request = new HttpRequest({
       method,
       url,
@@ -31,7 +34,7 @@ export class RequestController<Resource> {
       wrapper: this.config.wrapper,
       prefix: this.config.prefix,
       queryParams: this.config.queryParams,
-      baseUrl: this.config.baseUrl
+      baseUrl: this.config.baseUrl,
     });
   }
 
