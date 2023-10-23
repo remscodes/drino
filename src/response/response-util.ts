@@ -14,7 +14,6 @@ export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise
       original: err,
     });
   }
-
 }
 
 export function inferBody(fetchResponse: Response): Promise<any> {
