@@ -33,15 +33,13 @@ function checkSignalAndAbort(signal: AbortSignal, abortCtrl: AbortController): v
 }
 
 export function fixFirefoxAbortError(err: any): any {
-  return (err?.name !== 'AbortError') ? createError('AbortError', 'The user aborted a request.', {
-      original: err
-    })
+  return (err?.name !== 'AbortError')
+    ? createError('AbortError', 'The user aborted a request.', { original: err })
     : err;
 }
 
 export function fixChromiumAndWebkitTimeoutError(err: any): any {
-  return (err?.name !== 'TimeoutError') ? createError('TimeoutError', 'The operation timed out.', {
-      original: err
-    })
+  return (err?.name !== 'TimeoutError')
+    ? createError('TimeoutError', 'The operation timed out.', { original: err })
     : err;
 }
