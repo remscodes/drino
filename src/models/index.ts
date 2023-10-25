@@ -1,3 +1,2 @@
 export type { DrinoInstance } from './drino.model';
-export type { StatusType } from './http.model';
-export * from './plugin.model';
+export type { DrinoPlugin, PluginTools } from './plugin.model';

@@ -1,4 +1,5 @@
-import type { ProgressConfig, RetryConfig } from '../../features';
+import type { ProgressConfig } from '../../features/progress/models/progress-config.model';
+import type { RetryConfig } from '../../features/retry/models/retry-config.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
 export interface RequestConfig<
