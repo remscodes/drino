@@ -1,4 +1,4 @@
-import type { StatusType } from '../models';
+import type { StatusType } from '../models/http.model';
 
 export interface HttpCommonResponseInit {
   url: string;

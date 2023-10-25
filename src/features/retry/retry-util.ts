@@ -1,7 +1,6 @@
 import type { RequestMethodType } from '../../models/http.model';
 import type { NumberRange } from '../../models/shared.model';
-import type { OnMethods, OnStatusCodes } from './models';
-import type { InstanceRetryConfig } from './models/retry-config.model';
+import type { InstanceRetryConfig, OnMethods, OnStatusCodes } from './models/retry-config.model';
 
 export function needRetry(retryConfig: Required<InstanceRetryConfig>, status: number, method: RequestMethodType, retried: number, abortCtrl: AbortController): boolean {
   return (retried < retryConfig.max)

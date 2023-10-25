@@ -1,6 +1,6 @@
 import type { Drino } from '../drino';
-import type { ProgressConfig } from '../features';
 import type { Interceptors } from '../features/interceptors/models/interceptor.model';
+import type { ProgressConfig } from '../features/progress/models/progress-config.model';
 import type { InstanceRetryConfig } from '../features/retry/models/retry-config.model';
 import type { RequestConfig } from '../request';
 import type { Url } from './http.model';

@@ -1,6 +1,7 @@
-import type { ProgressConfig, RetryEvent, StreamProgressEvent } from '../../features';
+import type { RetryEvent, StreamProgressEvent } from '../../features';
 import type { AbortTools } from '../../features/abort/models/abort.model';
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
+import type { ProgressConfig } from '../../features/progress/models/progress-config.model';
 import type { InstanceRetryConfig } from '../../features/retry/models/retry-config.model';
 import type { DeepRequired } from '../../models/shared.model';
 import type { HttpResponse } from '../../response';
