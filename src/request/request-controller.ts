@@ -38,10 +38,13 @@ export class RequestController<Resource> {
     });
   }
 
+  /** @internal */
   private readonly config: RequestControllerConfig;
 
+  /** @internal */
   private readonly request: HttpRequest;
 
+  /** @internal */
   private readonly modifiers: Modifier<any, any>[] = [];
 
   public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
@@ -101,6 +104,7 @@ export class RequestController<Resource> {
     this.useObserver(observer, tools);
   }
 
+  /** @internal */
   private async thenable(tools: FetchTools): Promise<Resource> {
     try {
       let result = await performHttpRequest<Resource>(this.request, tools);
@@ -115,6 +119,7 @@ export class RequestController<Resource> {
     }
   }
 
+  /** @internal */
   private useObserver(observer: Observer<Resource>, tools: FetchTools): void {
     performHttpRequest<Resource>(this.request, tools)
       .then(async (result) => {
@@ -136,6 +141,7 @@ export class RequestController<Resource> {
       });
   }
 
+  /** @internal */
   private catchable(thrown: any): Promise<any> {
     const error: any = (this.config.abortTools.signal.aborted) ?
       (this.config.abortTools.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
