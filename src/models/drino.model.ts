@@ -11,10 +11,10 @@ export type DrinoInstance = Omit<Drino, 'create' | 'use'>
 export interface DrinoDefaultConfigInit {
   baseUrl?: Exclude<Url, Prefix<string, '/'>>;
   interceptors?: Partial<Interceptors>;
-  requestsConfig?: DrinoRequestsConfigInit;
+  requestsConfig?: DrinoDefaultRequestsConfigInit;
 }
 
-export interface DrinoRequestsConfigInit extends Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal' | 'retry'> {
+export interface DrinoDefaultRequestsConfigInit extends Omit<RequestConfig<any, any>, 'read' | 'wrapper' | 'signal' | 'retry'> {
   retry?: InstanceRetryConfig;
 }
 
