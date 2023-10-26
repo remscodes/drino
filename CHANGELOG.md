@@ -1,3 +1,17 @@
+# 1.7.0 (2023-10-26)
+
+### Features
+
+- Add `percent`, `speed` and `remainingTimeMs` to `StreamProgressEvent` object.
+
+### Improvements
+
+- Add JSDocs.
+- Remove TypeScript notation from README examples.
+- Reduce type exports.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.7.0
+
 # 1.6.0 (2023-10-19)
 
 ### Features
