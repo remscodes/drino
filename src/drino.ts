@@ -16,6 +16,9 @@ export class Drino {
     this.default = mergeInstanceConfig(config, parentConfig);
   }
 
+  /**
+   * Default config applied to the instance.
+   */
   public default: DrinoDefaultConfig;
 
   /**

@@ -22,8 +22,8 @@ export interface RequestConfig<
   queryParams?: QueryParamsType;
   /**
    * Response type that will be passed into :
-   *  - result() callback when using Observer.
-   *  - then() callback when using Promise.
+   *  - `result` callback when using Observer.
+   *  - `then` callback when using Promise.
    *
    * If 'auto' is specified, read will be inferred from "content-type" response header.
    *
