@@ -1,10 +1,10 @@
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
 import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
-import type { FetchTools } from './fetching';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
 import type { RequestConfig } from './models';
+import type { FetchTools } from './models/fetch-tools.model';
 import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback, RequestControllerConfig } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
@@ -91,7 +91,7 @@ export class RequestController<Resource> {
     this.config.interceptors.beforeConsume(this.request);
 
     const tools: FetchTools = {
-      abortTools: this.config.abortTools,
+      abort: this.config.abort,
       interceptors: this.config.interceptors,
       retry: this.config.retry,
       retryCb: observer?.retry,
@@ -132,7 +132,7 @@ export class RequestController<Resource> {
         }
       })
       .catch((err: any) => {
-        if (this.config.abortTools.signal.aborted) return observer.abort?.(this.config.abortTools.signal.reason);
+        if (this.config.abort.signal.aborted) return observer.abort?.(this.config.abort.signal.reason);
         observer.error?.(err);
       })
       .finally(() => {
@@ -143,8 +143,8 @@ export class RequestController<Resource> {
 
   /** @internal */
   private catchable(thrown: any): Promise<any> {
-    const error: any = (this.config.abortTools.signal.aborted) ?
-      (this.config.abortTools.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
+    const error: any = (this.config.abort.signal.aborted) ?
+      (this.config.abort.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)
       : thrown;
 

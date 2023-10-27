@@ -1,6 +1,6 @@
 import { emitError } from 'thror';
 import type { Nullable } from '../../models/shared.model';
-import type { FetchTools } from '../../request/fetching';
+import type { FetchTools } from '../../request/models/fetch-tools.model';
 import { now as dateNow } from '../../utils/date-util';
 
 export async function inspectDownloadProgress(response: Response, tools: FetchTools): Promise<void> {
@@ -20,7 +20,7 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
   let reminder: number = dateNow();
 
   for (let i = 1; ; i ++) {
-    if (tools.abortTools.signal.aborted) return;
+    if (tools.abort.signal.aborted) return;
 
     const { done, value: chunk = new Uint8Array(0) }: ReadableStreamReadResult<Uint8Array> = await reader.read();
     if (done) break;

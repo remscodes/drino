@@ -85,7 +85,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       onStatus: onStatus ?? instanceOnStatus,
       onMethods: instanceOnMethods,
     },
-    abortTools: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
+    abort: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
       : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))
         : mergeSignals(signal),
   };

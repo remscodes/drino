@@ -1,4 +1,4 @@
 export interface AbortTools {
   signal: AbortSignal;
-  abortCtrl: AbortController;
+  ctrl: AbortController;
 }
