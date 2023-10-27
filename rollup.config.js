@@ -1,4 +1,5 @@
 import terser from '@rollup/plugin-terser';
+import bundleSize from 'rollup-plugin-bundle-size'
 import dts from 'rollup-plugin-dts';
 import esbuild from 'rollup-plugin-esbuild';
 
@@ -21,7 +22,7 @@ function bundle(options) {
 
 export default [
   bundle({
-    plugins: [esbuild(), terser()],
+    plugins: [esbuild(), terser(), bundleSize()],
     output: [
       {
         file: `./dist/cjs/${fileName}.cjs`,
