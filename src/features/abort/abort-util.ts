@@ -17,14 +17,14 @@ export function mergeSignals(...signals: AbortSignal[]): AbortTools {
   for (const signal of signals) {
     if (signal.aborted) {
       checkSignalAndAbort(signal, abortCtrl);
-      return { signal, abortCtrl };
+      return { signal, ctrl: abortCtrl };
     }
     signal.addEventListener('abort', function (_ev: Event) {
       checkSignalAndAbort(this, abortCtrl);
     }, { once: true, signal: abortCtrl.signal });
   }
 
-  return { signal: abortCtrl.signal, abortCtrl };
+  return { signal: abortCtrl.signal, ctrl: abortCtrl };
 }
 
 function checkSignalAndAbort(signal: AbortSignal, abortCtrl: AbortController): void {

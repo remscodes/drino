@@ -15,7 +15,7 @@ export interface RequestControllerConfig extends Required<Omit<RequestConfig<any
   interceptors: Interceptors;
   retry: Required<InstanceRetryConfig>;
   progress: DeepRequired<ProgressConfig>;
-  abortTools: AbortTools;
+  abort: AbortTools;
 }
 
 export type ObjectBody<T> = Exclude<Extract<T, object>, Blob | ArrayBuffer | FormData | HttpResponse<any>>

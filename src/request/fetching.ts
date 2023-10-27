@@ -1,8 +1,4 @@
-import type { AbortTools } from '../features/abort/models/abort.model';
-import type { Interceptors } from '../features/interceptors/models/interceptor.model';
 import { inspectDownloadProgress } from '../features/progress/download-progress';
-import type { ProgressConfig } from '../features/progress/models/progress-config.model';
-import type { InstanceRetryConfig } from '../features/retry/models/retry-config.model';
 import { needRetry } from '../features/retry/retry-util';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
@@ -10,17 +6,7 @@ import { convertBody } from '../response/response-util';
 import { getRetryAfter, inferContentType } from '../utils/headers-util';
 import { sleep } from '../utils/promise-util';
 import type { HttpRequest } from './http-request';
-import type { Observer } from './models/request-controller.model';
-
-export interface FetchTools {
-  abortTools: AbortTools;
-  interceptors: Interceptors;
-  retry: Required<InstanceRetryConfig>;
-  retryCb?: Observer<unknown>['retry'];
-  progress: Required<ProgressConfig>;
-  dlCb?: Observer<unknown>['downloadProgress'];
-  // ulCb?: Observer<unknown>['uploadProgress'];
-}
+import type { FetchTools } from './models/fetch-tools.model';
 
 export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTools, retried: number = 0): Promise<T> {
   const fetchResponse: Response = await performFetch(request, tools);
@@ -34,7 +20,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
       ? await fetchResponse.json()
       : await fetchResponse.text();
 
-    if (needRetry(tools.retry, status, request.method, retried, tools.abortTools.abortCtrl)) {
+    if (needRetry(tools.retry, status, request.method, retried, tools.abort.ctrl)) {
 
       const delay: number = (tools.retry.withRetryAfter && getRetryAfter(headers)) || tools.retry.withDelayMs;
       if (delay) await sleep(delay);
@@ -42,7 +28,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
       retried ++;
 
       tools.retryCb?.({
-        abort: (reason?: any) => tools.abortTools.abortCtrl.abort(reason),
+        abort: (reason?: any) => tools.abort.ctrl.abort(reason),
         count: retried,
         delay,
         error,
@@ -92,7 +78,7 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
   const fetchOptions: RequestInit & { duplex?: 'half' } = {
     method,
     headers,
-    signal: tools.abortTools.signal,
+    signal: tools.abort.signal,
   };
 
   if (requestBody) {
