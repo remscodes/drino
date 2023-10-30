@@ -20,7 +20,7 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
   let reminder: number = dateNow();
 
   for (let i = 1; ; i ++) {
-    if (tools.abort.signal.aborted) return;
+    if (tools.abortCtrl.signal.aborted) return;
 
     const { done, value: chunk = new Uint8Array(0) }: ReadableStreamReadResult<Uint8Array> = await reader.read();
     if (done) break;

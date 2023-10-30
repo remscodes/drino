@@ -20,7 +20,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
       ? await fetchResponse.json()
       : await fetchResponse.text();
 
-    if (needRetry(tools.retry, status, request.method, retried, tools.abort.ctrl)) {
+    if (needRetry(tools.retry, status, request.method, retried, tools.abortCtrl)) {
 
       const delay: number = (tools.retry.withRetryAfter && getRetryAfter(headers)) || tools.retry.withDelayMs;
       if (delay) await sleep(delay);
@@ -28,7 +28,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
       retried ++;
 
       tools.retryCb?.({
-        abort: (reason?: any) => tools.abort.ctrl.abort(reason),
+        abort: (reason?: any) => tools.abortCtrl.abort(reason),
         count: retried,
         delay,
         error,
@@ -78,7 +78,7 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
   const fetchOptions: RequestInit & { duplex?: 'half' } = {
     method,
     headers,
-    signal: tools.abort.signal,
+    signal: tools.abortCtrl.signal,
   };
 
   if (requestBody) {
