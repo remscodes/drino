@@ -47,4 +47,4 @@ type FinishCallback = () => void
 type AbortCallback = (reason: any) => void
 type RetryCallback = (args: RetryEvent) => void
 type DownloadCallback = (event: StreamProgressEvent) => void
-type UploadCallback = DownloadCallback
+// type UploadCallback = DownloadCallback
