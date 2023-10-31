@@ -1,4 +1,5 @@
 import { createError } from 'thror';
+import { ABORT_ERROR_NAME, TIMEOUT_ERROR_NAME } from './abort.constants';
 
 export function defaultSignal(): AbortSignal {
   return new AbortController().signal;
@@ -32,13 +33,13 @@ function checkSignalAndAbort(signal: AbortSignal, abortCtrl: AbortController): v
 }
 
 export function fixFirefoxAbortError(err: any): any {
-  return (err?.name !== 'AbortError')
-    ? createError('AbortError', 'The user aborted a request.', { original: err })
+  return (err?.name !== ABORT_ERROR_NAME)
+    ? createError(ABORT_ERROR_NAME, 'The user aborted a request.', { original: err })
     : err;
 }
 
 export function fixChromiumAndWebkitTimeoutError(err: any): any {
-  return (err?.name !== 'TimeoutError')
-    ? createError('TimeoutError', 'The operation timed out.', { original: err })
+  return (err?.name !== TIMEOUT_ERROR_NAME)
+    ? createError(TIMEOUT_ERROR_NAME, 'The operation timed out.', { original: err })
     : err;
 }

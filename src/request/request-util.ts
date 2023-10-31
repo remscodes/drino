@@ -1,39 +1,39 @@
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
-import { defaultTimeout } from '../features/abort/abort.constants';
+import { DEFAULT_TIMEOUT } from '../features/abort/abort.constants';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
-import { defaultProgress } from '../features/progress/progress.constants';
-import { defaultRetry } from '../features/retry/retry.constants';
+import { DEFAULT_PROGRESS } from '../features/progress/progress.constants';
+import { DEFAULT_RETRY } from '../features/retry/retry.constants';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
 import { createUrl } from '../utils/url-util';
 import type { RequestConfig } from './models';
 import type { RequestControllerConfig } from './models/request-controller.model';
-import { defaultBaseUrl, defaultPrefix, defaultRead, defaultWrapper } from './request.constants';
+import { DEFAULT_BASE_URL, DEFAULT_PREFIX, DEFAULT_READ, DEFAULT_WRAPPER } from './request.constants';
 
 export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): RequestControllerConfig {
   const {
-    baseUrl = defaultBaseUrl,
+    baseUrl = DEFAULT_BASE_URL,
     interceptors: instanceInterceptors = {},
     requestsConfig: {
-      prefix: instancePrefix = defaultPrefix,
+      prefix: instancePrefix = DEFAULT_PREFIX,
       headers: instanceHeaders = {},
       queryParams: instanceQueryParams = {},
-      timeoutMs: instanceTimeoutMs = defaultTimeout,
+      timeoutMs: instanceTimeoutMs = DEFAULT_TIMEOUT,
       progress: {
         download: {
-          inspect: instanceDownloadInspect = defaultProgress.download.inspect,
+          inspect: instanceDownloadInspect = DEFAULT_PROGRESS.download.inspect,
         } = {},
         // upload: {
         //   inspect: instanceUploadInspect = defaultProgress.upload.inspect,
         // } = {},
       } = {},
       retry: {
-        max: instanceMax = defaultRetry.max,
-        withRetryAfter: instanceWithRetryAfter = defaultRetry.withRetryAfter,
-        withDelayMs: instanceWithDelayMs = defaultRetry.withDelayMs,
-        onStatus: instanceOnStatus = defaultRetry.onStatus,
-        onMethods: instanceOnMethods = defaultRetry.onMethods,
+        max: instanceMax = DEFAULT_RETRY.max,
+        withRetryAfter: instanceWithRetryAfter = DEFAULT_RETRY.withRetryAfter,
+        withDelayMs: instanceWithDelayMs = DEFAULT_RETRY.withDelayMs,
+        onStatus: instanceOnStatus = DEFAULT_RETRY.onStatus,
+        onMethods: instanceOnMethods = DEFAULT_RETRY.onMethods,
       } = {},
     } = {},
   } = defaultConfig;
@@ -42,8 +42,8 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     prefix,
     headers = {},
     queryParams = {},
-    read = defaultRead,
-    wrapper = defaultWrapper,
+    read = DEFAULT_READ,
+    wrapper = DEFAULT_WRAPPER,
     timeoutMs,
     signal = defaultSignal(),
     progress: {

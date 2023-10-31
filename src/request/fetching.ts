@@ -1,3 +1,5 @@
+import { CONTENT_TYPE_JSON, HEADER_CONTENT_TYPE } from '../constants/headers.contants';
+import { WRAPPER_RESPONSE } from '../constants/wrapper.constants';
 import { inspectDownloadProgress } from '../features/progress/download-progress';
 import { needRetry } from '../features/retry/retry-util';
 import type { UnwrapHttpResponse } from '../models/http.model';
@@ -6,6 +8,7 @@ import { convertBody } from '../response/response-util';
 import { getRetryAfter, inferContentType } from '../utils/headers-util';
 import { sleep } from '../utils/promise-util';
 import type { HttpRequest } from './http-request';
+import { HTTP_HEAD, HTTP_OPTIONS } from '../constants/http.constants';
 import type { FetchTools } from './models/fetch-tools.model';
 
 export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTools, retried: number = 0): Promise<T> {
@@ -16,7 +19,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
   const { headers, status, statusText, ok, url } = fetchResponse;
 
   if (!ok) {
-    const error: string = headers.get('content-type')?.includes('application/json')
+    const error: string = headers.get(HEADER_CONTENT_TYPE)?.includes(CONTENT_TYPE_JSON)
       ? await fetchResponse.json()
       : await fetchResponse.text();
 
@@ -51,12 +54,12 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
   if (tools.progress.download.inspect && fetchResponse.status !== 204)
     await inspectDownloadProgress(fetchResponse, tools).catch(console.error);
 
-  const isHeadOrOptions: boolean = (request.method === 'HEAD' || request.method === 'OPTIONS');
+  const isHeadOrOptions: boolean = (request.method === HTTP_HEAD || request.method === HTTP_OPTIONS);
 
   const body: Headers | Awaited<UnwrapHttpResponse<T>> = (isHeadOrOptions) ? headers
     : await convertBody<T>(fetchResponse, request.read);
 
-  const result = (request.wrapper === 'response') ? new HttpResponse<UnwrapHttpResponse<T>>({
+  const result = (request.wrapper === WRAPPER_RESPONSE) ? new HttpResponse<UnwrapHttpResponse<T>>({
       body: (isHeadOrOptions) ? undefined : body,
       headers,
       status,
@@ -83,7 +86,7 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
 
   if (requestBody) {
     const contentType: string = inferContentType(requestBody);
-    headers.set('Content-Type', contentType);
+    headers.set(HEADER_CONTENT_TYPE, contentType);
 
     // if (tools.progress.upload.inspect) {
     //   fetchOptions.duplex = 'half';

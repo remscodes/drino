@@ -5,6 +5,7 @@ import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.
 import type { RequestMethodType, Url } from './models/http.model';
 import type { RequestConfig } from './request';
 import { RequestController } from './request';
+import { HTTP_DELETE, HTTP_GET, HTTP_HEAD, HTTP_PATCH, HTTP_POST, HTTP_PUT } from './constants/http.constants';
 import type { ArrayBufferBody, BlobBody, FormDataBody, ObjectBody, StringBody, VoidBody } from './request/models/request-controller.model';
 
 const pluginIdsUsed: Set<string> = new Set();
@@ -114,7 +115,7 @@ export class Drino {
    * @internal
    */
   public get<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
-    return this.request<T>('GET', url, null, config);
+    return this.request<T>(HTTP_GET, url, null, config);
   }
 
   /**
@@ -130,7 +131,7 @@ export class Drino {
    * @internal
    */
   public head<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
-    return this.request<T>('HEAD', url, null, config);
+    return this.request<T>(HTTP_HEAD, url, null, config);
   }
 
   /**
@@ -194,7 +195,7 @@ export class Drino {
    * @internal
    */
   public delete<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
-    return this.request<T>('DELETE', url, null, config);
+    return this.request<T>(HTTP_DELETE, url, null, config);
   }
 
   // private options<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
@@ -264,7 +265,7 @@ export class Drino {
    * @internal
    */
   public post<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
-    return this.request<T>('POST', url, body, config);
+    return this.request<T>(HTTP_POST, url, body, config);
   }
 
   /**
@@ -328,7 +329,7 @@ export class Drino {
    * @internal
    */
   public put<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
-    return this.request<T>('PUT', url, body, config);
+    return this.request<T>(HTTP_PUT, url, body, config);
   }
 
   /**
@@ -392,7 +393,7 @@ export class Drino {
    * @internal
    */
   public patch<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
-    return this.request<T>('PATCH', url, body, config);
+    return this.request<T>(HTTP_PATCH, url, body, config);
   }
 }
 

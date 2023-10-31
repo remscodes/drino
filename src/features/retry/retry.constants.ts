@@ -1,6 +1,6 @@
 import type { InstanceRetryConfig } from './models/retry-config.model';
 
-export const defaultRetry: Required<InstanceRetryConfig> = {
+export const DEFAULT_RETRY: Required<InstanceRetryConfig> = {
   max: 0,
   withRetryAfter: true,
   withDelayMs: 0,
