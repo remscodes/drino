@@ -29,10 +29,9 @@ describe('Drino - Progress', () => {
 
     it('should inspect download progress', (done: Mocha.Done) => {
       instance.get('/download').consume({
-        downloadProgress: ({ loaded, total, percent, speed, remainingTimeMs }: StreamProgressEvent) => {
-          // console.log(`Received ${loaded} bytes of ${total} bytes (${percent} %)`);
-          // console.log(`${Math.floor(percent * 100)} % | ${speed.toFixed()} B/ms | ${(speed / 1024 * 1000).toFixed()} KB/s | ${(speed / 1024 / 1024 * 1000).toFixed(2)} MB/s | ${remainingTimeMs.toFixed()} ms remaining.`);
-          if (loaded === total) done();
+        downloadProgress: (ev: StreamProgressEvent) => {
+          // logDownloadStats(ev);
+          if (ev.loaded === ev.total) done();
         },
       });
     }).timeout(4_000);
