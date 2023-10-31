@@ -1,6 +1,7 @@
 import type { HeadersType } from '../models/http.model';
 import type { Nullable } from '../models/shared.model';
 import { mergeMapsLike } from './map-util';
+import { dateToMs, now } from './date-util';
 
 export function mergeHeaders(...manyHeaders: HeadersType[]): Headers {
   return mergeMapsLike(Headers, ...manyHeaders);
@@ -19,7 +20,7 @@ export function getRetryAfter(headers: Headers): number {
 
   if (/^(\d*[.,])?\d+$/.test(retryAfter)) return parseFloat(retryAfter) * 1000;
 
-  const delay: number = new Date(retryAfter).getTime() - Date.now();
+  const delay: number = dateToMs(retryAfter) - now();
   return (delay > 0) ? delay
     : 0;
 }
