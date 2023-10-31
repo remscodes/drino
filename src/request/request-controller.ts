@@ -144,7 +144,7 @@ export class RequestController<Resource> {
   /** @internal */
   private catchable(thrown: any): Promise<any> {
     const error: any = (this.config.abortCtrl.signal.aborted) ?
-      (this.config.abortCtrl.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
+      (this.config.abortCtrl.signal.isTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)
       : thrown;
 
