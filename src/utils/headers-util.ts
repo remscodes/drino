@@ -9,9 +9,10 @@ export function mergeHeaders(...manyHeaders: HeadersType[]): Headers {
 
 export function inferContentType(body: unknown): string {
   return (body instanceof FormData) ? 'multipart/form-data'
-    : (body instanceof Blob) ? 'application/octet-stream'
-      : (typeof body === 'string') ? 'text/plain'
-        : 'application/json';
+    : (body instanceof URLSearchParams) ? 'application/x-www-form-urlencoded'
+      : (body instanceof Blob) ? 'application/octet-stream'
+        : (typeof body === 'string') ? 'text/plain'
+          : 'application/json';
 }
 
 export function getRetryAfter(headers: Headers): number {
