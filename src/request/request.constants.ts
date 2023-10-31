@@ -1,6 +1,7 @@
+import type { Url } from '../models/http.model';
 import type { ReadType, WrapperType } from './models/request-config.model';
 
-export const defaultBaseUrl: string = 'http://localhost';
+export const defaultBaseUrl: Url = 'http://localhost';
 
 export const defaultPrefix: string = '/';
 

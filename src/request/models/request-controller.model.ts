@@ -32,11 +32,19 @@ export type FinalCallback = () => void
 export type FollowCallback<A, B> = (result: A) => RequestController<B>
 
 export interface Observer<T> {
-  result?: (result: T) => void;
-  error?: (error: any) => void;
-  finish?: () => void;
-  abort?: (reason: any) => void;
-  retry?: (args: RetryEvent) => void;
-  downloadProgress?: (event: StreamProgressEvent) => void;
-  // uploadProgress?: (event: StreamProgressEvent) => void;
+  result?: ResultCallback<T>;
+  error?: ErrorCallback;
+  finish?: FinishCallback;
+  abort?: AbortCallback;
+  retry?: RetryCallback;
+  downloadProgress?: DownloadCallback;
+  // uploadProgress?: UploadCallback;
 }
+
+type ResultCallback<T> = (result: T) => void
+type ErrorCallback = (error: any) => void
+type FinishCallback = () => void
+type AbortCallback = (reason: any) => void
+type RetryCallback = (args: RetryEvent) => void
+type DownloadCallback = (event: StreamProgressEvent) => void
+type UploadCallback = DownloadCallback
