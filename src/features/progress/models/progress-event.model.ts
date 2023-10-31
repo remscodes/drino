@@ -21,7 +21,7 @@ export interface StreamProgressEvent {
    * Estimated remaining time in milliseconds to complete the progress.
    * Equals to 0 for the first `iteration`.
    */
-  readonly remainingTimeMs: number;
+  readonly remainingMs: number;
   /**
    * Current chunk received or sent.
    */
