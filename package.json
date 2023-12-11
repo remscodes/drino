@@ -63,7 +63,7 @@
     "@web/test-runner": "^0.18.0",
     "@web/test-runner-playwright": "^0.11.0",
     "cors": "^2.8.5",
-    "esbuild": "^0.19.8",
+    "esbuild": "^0.19.9",
     "express": "^4.18.2",
     "helmet": "^7.1.0",
     "rollup": "^4.7.0",
