@@ -1,3 +1,15 @@
+# 1.8.0 (2023-12-29)
+
+### Features
+
+- Infer `application/x-www-form-urlencoded` content type.
+
+### Fixes
+
+- Remove `node` and `default` entrypoints from `package.json`.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.8.0
+
 # 1.7.0 (2023-10-26)
 
 ### Features
