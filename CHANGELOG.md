@@ -1,3 +1,11 @@
+# 1.8.2 (2023-12-30)
+
+### Fixes
+
+- Fix CommonJS default import.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.8.2
+
 # 1.8.1 (2023-12-30)
 
 ### Fixes
