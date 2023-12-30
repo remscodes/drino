@@ -10,10 +10,11 @@
     "allowJs": true
   },
   "include": [
-    "./tests",
-    "./typings"
+    "tests",
+    "typings"
   ],
   "exclude": [
-    "./src"
+    "src",
+    "tests/imports"
   ]
 }
