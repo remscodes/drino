@@ -14,9 +14,9 @@ const fileName = 'index';
  */
 function bundle(options) {
   return {
-    ...options,
     input: `./src/${fileName}.ts`,
-    external: ['thror']
+    external: ['thror'],
+    ...options,
   }
 }
 
@@ -28,8 +28,14 @@ export default [
         file: `./dist/cjs/${fileName}.cjs`,
         format: 'cjs',
         exports: 'named',
-        sourcemap: true
+        sourcemap: true,
+        outro: 'module.exports = exports.default;'
       },
+    ]
+  }),
+  bundle({
+    plugins: [esbuild(), terser(), bundleSize()],
+    output: [
       {
         file: `./dist/esm/${fileName}.mjs`,
         format: 'es',
