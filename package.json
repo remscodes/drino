@@ -43,7 +43,7 @@
     "url": "https://github.com/remscodes/drino"
   },
   "engines": {
-    "node": ">=18.13.0"
+    "node": "^20.9.0"
   },
   "peerDependencies": {
     "thror": "^1.0.1"
