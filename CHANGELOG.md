@@ -1,3 +1,12 @@
+# 1.8.1 (2023-12-30)
+
+### Fixes
+
+- Fix CommonJS default import.
+- Increase Node engine minimum version to 20.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.8.1
+
 # 1.8.0 (2023-12-29)
 
 ### Features
