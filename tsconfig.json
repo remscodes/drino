@@ -9,8 +9,8 @@
       "DOM.Iterable"
     ],
     "baseUrl": "./",
-    "declarationDir": "./dist/types",
     "sourceMap": true,
+    "declaration": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "isolatedModules": true,
