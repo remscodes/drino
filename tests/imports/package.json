@@ -1,13 +1,15 @@
 {
   "name": "drino-import-tests",
-  "version": "0.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
+    "start:all": "run-s start:cjs start:mjs",
     "start:cjs": "node common.cjs",
-    "start:mjs": "node common.js"
+    "start:mjs": "node common.mjs"
   },
   "dependencies": {
     "drino": "file:../.."
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }

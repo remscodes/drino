@@ -1,3 +1,3 @@
-const drino = require('drino');
+const drino = require('drino').default;
 
 drino.create({});
