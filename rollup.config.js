@@ -29,7 +29,7 @@ export default [
         format: 'cjs',
         exports: 'named',
         sourcemap: true,
-        outro: 'module.exports = exports.default;'
+        outro: 'module.exports = Object.assign(exports.default, exports);'
       },
     ]
   }),
