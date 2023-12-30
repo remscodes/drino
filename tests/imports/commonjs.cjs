@@ -1,3 +1,3 @@
 const drino = require('drino');
 
-drino.create({});
+const instance = drino.create({});

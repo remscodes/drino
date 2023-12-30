@@ -1,3 +1,3 @@
 import drino from 'drino';
 
-drino.create({});
+const instance = drino.create({});

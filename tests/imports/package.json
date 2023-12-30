@@ -2,9 +2,11 @@
   "name": "drino-import-tests",
   "private": true,
   "scripts": {
-    "start:all": "run-s start:cjs start:mjs",
+    "start:all": "run-s start:cjs start:mjs start:cts start:mts",
     "start:cjs": "node commonjs.cjs",
-    "start:mjs": "node esm.mjs"
+    "start:mjs": "node esm.mjs",
+    "start:cts": "ts-node --project tsconfig.cjs.json commonjs-t.cts",
+    "start:mts": "ts-node --esm --project tsconfig.esm.json esm-t.mts"
   },
   "dependencies": {
     "drino": "file:../.."
