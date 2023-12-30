@@ -1,0 +1,13 @@
+{
+  "name": "drino-import-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start:cjs": "node common.cjs",
+    "start:mjs": "node common.js"
+  },
+  "dependencies": {
+    "drino": "file:../.."
+  }
+}
