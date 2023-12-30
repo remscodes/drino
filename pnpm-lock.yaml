@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   thror:
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^1.0.2
+    version: 1.0.2
 
 devDependencies:
   '@esm-bundle/chai':
@@ -3128,9 +3128,9 @@ packages:
       source-map-support: 0.5.21
     dev: true
 
-  /thror@1.0.1:
-    resolution: {integrity: sha512-9eQflGxhPv2NJr0c7aRjLnYzRmsEQcfMCGFb4SVKg3+CXcRqnD9cAwErlIZZUweNOkBomr4kPZJnZ4dMwMH1Iw==}
-    engines: {node: '>=18.0.0'}
+  /thror@1.0.2:
+    resolution: {integrity: sha512-q92jIDBO9s39Gamn1onZdPCWRbLfsfFSxUqNfgonFVWpJS8TLoCpUKOV3RLRJUq9Kuz4QYnYRRcZfaTFvBA2UA==}
+    engines: {node: '>=18.13.0'}
     dev: false
 
   /through@2.3.8:

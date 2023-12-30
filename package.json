@@ -46,7 +46,7 @@
     "node": "^20.9.0"
   },
   "peerDependencies": {
-    "thror": "^1.0.1"
+    "thror": "^1.0.2"
   },
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
