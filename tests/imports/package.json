@@ -6,7 +6,7 @@
     "start:cjs": "node commonjs.cjs",
     "start:mjs": "node esm.mjs",
     "start:cts": "ts-node --project tsconfig.cjs.json commonjs-t.cts",
-    "start:mts": "ts-node --esm --project tsconfig.esm.json esm-t.mts"
+    "start:mts": "node --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node --loader ts-node/esm esm-t.mts"
   },
   "dependencies": {
     "drino": "file:../.."
