@@ -35,8 +35,8 @@ devDependencies:
     specifier: ^17.0.3
     version: 17.0.3
   '@web/dev-server-esbuild':
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^1.0.2
+    version: 1.0.2
   '@web/test-runner':
     specifier: ^0.18.0
     version: 0.18.0(typescript@5.3.3)
@@ -1068,13 +1068,14 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@web/dev-server-esbuild@1.0.1:
-    resolution: {integrity: sha512-EoLLFuv5Y47pqY1IJBcGZswzkqJd+/vN4BDI3oYq8p9dDE9EuQVkC7vweAUkH7vDzI7xUp+f0UzJeQcj9t7zNQ==}
+  /@web/dev-server-esbuild@1.0.2:
+    resolution: {integrity: sha512-ak5mKt7L0H/Fa470Ku7p9A1eI32DNyFGM83jDkJviBO8r3lM00O5hVFW1K+UIYNC5EyanLyPxTqgtIuQEyMYcQ==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@mdn/browser-compat-data': 4.2.1
       '@web/dev-server-core': 0.7.0
       esbuild: 0.19.12
+      get-tsconfig: 4.7.2
       parse5: 6.0.1
       ua-parser-js: 1.0.36
     transitivePeerDependencies:
