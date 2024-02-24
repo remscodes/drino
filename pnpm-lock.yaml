@@ -17,8 +17,8 @@ devDependencies:
     specifier: ^0.4.4
     version: 0.4.4(rollup@4.12.0)
   '@types/chai':
-    specifier: ^4.3.11
-    version: 4.3.11
+    specifier: ^4.3.12
+    version: 4.3.12
   '@types/cors':
     specifier: ^2.8.17
     version: 2.8.17
@@ -525,7 +525,7 @@ packages:
   /@esm-bundle/chai@4.3.4-fix.0:
     resolution: {integrity: sha512-26SKdM4uvDWlY8/OOOxSB1AqQWeBosCX3wRYUZO7enTAj03CtVxIiCimYVG2WpULcyV51qapK4qTovwkUr5Mlw==}
     dependencies:
-      '@types/chai': 4.3.11
+      '@types/chai': 4.3.12
     dev: true
 
   /@jridgewell/gen-mapping@0.3.3:
@@ -836,8 +836,8 @@ packages:
       '@types/node': 20.11.20
     dev: true
 
-  /@types/chai@4.3.11:
-    resolution: {integrity: sha512-qQR1dr2rGIHYlJulmr8Ioq3De0Le9E4MJ5AiaeAETJJpndT1uUNHsGFK3L/UIu+rbkQSdj8J/w2bCsBZc/Y5fQ==}
+  /@types/chai@4.3.12:
+    resolution: {integrity: sha512-zNKDHG/1yxm8Il6uCCVsm+dRdEsJlFoDu73X17y09bId6UwoYww+vFBsAcRzl8knM1sab3Dp1VRikFQwDOtDDw==}
     dev: true
 
   /@types/co-body@6.1.1:
