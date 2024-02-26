@@ -11,15 +11,15 @@
     "build": "rollup -c",
     "test": "node ./tests/fixtures/process/test.mjs",
     "types": "tsc --noEmit",
-    "types:spec": "npm run types -- -p ./tsconfig.spec.json",
-    "types:all": "npm run types & npm run types:spec",
+    "types:spec": "pnpm run types -- -p ./tsconfig.spec.json",
+    "types:all": "pnpm run types & pnpm run types:spec",
     "start-web-runner": "web-test-runner",
     "start-test-server": "node ./tests/fixtures/server/server.mjs",
     "rm-dist": "node ./scripts/rm-dist.cjs",
     "playwright": "node ./node_modules/.pnpm/playwright@1.38.0/node_modules/playwright/cli.js",
-    "install-playwright": "npm run playwright -- install --with-deps",
-    "prebuild": "npm run rm-dist",
-    "pretest": "npm run types:all"
+    "install-playwright": "pnpm run playwright -- install --with-deps",
+    "prebuild": "pnpm run rm-dist",
+    "pretest": "pnpm run types:all"
   },
   "type": "module",
   "main": "./dist/cjs/index.cjs",
@@ -43,14 +43,13 @@
     "url": "https://github.com/remscodes/drino"
   },
   "engines": {
-    "node": "^20.9.0"
+    "node": ">=18"
   },
   "peerDependencies": {
     "thror": "^1.0.2"
   },
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
-    "@rollup/plugin-terser": "^0.4.4",
     "@types/chai": "^4.3.12",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -78,6 +77,6 @@
     "promise",
     "callback"
   ],
-  "packageManager": "pnpm@8.13.1",
+  "packageManager": "pnpm@8.15.4",
   "sideEffects": false
 }
