@@ -12,7 +12,7 @@ export function buildUrl(args: BuildUrlArgs): URL {
     baseUrl,
     prefix,
     url,
-    queryParams
+    queryParams,
   } = args;
 
   let finalUrl: URL;
@@ -47,7 +47,7 @@ export function createUrl(url: Url): URL {
   catch (err: any) {
     emitError('TypeError : Invalid URL', `${url}`, {
       withStack: true,
-      original: err
+      original: err,
     });
   }
 }
