@@ -24,12 +24,12 @@ export type BlobBody<T> = Extract<T, Blob>
 export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
-export type Modifier<I, O> = (value: I) => O
+export type Modifier<I, O> = (res: I) => O
 
-export type CheckCallback<T> = (result: T) => void
-export type ReportCallback = (error: any) => void
+export type CheckCallback<T> = (res: T) => void
+export type ReportCallback = (err: any) => void
 export type FinalCallback = () => void
-export type FollowCallback<A, B> = (result: A) => RequestController<B>
+export type FollowCallback<A, B> = (res: A) => RequestController<B>
 
 export interface Observer<T> {
   result?: ResultCallback<T>;
@@ -41,10 +41,10 @@ export interface Observer<T> {
   // uploadProgress?: UploadCallback;
 }
 
-type ResultCallback<T> = (value: T) => void
-type ErrorCallback = (error: any) => void
+type ResultCallback<T> = (res: T) => void
+type ErrorCallback = (err: any) => void
 type FinishCallback = () => void
 type AbortCallback = (reason: any) => void
-type RetryCallback = (args: RetryEvent) => void
-type DownloadCallback = (event: StreamProgressEvent) => void
+type RetryCallback = (ev: RetryEvent) => void
+type DownloadCallback = (ev: StreamProgressEvent) => void
 // type UploadCallback = DownloadCallback
