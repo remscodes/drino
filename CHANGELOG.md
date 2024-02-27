@@ -1,3 +1,12 @@
+# 1.8.3 (2024-02-27)
+
+### Fixes
+
+- Change the default `read` value to 'auto'.
+- Remove rollup terser plugin.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.8.3
+
 # 1.8.2 (2023-12-30)
 
 ### Fixes
