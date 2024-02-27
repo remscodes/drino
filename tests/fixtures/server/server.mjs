@@ -27,6 +27,9 @@ express()
   .use('/item', itemRouter)
   .use('/file', fileRouter)
   .use('/error', errorRouter)
+  .get('/empty', (_, res) => {
+    res.status(204).send();
+  })
   .listen(port, hostname, () => {
     console.info(`Test server running on : http://${hostname}:${port}`);
     process.send?.(SERVER_READY);
