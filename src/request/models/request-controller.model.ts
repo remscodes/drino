@@ -41,7 +41,7 @@ export interface Observer<T> {
   // uploadProgress?: UploadCallback;
 }
 
-type ResultCallback<T> = (result: T) => void
+type ResultCallback<T> = (value: T) => void
 type ErrorCallback = (error: any) => void
 type FinishCallback = () => void
 type AbortCallback = (reason: any) => void

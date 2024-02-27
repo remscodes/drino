@@ -3,7 +3,7 @@ import type { RetryConfig } from '../../features/retry/models/retry-config.model
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
 export interface RequestConfig<
-  Read extends ReadType = 'object',
+  Read extends ReadType = 'auto',
   Wrapper extends WrapperType = 'none'
 > {
   /**
@@ -27,7 +27,7 @@ export interface RequestConfig<
    *
    * If 'auto' is specified, read will be inferred from "content-type" response header.
    *
-   * @default 'object'
+   * @default 'auto'
    */
   read?: Read;
   /**
