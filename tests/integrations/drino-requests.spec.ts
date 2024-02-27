@@ -1,10 +1,35 @@
+import { expect } from '@esm-bundle/chai';
 import type { HttpResponse } from '../../src';
+import drino from '../../src';
 import type { TestItem } from '../fixtures/services/item-service';
 import { ItemService } from '../fixtures/services/item-service';
 import { expectEqual, expectProperty, expectType } from '../fixtures/utils/expect-util';
 
 describe('Drino - Requests', () => {
   const service: ItemService = new ItemService();
+
+  describe('External request', () => {
+
+    it('should fetch catfact', async () => {
+      const res = await drino.get('https://catfact.ninja/fact', {
+        progress: { download: { inspect: false } },
+      }).consume();
+
+      expectType(res, 'object');
+    });
+
+    it('should fetch catfact', async () => {
+      const instance = drino.create({
+        baseUrl: 'http://localhost:3000',
+      });
+
+      const res = await instance.get('https://catfact.ninja/fact', {
+        progress: { download: { inspect: false } },
+      }).consume();
+
+      expectType(res, 'object');
+    });
+  });
 
   describe('GET', () => {
     const id: number = 1;
@@ -15,7 +40,7 @@ describe('Drino - Requests', () => {
           expectProperty(result, 'id', 'number', id);
           expectProperty(result, 'name', 'string');
           done();
-        }
+        },
       });
     });
 
@@ -34,7 +59,7 @@ describe('Drino - Requests', () => {
         result: (headers: Headers) => {
           expectType(headers, 'Headers');
           done();
-        }
+        },
       });
     });
 
@@ -55,7 +80,7 @@ describe('Drino - Requests', () => {
           expectProperty(result, 'id', 'number');
           expectProperty(result, 'name', 'string', itemName);
           done();
-        }
+        },
       });
     });
 
@@ -72,7 +97,7 @@ describe('Drino - Requests', () => {
   describe('PUT', () => {
     const updatedItem: TestItem = {
       id: 1,
-      name: 'Updated First Item'
+      name: 'Updated First Item',
     };
 
     it('should retrieve result from Observer', (done: Mocha.Done) => {
@@ -81,7 +106,7 @@ describe('Drino - Requests', () => {
           expectProperty(result, 'id', 'number', updatedItem.id);
           expectProperty(result, 'name', 'string', updatedItem.name);
           done();
-        }
+        },
       });
     });
 
@@ -96,7 +121,7 @@ describe('Drino - Requests', () => {
   describe('PATCH', () => {
     const updatedItem: TestItem = {
       id: 1,
-      name: 'Updated Second Item'
+      name: 'Updated Second Item',
     };
 
     it('should retrieve result from Observer', (done: Mocha.Done) => {
@@ -105,7 +130,7 @@ describe('Drino - Requests', () => {
           expectProperty(result, 'id', 'number', updatedItem.id);
           expectProperty(result, 'name', 'string', updatedItem.name);
           done();
-        }
+        },
       });
     });
 
@@ -145,7 +170,7 @@ describe('Drino - Requests', () => {
         result: ({ status }: HttpResponse<void>) => {
           expectEqual(status, 204);
           done();
-        }
+        },
       });
     });
 
@@ -155,6 +180,23 @@ describe('Drino - Requests', () => {
       const { status }: HttpResponse<void> = await service.deleteOneItem(id).consume();
 
       expectEqual(status, 204);
+    });
+  });
+
+  describe('NO CONTENT', () => {
+
+    it('should get nothing', (done) => {
+      drino.get('http://localhost:8080/empty').consume({
+        result: (value) => {
+          expect(value).to.be.undefined;
+          done();
+        },
+      });
+    });
+
+    it('should get nothing', async () => {
+      const value = await drino.get('http://localhost:8080/empty').consume();
+      expect(value).to.be.undefined;
     });
   });
 });

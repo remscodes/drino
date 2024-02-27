@@ -54,9 +54,13 @@ export class Drino {
   }
 
   /**
+   * Builds a `GET` request controller that interprets the response body according to the response "content-type" header and returns it.
+   */
+  public get<T>(url: Url, config?: RequestConfig): RequestController<T>;
+  /**
    * Builds a `GET` request controller that interprets the response body as an `object` and returns it.
    */
-  public get<T>(url: Url, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public get<T>(url: Url, config?: RequestConfig<'object'>): RequestController<ObjectBody<T>>;
   /**
    * Builds a `GET` request controller that interprets the response body as a `string` and returns it.
    */
@@ -78,9 +82,9 @@ export class Drino {
    */
   public get<T>(url: Url, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
   /**
-   * Builds a `GET` request controller that interprets the response body according to the response "content-type" header and returns it.
+   * Builds a `GET` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
    */
-  public get<T>(url: Url, config?: RequestConfig<'auto'>): RequestController<T>;
+  public get<T>(url: Url, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
   /**
    * Builds a `GET` request controller that interprets the response body as an `object` and returns it wrapped into a `HttpResponse`.
    */
@@ -106,10 +110,6 @@ export class Drino {
    */
   public get<T>(url: Url, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
   /**
-   * Builds a `GET` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
-   */
-  public get<T>(url: Url, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
-  /**
    * Builds a `GET` request controller.
    * @internal
    */
@@ -134,9 +134,13 @@ export class Drino {
   }
 
   /**
+   * Builds a `DELETE` request controller that interprets the response body according to the response "content-type" header and returns it.
+   */
+  public delete<T>(url: Url, config?: RequestConfig): RequestController<T>;
+  /**
    * Builds a `DELETE` request controller that interprets the response body as an `object` and returns it.
    */
-  public delete<T>(url: Url, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public delete<T>(url: Url, config?: RequestConfig<'object'>): RequestController<ObjectBody<T>>;
   /**
    * Builds a `DELETE` request controller that interprets the response body as a `string` and returns it.
    */
@@ -158,9 +162,9 @@ export class Drino {
    */
   public delete<T>(url: Url, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
   /**
-   * Builds a `DELETE` request controller that interprets the response body according to the response "content-type" header and returns it.
+   * Builds a `DELETE` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
    */
-  public delete<T>(url: Url, config?: RequestConfig<'auto'>): RequestController<T>;
+  public delete<T>(url: Url, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
   /**
    * Builds a `DELETE` request controller that interprets the response body as an `object` and returns it wrapped into a `HttpResponse`.
    */
@@ -186,10 +190,6 @@ export class Drino {
    */
   public delete<T>(url: Url, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
   /**
-   * Builds a `DELETE` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
-   */
-  public delete<T>(url: Url, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
-  /**
    * Builds a `DELETE` request controller.
    * @internal
    */
@@ -197,16 +197,14 @@ export class Drino {
     return this.request<T>('DELETE', url, null, config);
   }
 
-  // private options<T>(url: Url, config?: RequestConfig): RequestController<Headers>;
-  // private options<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
-  // private options<T>(url: Url, config?: RequestConfig<any, any>): RequestController<any> {
-  //   return this.request<T>('OPTIONS', url, null, config);
-  // }
-
+  /**
+   * Builds a `POST` request controller that interprets the response body according to the response "content-type" header and returns it.
+   */
+  public post<T>(url: Url, body: any, config?: RequestConfig): RequestController<T>;
   /**
    * Builds a `POST` request controller that interprets the response body as an `object` and returns it.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'object'>): RequestController<ObjectBody<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body as a `string` and returns it.
    */
@@ -228,9 +226,9 @@ export class Drino {
    */
   public post<T>(url: Url, body: any, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
   /**
-   * Builds a `POST` request controller that interprets the response body according to the response "content-type" header and returns it.
+   * Builds a `POST` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'auto'>): RequestController<T>;
+  public post<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body as an `object` and returns it wrapped into a `HttpResponse`.
    */
@@ -256,10 +254,6 @@ export class Drino {
    */
   public post<T>(url: Url, body: any, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
   /**
-   * Builds a `POST` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
-   */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
-  /**
    * Builds a `POST` request controller.
    * @internal
    */
@@ -268,9 +262,13 @@ export class Drino {
   }
 
   /**
+   * Builds a `PUT` request controller that interprets the response body according to the response "content-type" header and returns it.
+   */
+  public put<T>(url: Url, body: any, config?: RequestConfig): RequestController<T>;
+  /**
    * Builds a `PUT` request controller that interprets the response body as an `object` and returns it.
    */
-  public put<T>(url: Url, body: any, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'object'>): RequestController<ObjectBody<T>>;
   /**
    * Builds a `PUT` request controller that interprets the response body as a `string` and returns it.
    */
@@ -292,9 +290,9 @@ export class Drino {
    */
   public put<T>(url: Url, body: any, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
   /**
-   * Builds a `PUT` request controller that interprets the response body according to the response "content-type" header and returns it.
+   * Builds a `PUT` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
    */
-  public put<T>(url: Url, body: any, config?: RequestConfig<'auto'>): RequestController<T>;
+  public put<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
   /**
    * Builds a `PUT` request controller that interprets the response body as an `object` and returns it wrapped into a `HttpResponse`.
    */
@@ -320,10 +318,6 @@ export class Drino {
    */
   public put<T>(url: Url, body: any, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
   /**
-   * Builds a `PUT` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
-   */
-  public put<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
-  /**
    * Builds a `PUT` request controller.
    * @internal
    */
@@ -332,9 +326,13 @@ export class Drino {
   }
 
   /**
+   * Builds a `PATCH` request controller that interprets the response body according to the response "content-type" header and returns it.
+   */
+  public patch<T>(url: Url, body: any, config?: RequestConfig): RequestController<T>;
+  /**
    * Builds a `PATCH` request controller that interprets the response body as an `object` and returns it.
    */
-  public patch<T>(url: Url, body: any, config?: RequestConfig): RequestController<ObjectBody<T>>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'object'>): RequestController<ObjectBody<T>>;
   /**
    * Builds a `PATCH` request controller that interprets the response body as a `string` and returns it.
    */
@@ -356,9 +354,9 @@ export class Drino {
    */
   public patch<T>(url: Url, body: any, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
   /**
-   * Builds a `PATCH` request controller that interprets the response body according to the response "content-type" header and returns it.
+   * Builds a `PATCH` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
    */
-  public patch<T>(url: Url, body: any, config?: RequestConfig<'auto'>): RequestController<T>;
+  public patch<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
   /**
    * Builds a `PATCH` request controller that interprets the response body as an `object` and returns it wrapped into a `HttpResponse`.
    */
@@ -383,10 +381,6 @@ export class Drino {
    * Builds a `PATCH` request controller that interprets the response body as a `FormData` and returns it wrapped into a `HttpResponse`.
    */
   public patch<T>(url: Url, body: any, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
-  /**
-   * Builds a `PATCH` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
-   */
-  public patch<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
   /**
    * Builds a `PATCH` request controller.
    * @internal

@@ -5,6 +5,6 @@ export const defaultBaseUrl: Url = 'http://localhost';
 
 export const defaultPrefix: string = '/';
 
-export const defaultRead: ReadType = 'object';
+export const defaultRead: ReadType = 'auto';
 
 export const defaultWrapper: WrapperType = 'none';

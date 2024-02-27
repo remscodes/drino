@@ -23,7 +23,8 @@ export function inferBody(fetchResponse: Response): Promise<any> {
     = (contentType?.includes('text/plain')) ? 'string'
     : (contentType?.includes('application/octet-stream')) ? 'blob'
       : (contentType?.includes('multipart/form-data')) ? 'formData'
-        : 'object';
+        : (contentType?.includes('application/json')) ? 'object'
+          : 'none';
 
   return bodyFromReadType(fetchResponse, readType);
 }
