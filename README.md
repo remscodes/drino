@@ -33,6 +33,7 @@ npm install drino
   - [Pipe Methods](#pipe-methods)
   - [Request Annulation](#request-annulation)
   - [Request Retry](#request-retry)
+- [React Native support](#react-native-support)
 
 ## Basic Usage
 
@@ -103,8 +104,8 @@ interface RequestConfig {
   // 
   // If 'auto' is specified, the response type will be inferred from "content-type" response header.
   // 
-  // default: 'object'
-  read?: 'object' | 'string' | 'blob' | 'arrayBuffer' | 'formData' | 'auto' | 'none';
+  // default: 'auto'
+  read?: 'auto' | 'object' | 'string' | 'blob' | 'arrayBuffer' | 'formData' | 'none';
 
   // Wrap response body into a specific Object.
   // - 'response' : HttpResponse
@@ -542,7 +543,7 @@ drino.get('/cat/meow', { timeoutMs: 2_000 }).consume({
 // With Promise async/await
 async function getCatInfo() {
   try {
-    const result = await drino.get('/cat/meow', { timeoutMs: 2_000 }).consume();
+    const res = await drino.get('/cat/meow', { timeoutMs: 2_000 }).consume();
     // handle result
   }
   catch (err) {
@@ -637,6 +638,13 @@ instance.get('/my-failed-api').consume({
     console.log(reason); // "Too many retries."
   }
 });
+```
+
+## React Native support
+
+Install `react-native-url-polyfill` and add the following line at the top of your `index.js` file :
+```js
+import 'react-native-url-polyfill/auto';
 ```
 
 ## License
