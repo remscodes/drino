@@ -8,29 +8,6 @@ import { expectEqual, expectProperty, expectType } from '../fixtures/utils/expec
 describe('Drino - Requests', () => {
   const service: ItemService = new ItemService();
 
-  describe('External request', () => {
-
-    it('should fetch catfact', async () => {
-      const res = await drino.get('https://catfact.ninja/fact', {
-        progress: { download: { inspect: false } },
-      }).consume();
-
-      expectType(res, 'object');
-    });
-
-    it('should fetch catfact', async () => {
-      const instance = drino.create({
-        baseUrl: 'http://localhost:3000',
-      });
-
-      const res = await instance.get('https://catfact.ninja/fact', {
-        progress: { download: { inspect: false } },
-      }).consume();
-
-      expectType(res, 'object');
-    });
-  });
-
   describe('GET', () => {
     const id: number = 1;
 
