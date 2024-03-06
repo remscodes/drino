@@ -22,17 +22,17 @@ npm install drino
 ## Table of contents
 
 - [Basic Usage](#basic-usage)
-  - [Example](#example)
-  - [Request Methods](#request-methods)
-  - [Request Config](#request-config)
-  - [Instance](#instance)
-  - [Plugin](#plugin)
+    - [Example](#example)
+    - [Request Methods](#request-methods)
+    - [Request Config](#request-config)
+    - [Instance](#instance)
+    - [Plugin](#plugin)
 - [Advanced Usage](#advanced-usage)
-  - [Interceptors](#interceptors)
-  - [Progress Capturing](#progress-capturing)
-  - [Pipe Methods](#pipe-methods)
-  - [Request Annulation](#request-annulation)
-  - [Request Retry](#request-retry)
+    - [Interceptors](#interceptors)
+    - [Progress Capturing](#progress-capturing)
+    - [Pipe Methods](#pipe-methods)
+    - [Request Annulation](#request-annulation)
+    - [Request Retry](#request-retry)
 - [React Native support](#react-native-support)
 
 ## Basic Usage
@@ -312,11 +312,12 @@ const instance = drino.create({
 
 ### Progress Capturing
 
-#### Download 
+#### Download
 
 You can inspect download progress with `downloadProgress` observer's callback.
 
-Progress capturing can be disabled for the instance or for the request by set `inspect: false` into ProgressConfig in RequestConfig.
+Progress capturing can be disabled for the instance or for the request by set `inspect: false` into ProgressConfig in
+RequestConfig.
 
 ```ts
 interface ProgressConfig {
@@ -353,7 +354,7 @@ export interface StreamProgressEvent {
 
   // Current chunk received or sent.
   chunk: Uint8Array;
-  
+
   // Current iteration number of the progress.
   iteration: number;
 }
@@ -643,6 +644,7 @@ instance.get('/my-failed-api').consume({
 ## React Native support
 
 Install `react-native-url-polyfill` and add the following line at the top of your `index.js` file :
+
 ```js
 import 'react-native-url-polyfill/auto';
 ```
