@@ -10,7 +10,7 @@ type MapLikeCtor<T, InitType> = Constructor<T, [Optional<InitType>]>
 
 export function mergeMapsLike<T extends MapLike<T>, InitType>(MapLikeCtor: MapLikeCtor<T, InitType>, ...maps: InitType[]): T {
   return maps.reduce((finalMapLike: T, map: InitType) => {
-    new MapLikeCtor(map).forEach((value: string, key: string) => finalMapLike.set(key, value));
+    new MapLikeCtor(map).forEach((value: any, key: string) => finalMapLike.set(key, `${value}`));
     return finalMapLike;
   }, new MapLikeCtor(undefined));
 }
