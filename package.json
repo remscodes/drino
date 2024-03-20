@@ -16,7 +16,7 @@
     "start-web-runner": "web-test-runner",
     "start-test-server": "node ./tests/fixtures/server/server.mjs",
     "rm-dist": "node ./scripts/rm-dist.cjs",
-    "playwright": "node ./node_modules/.pnpm/playwright@1.38.0/node_modules/playwright/cli.js",
+    "playwright": "node ./node_modules/.pnpm/playwright@1.42.1/node_modules/playwright/cli.js",
     "install-playwright": "pnpm run playwright install --with-deps",
     "prebuild": "pnpm run rm-dist",
     "pretest": "pnpm run types:all"
