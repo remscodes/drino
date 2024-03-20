@@ -1,31 +1,31 @@
-import { defaultTimeout } from './features/abort/abort.constants';
+import { DEFAULT_TIMEOUT } from './features/abort/abort.constants';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
-import { defaultProgress } from './features/progress/progress.constants';
-import { defaultRetry } from './features/retry/retry.constants';
+import { DEFAULT_PROGRESS } from './features/progress/progress.constants';
+import { DEFAULT_RETRY } from './features/retry/retry.constants';
 import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
-import { defaultBaseUrl, defaultPrefix } from './request/request.constants';
+import { DEFAULT_BASE_URL, DEFAULT_PREFIX } from './request/request.constants';
 import { mergeHeaders } from './utils/headers-util';
 import { mergeQueryParams } from './utils/params-util';
 
 export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, parentDefaultConfig?: DrinoDefaultConfig): DrinoDefaultConfig {
   const {
-    baseUrl: parentBaseUrl = defaultBaseUrl,
+    baseUrl: parentBaseUrl = DEFAULT_BASE_URL,
     interceptors: parentInterceptors = {},
     requestsConfig: {
-      prefix: parentPrefix = defaultPrefix,
+      prefix: parentPrefix = DEFAULT_PREFIX,
       headers: parentHeaders = {},
       queryParams: parentQueryParams = {},
-      timeoutMs: parentTimeoutMs = defaultTimeout,
+      timeoutMs: parentTimeoutMs = DEFAULT_TIMEOUT,
       retry: {
-        max: parentMax = defaultRetry.max,
-        withRetryAfter: parentWithRetryAfter = defaultRetry.withRetryAfter,
-        withDelayMs: parentDelayMs = defaultRetry.withDelayMs,
-        onStatus: parentOnStatus = defaultRetry.onStatus,
-        onMethods: parentOnMethods = defaultRetry.onMethods,
+        max: parentMax = DEFAULT_RETRY.max,
+        withRetryAfter: parentWithRetryAfter = DEFAULT_RETRY.withRetryAfter,
+        withDelayMs: parentDelayMs = DEFAULT_RETRY.withDelayMs,
+        onStatus: parentOnStatus = DEFAULT_RETRY.onStatus,
+        onMethods: parentOnMethods = DEFAULT_RETRY.onMethods,
       } = {},
       progress: {
         download: {
-          inspect: parentDownloadInspect = defaultProgress.download.inspect,
+          inspect: parentDownloadInspect = DEFAULT_PROGRESS.download.inspect,
         } = {},
         // upload: {
         //   inspect: parentUploadInspect = defaultProgress.upload.inspect,

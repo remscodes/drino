@@ -1,1 +1,1 @@
-export const defaultTimeout: number = 0;
+export const DEFAULT_TIMEOUT: number = 0;
