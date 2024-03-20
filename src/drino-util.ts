@@ -62,11 +62,11 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
 
   return {
     baseUrl: baseUrl ?? parentBaseUrl,
-    interceptors: mergeInterceptors(interceptors, parentInterceptors),
+    interceptors: mergeInterceptors(parentInterceptors, interceptors),
     requestsConfig: {
       prefix: prefix ?? parentPrefix,
-      headers: mergeHeaders(headers, parentHeaders),
-      queryParams: mergeQueryParams(queryParams, parentQueryParams),
+      headers: mergeHeaders(parentHeaders, headers),
+      queryParams: mergeQueryParams(parentQueryParams, queryParams),
       timeoutMs: timeoutMs ?? parentTimeoutMs,
       progress: {
         download: {

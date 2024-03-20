@@ -11,7 +11,7 @@ export function timedSignal(timeoutMs: number): AbortSignal {
 }
 
 export function mergeSignals(...signals: AbortSignal[]): AbortController {
-  const abortCtrl: AbortController = new AbortController();
+  const abortCtrl = new AbortController();
 
   for (const signal of signals) {
     if (signal.aborted) {
