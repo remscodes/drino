@@ -42,10 +42,9 @@ export class RequestController<Resource> {
   private readonly config: RequestControllerConfig;
 
   /** @internal */
-  private readonly request: HttpRequest;
-
-  /** @internal */
   private readonly modifiers: Modifier<any, any>[] = [];
+
+  public readonly request: HttpRequest<Resource>;
 
   public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
   public transform(modifiers: Modifier<any, any>): RequestController<any> {
