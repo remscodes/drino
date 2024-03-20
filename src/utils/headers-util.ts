@@ -1,7 +1,7 @@
 import type { HeadersType } from '../models/http.model';
 import type { Nullable } from '../models/shared.model';
-import { mergeMapsLike } from './map-util';
 import { dateToMs, now } from './date-util';
+import { mergeMapsLike } from './map-util';
 
 export function mergeHeaders(...manyHeaders: HeadersType[]): Headers {
   return mergeMapsLike(Headers, ...manyHeaders);
