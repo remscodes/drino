@@ -4,6 +4,10 @@ declare global {
     hasTimeout?: boolean;
     abortedByTimeout?: boolean;
   }
+
+  interface RequestInit {
+    duplex?: 'half';
+  }
 }
 
 export {};

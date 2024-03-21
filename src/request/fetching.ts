@@ -72,14 +72,11 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
 
 function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response> {
   const { headers, method, url, body: requestBody } = request;
+  const { abortCtrl: { signal }, fetchInit, fetch: fetchFn } = tools;
+
+  const fetchOptions: RequestInit = { method, headers, signal };
 
   let body: any;
-
-  const fetchOptions: RequestInit & { duplex?: 'half' } = {
-    method,
-    headers,
-    signal: tools.abortCtrl.signal,
-  };
 
   if (requestBody) {
     const contentType: string = inferContentType(requestBody);
@@ -96,10 +93,8 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
 
   fetchOptions.body = body;
 
-  const fetchFn = tools.fetch;
-
   return fetchFn(url, {
     ...fetchOptions,
-    ...tools.fetchInit,
+    ...fetchInit,
   });
 }
