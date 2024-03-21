@@ -93,10 +93,10 @@ interface RequestConfig {
   prefix?: string;
 
   // HTTP Headers
-  headers?: Headers | Record<string, string>;
+  headers?: Headers | Record<string, any>;
 
   // HTTP Parameters
-  queryParams?: URLSearchParams | Record<string, string>;
+  queryParams?: URLSearchParams | Record<string, any>;
 
   // Response type that will be passed into :
   // - `result` callback when using Observer
@@ -175,10 +175,10 @@ interface DrinoDefaultConfig {
   //
   // See below in section 'Interceptors'
   interceptors?: {
-    beforeConsume?: (request: HttpRequest) => void;
-    afterConsume?: (request: HttpRequest) => void;
-    beforeResult?: (result: any) => void;
-    beforeError?: (errorResponse: HttpErrorResponse) => void;
+    beforeConsume?: (req: HttpRequest) => void;
+    afterConsume?: (req: HttpRequest) => void;
+    beforeResult?: (res: any) => void;
+    beforeError?: (errRes: HttpErrorResponse) => void;
     beforeFinish?: () => void;
   };
 
@@ -232,9 +232,9 @@ Example :
 ```ts
 const instance = drino.create({
   interceptors: {
-    beforeConsume: (request) => {
+    beforeConsume: (req) => {
       const token = myService.getToken();
-      request.headers.set('Authorization', `Bearer ${token}`);
+      req.headers.set('Authorization', `Bearer ${token}`);
     }
   }
 });
@@ -249,8 +249,8 @@ Example :
 ```ts
 const instance = drino.create({
   interceptors: {
-    afterConsume: (request) => {
-      console.info(`Response received from ${request.url}`);
+    afterConsume: (req) => {
+      console.info(`Response received from ${req.url}`);
     }
   }
 });
@@ -265,8 +265,8 @@ Example :
 ```ts
 const instance = drino.create({
   interceptors: {
-    beforeResult: (result) => {
-      console.info(`Result : ${result}`);
+    beforeResult: (res) => {
+      console.info(`Result : ${res}`);
     }
   }
 });
@@ -491,10 +491,10 @@ You can cancel a send request (before receive response) by using `AbortSignal` a
 Example :
 
 ```ts
-const abortCtrl = new AbortController();
-const signal = abortCtrl.signal;
+const controller = new AbortController();
+const signal = controller.signal;
 
-setTimeout(() => abortCtrl.abort('Too Long'), 2_000);
+setTimeout(() => controller.abort('Too Long'), 2_000);
 
 // With Observer
 drino.get('/cat/meow', { signal }).consume({
@@ -538,7 +538,7 @@ drino.get('/cat/meow', { timeoutMs: 2_000 }).consume({
   error: (err) => {
     console.error(err.message); // "The operation timed out."
     // handle timeout error
-  }
+  },
 });
 
 // With Promise async/await
