@@ -1,38 +1,23 @@
-import type { HttpRequest } from '../../request';
-import type { HttpErrorResponse } from '../../response';
+import { EMPTY_FN, mergeVoidFns } from '../../utils/fn-util';
 import type { Interceptors } from './models/interceptor.model';
 
-export function mergeInterceptors(defaultInterceptors: Partial<Interceptors>, interceptors: Partial<Interceptors>): Interceptors {
+export function initInterceptors(interceptors: Partial<Interceptors>): Interceptors {
+  const { beforeConsume, afterConsume, beforeResult, beforeError, beforeFinish } = interceptors;
   return {
-    beforeConsume: (request: HttpRequest) => {
-      defaultInterceptors.beforeConsume?.(request);
-      interceptors.beforeConsume?.(request);
-    },
-    afterConsume: (request: HttpRequest, response: Response) => {
-      defaultInterceptors.afterConsume?.(request, response);
-      interceptors.afterConsume?.(request, response);
-    },
-    beforeResult: (result: unknown) => {
-      defaultInterceptors.beforeResult?.(result);
-      interceptors.beforeResult?.(result);
-    },
-    beforeError: (errorResponse: HttpErrorResponse) => {
-      defaultInterceptors.beforeError?.(errorResponse);
-      interceptors.beforeError?.(errorResponse);
-    },
-    beforeFinish: () => {
-      defaultInterceptors.beforeFinish?.();
-      interceptors.beforeFinish?.();
-    },
+    beforeConsume: beforeConsume ?? EMPTY_FN,
+    afterConsume: afterConsume ?? EMPTY_FN,
+    beforeResult: beforeResult ?? EMPTY_FN,
+    beforeError: beforeError ?? EMPTY_FN,
+    beforeFinish: beforeFinish ?? EMPTY_FN,
   };
 }
 
-export function initInterceptors(interceptors: Partial<Interceptors>): Interceptors {
+export function mergeInterceptors(...interceptors: Partial<Interceptors>[]): Interceptors {
   return {
-    beforeConsume: (request: HttpRequest) => interceptors.beforeConsume?.(request),
-    afterConsume: (request: HttpRequest, response: Response) => interceptors.afterConsume?.(request, response),
-    beforeResult: (result: unknown) => interceptors.beforeResult?.(result),
-    beforeError: (errorResponse: HttpErrorResponse) => interceptors.beforeError?.(errorResponse),
-    beforeFinish: () => interceptors.beforeFinish?.(),
+    beforeConsume: mergeVoidFns(...interceptors.map(i => i.beforeConsume)),
+    afterConsume: mergeVoidFns(...interceptors.map(i => i.afterConsume)),
+    beforeResult: mergeVoidFns(...interceptors.map(i => i.beforeResult)),
+    beforeError: mergeVoidFns(...interceptors.map(i => i.beforeError)),
+    beforeFinish: mergeVoidFns(...interceptors.map(i => i.beforeFinish)),
   };
 }
