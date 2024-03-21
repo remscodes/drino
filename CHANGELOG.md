@@ -1,3 +1,12 @@
+# 1.9.0 (2024-03-XX)
+
+### Features
+
+- Access `HttpRequest` built by `RequestController`.
+- Allow to set any value to `headers` and `queryParams`.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.9.0
+
 # 1.8.3 (2024-02-27)
 
 ### Fixes
@@ -119,11 +128,11 @@
 ### Features
 
 - Interceptors :
-  - `beforeConsume` : before the request is launched.
-  - `afterConsume` : when the response has been received.
-  - `beforeResult` : before the `result` callback (observer) or before the `then()` arg callback (promise).
-  - `beforeError` : before the `error` callback (observer) or before the `catch()` arg callback (promise).
-  - `beforeFinish` : before the `finish` callback (observer) or before the `finally()` arg callback (promise).
+    - `beforeConsume` : before the request is launched.
+    - `afterConsume` : when the response has been received.
+    - `beforeResult` : before the `result` callback (observer) or before the `then()` arg callback (promise).
+    - `beforeError` : before the `error` callback (observer) or before the `catch()` arg callback (promise).
+    - `beforeFinish` : before the `finish` callback (observer) or before the `finally()` arg callback (promise).
 
 
 - `HttpRequest` object for being passed into interceptors.
