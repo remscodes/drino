@@ -57,6 +57,16 @@ export interface RequestConfig<
    * Config to inspect download progress.
    */
   progress?: ProgressConfig;
+  /**
+   * The `fetch` function to be used to perform request.
+   *
+   * @default fetch
+   */
+  fetch?: typeof fetch;
+  /**
+   * Overrides final fetch init.
+   */
+  fetchInit?: RequestInit;
 }
 
 export type ReadType =

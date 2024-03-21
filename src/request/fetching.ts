@@ -96,5 +96,10 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
 
   fetchOptions.body = body;
 
-  return fetch(url, fetchOptions);
+  const fetchFn = tools.fetch;
+
+  return fetchFn(url, {
+    ...fetchOptions,
+    ...tools.fetchInit,
+  });
 }

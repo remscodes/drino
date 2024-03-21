@@ -96,6 +96,8 @@ export class RequestController<Resource> {
       retryCb: observer?.retry,
       progress: this.config.progress,
       dlCb: observer?.downloadProgress,
+      fetch: this.config.fetch,
+      fetchInit: this.config.fetchInit,
       // ulCb: observer?.uploadProgress,
     };
 

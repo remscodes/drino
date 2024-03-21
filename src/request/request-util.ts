@@ -35,6 +35,8 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
         onStatus: instanceOnStatus = DEFAULT_RETRY.onStatus,
         onMethods: instanceOnMethods = DEFAULT_RETRY.onMethods,
       } = {},
+      fetch: instanceFetch = fetch,
+      fetchInit: instanceFetchInit = {},
     } = {},
   } = defaultConfig;
 
@@ -60,6 +62,8 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       withDelayMs,
       onStatus,
     } = {},
+    fetch: reqFetch,
+    fetchInit,
   } = requestConfig;
 
   return {
@@ -88,5 +92,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     abortCtrl: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
       : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))
         : mergeSignals(signal),
+    fetch: reqFetch ?? instanceFetch,
+    fetchInit: fetchInit ?? instanceFetchInit,
   };
 }

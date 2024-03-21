@@ -31,6 +31,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         //   inspect: parentUploadInspect = defaultProgress.upload.inspect,
         // } = {},
       } = {},
+      fetch: parentFetch = fetch,
+      fetchInit: parentFetchInit = {},
     } = {},
   } = parentDefaultConfig ?? {};
 
@@ -57,6 +59,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         //   inspect: uploadInspect = undefined,
         // } = {},
       } = {},
+      fetch: reqFetch,
+      fetchInit,
     } = {},
   } = defaultConfig;
 
@@ -83,6 +87,8 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         onStatus: onStatus ?? parentOnStatus,
         onMethods: onMethods ?? parentOnMethods,
       },
+      fetch: reqFetch ?? parentFetch,
+      fetchInit: fetchInit ?? parentFetchInit,
     },
   };
 }
