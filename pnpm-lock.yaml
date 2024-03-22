@@ -14,8 +14,8 @@ devDependencies:
     specifier: 4.3.4-fix.0
     version: 4.3.4-fix.0
   '@types/chai':
-    specifier: ^4.3.13
-    version: 4.3.13
+    specifier: ^4.3.14
+    version: 4.3.14
   '@types/cookie-parser':
     specifier: ^1.4.7
     version: 1.4.7
@@ -529,7 +529,7 @@ packages:
   /@esm-bundle/chai@4.3.4-fix.0:
     resolution: {integrity: sha512-26SKdM4uvDWlY8/OOOxSB1AqQWeBosCX3wRYUZO7enTAj03CtVxIiCimYVG2WpULcyV51qapK4qTovwkUr5Mlw==}
     dependencies:
-      '@types/chai': 4.3.13
+      '@types/chai': 4.3.14
     dev: true
 
   /@jridgewell/resolve-uri@3.1.2:
@@ -778,8 +778,8 @@ packages:
       '@types/node': 20.11.30
     dev: true
 
-  /@types/chai@4.3.13:
-    resolution: {integrity: sha512-+LxQEbg4BDUf88utmhpUpTyYn1zHao443aGnXIAQak9ZMt9Rtsic0Oig0OS1xyIqdDXc5uMekoC6NaiUlkT/qA==}
+  /@types/chai@4.3.14:
+    resolution: {integrity: sha512-Wj71sXE4Q4AkGdG9Tvq1u/fquNz9EdG4LIJMwVVII7ashjD/8cf8fyIfJAjRr6YcsXnSE8cOGQPq1gqeR8z+3w==}
     dev: true
 
   /@types/co-body@6.1.3:
