@@ -8,7 +8,7 @@ export const errorRouter = Router()
   .get('/503', handle503)
   .get('/504', handle504);
 
-function handle401(_, res) {
+function handle401({}, res) {
   sendError(res, 401, 'Unauthorized');
 }
 
@@ -22,13 +22,12 @@ function handle408({ params: { timeout: rawTimeout } }, res) {
 }
 
 function handle503({ query: { format } }, res) {
-  const delay = (format === 'date') ? new Date(new Date().getTime() + 1000)
-    : 0.3
-  res.append('Retry-After', `${delay}`);
+  const delay = (format === 'date') ? new Date(new Date().getTime() + 1000) : 0.3
+  res.append('retry-after', `${delay}`);
   sendError(res, 503, 'Service Unavailable');
 }
 
-function handle504(_, res) {
+function handle504({}, res) {
   sendError(res, 504, 'Gateway Timeout');
 }
 
