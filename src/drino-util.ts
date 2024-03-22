@@ -3,7 +3,7 @@ import { mergeInterceptors } from './features/interceptors/interceptors-util';
 import { DEFAULT_PROGRESS } from './features/progress/progress.constants';
 import { DEFAULT_RETRY } from './features/retry/retry.constants';
 import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
-import { DEFAULT_BASE_URL, DEFAULT_PREFIX } from './request/request.constants';
+import { DEFAULT_BASE_URL, DEFAULT_CACHE, DEFAULT_CREDENTIALS, DEFAULT_FETCH, DEFAULT_INTEGRITY, DEFAULT_KEEPALIVE, DEFAULT_MODE, DEFAULT_PREFIX, DEFAULT_PRIORITY, DEFAULT_REDIRECT, DEFAULT_REFERRER_POLICY } from './request/request.constants';
 import { mergeHeaders } from './utils/headers-util';
 import { mergeQueryParams } from './utils/params-util';
 
@@ -31,6 +31,15 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         //   inspect: parentUploadInspect = defaultProgress.upload.inspect,
         // } = {},
       } = {},
+      fetch: parentFetch = DEFAULT_FETCH,
+      credentials: parentCredentials = DEFAULT_CREDENTIALS,
+      mode: parentMode = DEFAULT_MODE,
+      priority: parentPriority = DEFAULT_PRIORITY,
+      cache: parentCache = DEFAULT_CACHE,
+      redirect: parentRedirect = DEFAULT_REDIRECT,
+      keepalive: parentKeepalive = DEFAULT_KEEPALIVE,
+      referrerPolicy: parentReferrerPolicy = DEFAULT_REFERRER_POLICY,
+      integrity: parentIntegrity = DEFAULT_INTEGRITY,
     } = {},
   } = parentDefaultConfig ?? {};
 
@@ -57,6 +66,15 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         //   inspect: uploadInspect = undefined,
         // } = {},
       } = {},
+      fetch: reqFetch,
+      credentials,
+      mode,
+      priority,
+      cache,
+      redirect,
+      keepalive,
+      referrerPolicy,
+      integrity,
     } = {},
   } = defaultConfig;
 
@@ -68,6 +86,13 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       headers: mergeHeaders(parentHeaders, headers),
       queryParams: mergeQueryParams(parentQueryParams, queryParams),
       timeoutMs: timeoutMs ?? parentTimeoutMs,
+      retry: {
+        max: max ?? parentMax,
+        withRetryAfter: withRetryAfter ?? parentWithRetryAfter,
+        withDelayMs: withDelayMs ?? parentDelayMs,
+        onStatus: onStatus ?? parentOnStatus,
+        onMethods: onMethods ?? parentOnMethods,
+      },
       progress: {
         download: {
           inspect: downloadInspect ?? parentDownloadInspect,
@@ -76,13 +101,15 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         //   inspect: uploadInspect ?? parentUploadInspect,
         // },
       },
-      retry: {
-        max: max ?? parentMax,
-        withRetryAfter: withRetryAfter ?? parentWithRetryAfter,
-        withDelayMs: withDelayMs ?? parentDelayMs,
-        onStatus: onStatus ?? parentOnStatus,
-        onMethods: onMethods ?? parentOnMethods,
-      },
+      fetch: reqFetch ?? parentFetch,
+      credentials: credentials ?? parentCredentials,
+      mode: mode ?? parentMode,
+      priority: priority ?? parentPriority,
+      cache: cache ?? parentCache,
+      redirect: redirect ?? parentRedirect,
+      keepalive: keepalive ?? parentKeepalive,
+      referrerPolicy: referrerPolicy ?? parentReferrerPolicy,
+      integrity: integrity ?? parentIntegrity,
     },
   };
 }

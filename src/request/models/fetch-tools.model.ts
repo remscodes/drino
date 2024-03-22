@@ -11,4 +11,6 @@ export interface FetchTools {
   progress: Required<ProgressConfig>;
   dlCb?: Observer<unknown>['downloadProgress'];
   // ulCb?: Observer<unknown>['uploadProgress'];
+  fetch: typeof fetch;
+  fetchInit: RequestInit;
 }

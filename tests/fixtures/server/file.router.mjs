@@ -1,16 +1,16 @@
 import { Router } from 'express';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
-import path from 'node:path';
+import { join } from 'node:path';
 import { FIXTURES_ROOT_PATH } from '../fixtures.constants.mjs';
 
 export const fileRouter = Router()
   .get('/download', handleDownload)
   .post('/upload', handleUpload)
 
-function handleDownload(_, res) {
+function handleDownload({}, res) {
   const filename = 'neom-unsplash.jpg'
-  const filepath = path.join(FIXTURES_ROOT_PATH, 'res', filename);
+  const filepath = join(FIXTURES_ROOT_PATH, 'res', filename);
 
   stat(filepath).then((stats) => {
     res
@@ -23,6 +23,6 @@ function handleDownload(_, res) {
   });
 }
 
-function handleUpload({ body }, res) {
+function handleUpload({}, res) {
   res.status(200).json('OK');
 }

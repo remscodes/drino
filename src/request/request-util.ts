@@ -9,7 +9,7 @@ import { mergeQueryParams } from '../utils/params-util';
 import { createUrl } from '../utils/url-util';
 import type { RequestConfig } from './models';
 import type { RequestControllerConfig } from './models/request-controller.model';
-import { DEFAULT_BASE_URL, DEFAULT_PREFIX, DEFAULT_READ, DEFAULT_WRAPPER } from './request.constants';
+import { DEFAULT_BASE_URL, DEFAULT_CACHE, DEFAULT_CREDENTIALS, DEFAULT_FETCH, DEFAULT_INTEGRITY, DEFAULT_KEEPALIVE, DEFAULT_MODE, DEFAULT_PREFIX, DEFAULT_PRIORITY, DEFAULT_READ, DEFAULT_REDIRECT, DEFAULT_REFERRER_POLICY, DEFAULT_WRAPPER } from './request.constants';
 
 export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): RequestControllerConfig {
   const {
@@ -20,6 +20,13 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       headers: instanceHeaders = {},
       queryParams: instanceQueryParams = {},
       timeoutMs: instanceTimeoutMs = DEFAULT_TIMEOUT,
+      retry: {
+        max: instanceMax = DEFAULT_RETRY.max,
+        withRetryAfter: instanceWithRetryAfter = DEFAULT_RETRY.withRetryAfter,
+        withDelayMs: instanceWithDelayMs = DEFAULT_RETRY.withDelayMs,
+        onStatus: instanceOnStatus = DEFAULT_RETRY.onStatus,
+        onMethods: instanceOnMethods = DEFAULT_RETRY.onMethods,
+      } = {},
       progress: {
         download: {
           inspect: instanceDownloadInspect = DEFAULT_PROGRESS.download.inspect,
@@ -28,13 +35,15 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
         //   inspect: instanceUploadInspect = defaultProgress.upload.inspect,
         // } = {},
       } = {},
-      retry: {
-        max: instanceMax = DEFAULT_RETRY.max,
-        withRetryAfter: instanceWithRetryAfter = DEFAULT_RETRY.withRetryAfter,
-        withDelayMs: instanceWithDelayMs = DEFAULT_RETRY.withDelayMs,
-        onStatus: instanceOnStatus = DEFAULT_RETRY.onStatus,
-        onMethods: instanceOnMethods = DEFAULT_RETRY.onMethods,
-      } = {},
+      fetch: instanceFetch = DEFAULT_FETCH,
+      credentials: instanceCredentials = DEFAULT_CREDENTIALS,
+      mode: instanceMode = DEFAULT_MODE,
+      priority: instancePriority = DEFAULT_PRIORITY,
+      cache: instanceCache = DEFAULT_CACHE,
+      redirect: instanceRedirect = DEFAULT_REDIRECT,
+      keepalive: instanceKeepalive = DEFAULT_KEEPALIVE,
+      referrerPolicy: instanceReferrerPolicy = DEFAULT_REFERRER_POLICY,
+      integrity: instanceIntegrity = DEFAULT_INTEGRITY,
     } = {},
   } = defaultConfig;
 
@@ -46,6 +55,12 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     wrapper = DEFAULT_WRAPPER,
     timeoutMs,
     signal = defaultSignal(),
+    retry: {
+      max,
+      withRetryAfter,
+      withDelayMs,
+      onStatus,
+    } = {},
     progress: {
       download: {
         inspect: downloadInspect = undefined,
@@ -54,12 +69,15 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       //   inspect: uploadInspect = undefined,
       // } = {},
     } = {},
-    retry: {
-      max,
-      withRetryAfter,
-      withDelayMs,
-      onStatus,
-    } = {},
+    fetch: reqFetch,
+    credentials,
+    mode,
+    priority,
+    cache,
+    redirect,
+    keepalive,
+    referrerPolicy,
+    integrity,
   } = requestConfig;
 
   return {
@@ -70,6 +88,13 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     read,
     wrapper,
     interceptors: initInterceptors(instanceInterceptors),
+    retry: {
+      max: max ?? instanceMax,
+      withRetryAfter: withRetryAfter ?? instanceWithRetryAfter,
+      withDelayMs: withDelayMs ?? instanceWithDelayMs,
+      onStatus: onStatus ?? instanceOnStatus,
+      onMethods: instanceOnMethods,
+    },
     progress: {
       download: {
         inspect: downloadInspect ?? instanceDownloadInspect,
@@ -78,15 +103,17 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       //   inspect: uploadInspect ?? instanceUploadInspect,
       // },
     },
-    retry: {
-      max: max ?? instanceMax,
-      withRetryAfter: withRetryAfter ?? instanceWithRetryAfter,
-      withDelayMs: withDelayMs ?? instanceWithDelayMs,
-      onStatus: onStatus ?? instanceOnStatus,
-      onMethods: instanceOnMethods,
-    },
     abortCtrl: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
       : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))
         : mergeSignals(signal),
+    fetch: reqFetch ?? instanceFetch,
+    credentials: credentials ?? instanceCredentials,
+    mode: mode ?? instanceMode,
+    priority: priority ?? instancePriority,
+    cache: cache ?? instanceCache,
+    redirect: redirect ?? instanceRedirect,
+    keepalive: keepalive ?? instanceKeepalive,
+    referrerPolicy: referrerPolicy ?? instanceReferrerPolicy,
+    integrity: integrity ?? instanceIntegrity,
   };
 }

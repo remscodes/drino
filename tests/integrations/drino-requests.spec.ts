@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai';
-import type { HttpResponse } from '../../src';
+import type { HttpResponse, RequestConfig } from '../../src';
 import drino from '../../src';
 import type { TestItem } from '../fixtures/services/item-service';
 import { ItemService } from '../fixtures/services/item-service';
@@ -174,6 +174,18 @@ describe('Drino - Requests', () => {
     it('should get nothing', async () => {
       const value = await drino.get('http://localhost:8080/empty').consume();
       expect(value).to.be.undefined;
+    });
+  });
+
+  describe('cookies', () => {
+
+    it('should receive and send httpOnly cookie', async () => {
+      const config: RequestConfig = { credentials: 'include' };
+
+      const { token } = await drino.post('http://localhost:8080/auth/login', {}, config)
+        .follow(() => drino.get<{ token: string }>('http://localhost:8080/auth/context', config))
+        .consume();
+      expectEqual(token, '1234');
     });
   });
 });
