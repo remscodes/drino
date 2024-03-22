@@ -5,9 +5,7 @@ import type { TestItem } from '../fixtures/services/item-service';
 import { ItemService } from '../fixtures/services/item-service';
 import { expectEqual, expectProperty, expectType } from '../fixtures/utils/expect-util';
 
-describe('Drino - Requests', function () {
-  this.timeout(2000);
-
+describe('Drino - Requests', () => {
   const service: ItemService = new ItemService();
 
   describe('GET', () => {
@@ -182,12 +180,7 @@ describe('Drino - Requests', function () {
   describe('cookies', () => {
 
     it('should receive and send httpOnly cookie', async () => {
-      const config: RequestConfig = {
-        fetchInit: {
-          credentials: 'include',
-          priority: 'high',
-        },
-      };
+      const config: RequestConfig = { credentials: 'include' };
 
       const { token } = await drino.post('http://localhost:8080/auth/login', {}, config)
         .follow(() => drino.get<{ token: string }>('http://localhost:8080/auth/context', config))
