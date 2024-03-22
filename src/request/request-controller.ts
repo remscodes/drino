@@ -96,9 +96,18 @@ export class RequestController<Resource> {
       retryCb: observer?.retry,
       progress: this.config.progress,
       dlCb: observer?.downloadProgress,
-      fetch: this.config.fetch,
-      fetchInit: this.config.fetchInit,
       // ulCb: observer?.uploadProgress,
+      fetch: this.config.fetch,
+      fetchInit: {
+        credentials: this.config.credentials,
+        mode: this.config.mode,
+        priority: this.config.priority,
+        cache: this.config.cache,
+        redirect: this.config.redirect,
+        keepalive: this.config.keepalive,
+        referrerPolicy: this.config.referrerPolicy,
+        integrity: this.config.integrity,
+      },
     };
 
     if (!observer) return this.thenable(tools);

@@ -74,13 +74,13 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
   const { headers, method, url, body: requestBody } = request;
   const { abortCtrl: { signal }, fetchInit, fetch: fetchFn } = tools;
 
-  const fetchOptions: RequestInit = { method, headers, signal };
+  const fetchOptions: RequestInit = { ...fetchInit, method, headers, signal };
 
   let body: any;
 
   if (requestBody) {
     const contentType: string = inferContentType(requestBody);
-    headers.set('Content-Type', contentType);
+    headers.set('content-type', contentType);
 
     // if (tools.progress.upload.inspect) {
     //   fetchOptions.duplex = 'half';
@@ -93,8 +93,5 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
 
   fetchOptions.body = body;
 
-  return fetchFn(url, {
-    ...fetchOptions,
-    ...fetchInit,
-  });
+  return fetchFn(url, fetchOptions);
 }

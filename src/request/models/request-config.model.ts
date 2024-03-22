@@ -64,9 +64,53 @@ export interface RequestConfig<
    */
   fetch?: typeof fetch;
   /**
-   * Overrides final fetch init.
+   * A string indicating whether credentials will be sent with the request always, never, or only when sent to a same-origin URL.
+   *
+   * @default 'same-origin'
    */
-  fetchInit?: RequestInit;
+  credentials?: RequestCredentials;
+  /**
+   * A string to indicate whether the request will use CORS, or will be restricted to same-origin URLs.
+   *
+   * @default 'cors'
+   */
+  mode?: RequestMode;
+  /**
+   * The priority of the request relative to other requests.
+   *
+   * @default 'auto'
+   */
+  priority?: RequestPriority;
+  /**
+   * A string indicating how the request will interact with the browser's cache to set request's cache.
+   *
+   * @default 'default'
+   */
+  cache?: RequestCache;
+  /**
+   * A string indicating whether request follows redirects, results in an error upon encountering a redirect, or returns the redirect (in an opaque fashion).
+   *
+   * @default 'follow'
+   */
+  redirect?: RequestRedirect;
+  /**
+   * Perform the request in the background with a body limit of 64kB.
+   *
+   * If enabled, the request will not be aborted when the document is unloaded.
+   *
+   * @default false
+   */
+  keepalive?: boolean;
+  /**
+   * A referrer policy to set request's referrerPolicy.
+   *
+   * @default 'strict-origin-when-cross-origin'
+   */
+  referrerPolicy?: ReferrerPolicy;
+  /**
+   * A cryptographic hash of the resource to be fetched by request.
+   */
+  integrity?: string;
 }
 
 export type ReadType =
@@ -81,5 +125,3 @@ export type ReadType =
 export type WrapperType =
   | 'none'
   | 'response'
-
-
