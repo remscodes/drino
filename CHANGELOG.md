@@ -1,9 +1,12 @@
-# 1.9.0 (2024-03-XX)
+# 1.9.0 (2024-03-22)
 
 ### Features
 
 - Access `HttpRequest` built by `RequestController`.
 - Allow to set any value to `headers` and `queryParams`.
+- Add new request
+  options : `fetch`, `credentials`, `mode`, `priority`, `cache`, `redirect`, `keepalive`, `referrerPolicy`
+  and `integrity`.
 
 > Commits : https://github.com/remscodes/drino/commits/v1.9.0
 
