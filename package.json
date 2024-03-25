@@ -63,7 +63,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "esbuild": "^0.20.2",
-    "express": "^4.19.1",
+    "express": "^4.19.2",
     "helmet": "^7.1.0",
     "rollup": "^4.13.0",
     "rollup-plugin-bundle-size": "^1.0.3",
