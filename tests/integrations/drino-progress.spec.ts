@@ -29,7 +29,7 @@ describe('Drino - Progress', () => {
 
     it('should inspect download progress', (done: Mocha.Done) => {
       instance.get('/download').consume({
-        downloadProgress: (ev: StreamProgressEvent) => {
+        download: (ev: StreamProgressEvent) => {
           // logDownloadStats(ev);
           if (ev.loaded === ev.total) done();
         },
