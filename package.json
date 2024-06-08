@@ -1,7 +1,7 @@
 {
   "name": "drino",
-  "version": "1.9.0",
-  "description": "Modern and Reactive HTTP Client",
+  "version": "1.9.1",
+  "description": "Flexible and Reactive HTTP Client",
   "license": "MIT",
   "author": {
     "name": "Rémy Abitbol",
