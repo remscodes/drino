@@ -6,6 +6,7 @@ import { FIXTURES_ROOT_PATH } from '../fixtures.constants.mjs';
 
 export const fileRouter = Router()
   .get('/download', handleDownload)
+  .get('/download-wo-cl', handleDownloadWoCL)
   .post('/upload', handleUpload)
 
 function handleDownload({}, res) {
@@ -16,6 +17,20 @@ function handleDownload({}, res) {
     res
       .setHeader('content-type', 'image/jpeg')
       .setHeader('content-length', stats.size)
+      .setHeader('content-disposition', `attachment; filename="${filename.split('.')[0]}"`)
+      .status(200);
+
+    createReadStream(filepath).pipe(res);
+  });
+}
+
+function handleDownloadWoCL({}, res) {
+  const filename = 'neom-unsplash.jpg'
+  const filepath = join(FIXTURES_ROOT_PATH, 'res', filename);
+
+  stat(filepath).then((_stats) => {
+    res
+      .setHeader('content-type', 'image/jpeg')
       .setHeader('content-disposition', `attachment; filename="${filename.split('.')[0]}"`)
       .status(200);
 
