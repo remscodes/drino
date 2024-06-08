@@ -37,7 +37,7 @@ export interface Observer<T> {
   finish?: FinishCallback;
   abort?: AbortCallback;
   retry?: RetryCallback;
-  downloadProgress?: DownloadCallback;
+  download?: DownloadCallback;
   // uploadProgress?: UploadCallback;
 }
 
