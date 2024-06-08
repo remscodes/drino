@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       thror:
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: ^1.0.3
+        version: 1.0.3
     devDependencies:
       '@esm-bundle/chai':
         specifier: 4.3.4-fix.0
@@ -1824,9 +1824,9 @@ packages:
   tar-stream@3.1.7:
     resolution: {integrity: sha512-qJj60CXt7IU1Ffyc3NJMjh6EkuCFej46zUqJ4J7pqYlThyd9bO0XBTmcOIhSzZJVWfsLks0+nle/j538YAW9RQ==}
 
-  thror@1.0.2:
-    resolution: {integrity: sha512-q92jIDBO9s39Gamn1onZdPCWRbLfsfFSxUqNfgonFVWpJS8TLoCpUKOV3RLRJUq9Kuz4QYnYRRcZfaTFvBA2UA==}
-    engines: {node: '>=18.13.0'}
+  thror@1.0.3:
+    resolution: {integrity: sha512-/5DVS1O4ubVPwNPwjfmAwdx0SvkT2jjsCzYbQqH4GJ5/h7rq3+t9bYDmUfSKIQqE+lFgvVHpqIGQjPNIgGDAIQ==}
+    engines: {node: '>=18'}
 
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
@@ -3860,7 +3860,7 @@ snapshots:
       fast-fifo: 1.3.2
       streamx: 2.16.1
 
-  thror@1.0.2: {}
+  thror@1.0.3: {}
 
   through@2.3.8: {}
 
