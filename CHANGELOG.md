@@ -1,3 +1,13 @@
+# 1.9.1 (2024-06-08) 
+
+### Fixes
+
+- Do not throw error when content-type missing with download inspection.
+- Export `QueryParamsType` and `HeadersType` types.
+- Rename `downloadProgress` observe callback to `download`.
+
+> Commits : https://github.com/remscodes/drino/commits/v1.9.1
+
 # 1.9.0 (2024-03-22)
 
 ### Features
