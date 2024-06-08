@@ -1,6 +1,6 @@
 <div align="center">
     <h1>Drino</h1>
-    <p>Modern and Reactive HTTP Client</p>
+    <p>Flexible and Reactive HTTP Client</p>
 </div>
 
 <div align="center">
@@ -364,7 +364,7 @@ Example :
 
 ```ts
 drino.get('/cat/image').consume({
-  downloadProgress: ({ loaded, total, percent, speed, remainingTimeMs }) => {
+  download: ({ loaded, total, percent, speed, remainingTimeMs }) => {
     const remainingSeconds = remainingTimeMs / 1000;
     const speedKBs = speed / 1024 * 1000;
 
