@@ -18,7 +18,7 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
 
   let loaded: number = 0;
   let speed: number = 0;
-  let remainingMs: number = 0;
+  let remainingTime: number = 0;
   let reminder: number = dateNow();
 
   for (let i = 1; ; i ++) {
@@ -35,13 +35,13 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
 
     if (i > 1 && deltaMs && total !== loaded) {
       speed = bytes / deltaMs;
-      remainingMs = (total - loaded) / speed;
+      remainingTime = (total - loaded) / speed;
       reminder = now;
     }
 
     tools.dlCb?.({
       chunk,
-      remainingMs,
+      remainingTime,
       iteration: i,
       loaded,
       percent: loaded / total,
