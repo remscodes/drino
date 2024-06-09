@@ -15,13 +15,13 @@ export interface RetryConfig {
    */
   withRetryAfter?: boolean;
   /**
-   * Specify the time in millisecond to wait before retry.
+   * Specify the time in **milliseconds** to wait before retry.
    *
-   * Work only if `withRetryAfter` is `false` or if "Retry-After" response header is not present.
+   * Work only if `withRetryAfter` is `false` or if "retry-after" response header is not present.
    *
    * @default 0
    */
-  withDelayMs?: number;
+  delay?: number;
   /**
    * HTTP response status code to filter which request should be retried on failure.
    *

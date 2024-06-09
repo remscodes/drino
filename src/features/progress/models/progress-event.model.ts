@@ -18,7 +18,7 @@ export interface StreamProgressEvent {
    */
   readonly speed: number;
   /**
-   * Estimated remaining time in milliseconds to complete the progress.
+   * Estimated remaining time in **milliseconds** to complete the progress.
    * Equals to 0 for the first `iteration`.
    */
   readonly remainingMs: number;

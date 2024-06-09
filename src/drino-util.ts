@@ -19,7 +19,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       retry: {
         max: parentMax = DEFAULT_RETRY.max,
         withRetryAfter: parentWithRetryAfter = DEFAULT_RETRY.withRetryAfter,
-        withDelayMs: parentDelayMs = DEFAULT_RETRY.withDelayMs,
+        delay: parentDelay = DEFAULT_RETRY.delay,
         onStatus: parentOnStatus = DEFAULT_RETRY.onStatus,
         onMethods: parentOnMethods = DEFAULT_RETRY.onMethods,
       } = {},
@@ -54,7 +54,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       retry: {
         max = undefined,
         withRetryAfter = undefined,
-        withDelayMs = undefined,
+        delay = undefined,
         onStatus = undefined,
         onMethods = undefined,
       } = {},
@@ -89,7 +89,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       retry: {
         max: max ?? parentMax,
         withRetryAfter: withRetryAfter ?? parentWithRetryAfter,
-        withDelayMs: withDelayMs ?? parentDelayMs,
+        delay: delay ?? parentDelay,
         onStatus: onStatus ?? parentOnStatus,
         onMethods: onMethods ?? parentOnMethods,
       },

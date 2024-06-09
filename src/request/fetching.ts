@@ -22,7 +22,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
 
     if (needRetry(tools.retry, status, request.method, retried, tools.abortCtrl)) {
 
-      const delay: number = (tools.retry.withRetryAfter && getRetryAfter(headers)) || tools.retry.withDelayMs;
+      const delay: number = (tools.retry.withRetryAfter && getRetryAfter(headers)) || tools.retry.delay;
       if (delay) await sleep(delay);
 
       retried ++;
