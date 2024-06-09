@@ -15,7 +15,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix: parentPrefix = DEFAULT_PREFIX,
       headers: parentHeaders = {},
       queryParams: parentQueryParams = {},
-      timeoutMs: parentTimeoutMs = DEFAULT_TIMEOUT,
+      timeout: parentTimeout = DEFAULT_TIMEOUT,
       retry: {
         max: parentMax = DEFAULT_RETRY.max,
         withRetryAfter: parentWithRetryAfter = DEFAULT_RETRY.withRetryAfter,
@@ -50,7 +50,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix,
       headers = {},
       queryParams = {},
-      timeoutMs,
+      timeout,
       retry: {
         max = undefined,
         withRetryAfter = undefined,
@@ -85,7 +85,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix: prefix ?? parentPrefix,
       headers: mergeHeaders(parentHeaders, headers),
       queryParams: mergeQueryParams(parentQueryParams, queryParams),
-      timeoutMs: timeoutMs ?? parentTimeoutMs,
+      timeout: timeout ?? parentTimeout,
       retry: {
         max: max ?? parentMax,
         withRetryAfter: withRetryAfter ?? parentWithRetryAfter,

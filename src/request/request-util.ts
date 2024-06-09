@@ -19,7 +19,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       prefix: instancePrefix = DEFAULT_PREFIX,
       headers: instanceHeaders = {},
       queryParams: instanceQueryParams = {},
-      timeoutMs: instanceTimeoutMs = DEFAULT_TIMEOUT,
+      timeout: instanceTimeoutMs = DEFAULT_TIMEOUT,
       retry: {
         max: instanceMax = DEFAULT_RETRY.max,
         withRetryAfter: instanceWithRetryAfter = DEFAULT_RETRY.withRetryAfter,
@@ -53,7 +53,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     queryParams = {},
     read = DEFAULT_READ,
     wrapper = DEFAULT_WRAPPER,
-    timeoutMs,
+    timeout,
     signal = defaultSignal(),
     retry: {
       max,
@@ -103,7 +103,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       //   inspect: uploadInspect ?? instanceUploadInspect,
       // },
     },
-    abortCtrl: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
+    abortCtrl: (timeout) ? mergeSignals(signal, timedSignal(timeout))
       : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))
         : mergeSignals(signal),
     fetch: reqFetch ?? instanceFetch,
