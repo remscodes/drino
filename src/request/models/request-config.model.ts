@@ -114,13 +114,13 @@ export interface RequestConfig<
 }
 
 export type ReadType =
+  | 'auto'
   | 'object'
   | 'string'
   | 'none'
   | 'blob'
   | 'arrayBuffer'
   | 'formData'
-  | 'auto'
 
 export type WrapperType =
   | 'none'

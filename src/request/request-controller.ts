@@ -110,19 +110,19 @@ export class RequestController<Resource> {
       },
     };
 
-    if (!observer) return this.thenable(tools);
+    if (!observer) return this.makePromise(tools);
     this.useObserver(observer, tools);
   }
 
   /** @internal */
-  private async thenable(tools: FetchTools): Promise<Resource> {
+  private async makePromise(tools: FetchTools): Promise<Resource> {
     try {
       let result = await performHttpRequest<Resource>(this.request, tools);
       for (const modifier of this.modifiers) result = await modifier(result);
       return result;
     }
     catch (err: unknown) {
-      return this.catchable(err);
+      return this.reject(err);
     }
     finally {
       this.config.interceptors.beforeFinish();
@@ -138,11 +138,13 @@ export class RequestController<Resource> {
           observer.result?.(result);
         }
         catch (err: unknown) {
-          return this.catchable(err);
+          return this.reject(err);
         }
       })
       .catch((err: any) => {
-        if (this.config.abortCtrl.signal.aborted) return observer.abort?.(this.config.abortCtrl.signal.reason);
+        const signal: AbortSignal = this.config.abortCtrl.signal;
+        if (signal.aborted) return observer.abort?.(signal.reason);
+
         observer.error?.(err);
       })
       .finally(() => {
@@ -152,7 +154,7 @@ export class RequestController<Resource> {
   }
 
   /** @internal */
-  private catchable(thrown: any): Promise<any> {
+  private reject(thrown: any): Promise<any> {
     const error: any = (this.config.abortCtrl.signal.aborted) ?
       (this.config.abortCtrl.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)

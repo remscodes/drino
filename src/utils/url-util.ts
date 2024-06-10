@@ -8,12 +8,7 @@ interface BuildUrlArgs extends Pick<RequestControllerConfig, 'baseUrl' | 'prefix
 }
 
 export function buildUrl(args: BuildUrlArgs): URL {
-  const {
-    baseUrl,
-    prefix,
-    url,
-    queryParams,
-  } = args;
+  const { baseUrl, prefix, url, queryParams } = args;
 
   let finalUrl: URL;
 
@@ -53,6 +48,6 @@ export function createUrl(url: Url): URL {
 }
 
 function hasOrigin(url: Url): url is URL | Prefix<string, `http${'s' | ''}://`> {
-  if (url instanceof URL) return true;
-  return !!url.match(/http(s)?:\/\/[a-z0-9.]+(:\d{0,5})?/)?.length;
+  return (url instanceof URL) ? true
+    : !!url.match(/http(s)?:\/\/[a-z0-9.]+(:\d{0,5})?/)?.length;
 }

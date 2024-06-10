@@ -18,12 +18,13 @@ export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise
 
 export function inferBody(fetchResponse: Response): Promise<any> {
   const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
+  if (!contentType) return bodyFromReadType(fetchResponse, 'none');
 
   const readType: ReadType
-    = (contentType?.includes('text/plain')) ? 'string'
-    : (contentType?.includes('application/octet-stream')) ? 'blob'
-      : (contentType?.includes('multipart/form-data')) ? 'formData'
-        : (contentType?.includes('application/json')) ? 'object'
+    = (contentType.includes('text/plain')) ? 'string'
+    : (contentType.includes('application/octet-stream')) ? 'blob'
+      : (contentType.includes('multipart/form-data')) ? 'formData'
+        : (contentType.includes('application/json')) ? 'object'
           : 'none';
 
   return bodyFromReadType(fetchResponse, readType);
