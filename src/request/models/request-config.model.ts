@@ -44,11 +44,11 @@ export interface RequestConfig<
    */
   signal?: AbortSignal;
   /**
-   * Time limit from which the request is aborted.
+   * Time limit in **milliseconds** from which the request is aborted.
    *
    * @default 0 (= meaning disabled)
    */
-  timeoutMs?: number;
+  timeout?: number;
   /**
    * Retry a failed request a certain number of times on a specific http status.
    */
@@ -114,13 +114,13 @@ export interface RequestConfig<
 }
 
 export type ReadType =
+  | 'auto'
   | 'object'
   | 'string'
   | 'none'
   | 'blob'
   | 'arrayBuffer'
   | 'formData'
-  | 'auto'
 
 export type WrapperType =
   | 'none'

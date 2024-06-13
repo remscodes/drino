@@ -45,7 +45,7 @@ describe('Drino - Abort', () => {
 
   // FIXME : Does not work during CI for Node 20 + Webkit
   it.skip('should abort with timeout', (done: Mocha.Done) => {
-    drino.head('http://localhost:8080/error/408/3000', { timeoutMs: 300 }).consume()
+    drino.head('http://localhost:8080/error/408/3000', { timeout: 300 }).consume()
       .catch((err: any) => {
           expectEqual(err.name, 'TimeoutError');
           done();
@@ -59,7 +59,7 @@ describe('Drino - Abort', () => {
       baseUrl: 'http://localhost:8080',
       requestsConfig: {
         prefix: '/error',
-        timeoutMs: 1_000
+        timeout: 1_000
       }
     });
 
@@ -78,7 +78,7 @@ describe('Drino - Abort', () => {
     const abortCtrl: AbortController = new AbortController();
 
     drino.head('http://localhost:8080/error/408/3000', {
-      timeoutMs: 1_000,
+      timeout: 1_000,
       signal: abortCtrl.signal
     }).consume().catch((err: any) => {
         expectEqual(err.name, 'AbortError');

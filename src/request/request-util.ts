@@ -19,11 +19,11 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       prefix: instancePrefix = DEFAULT_PREFIX,
       headers: instanceHeaders = {},
       queryParams: instanceQueryParams = {},
-      timeoutMs: instanceTimeoutMs = DEFAULT_TIMEOUT,
+      timeout: instanceTimeoutMs = DEFAULT_TIMEOUT,
       retry: {
         max: instanceMax = DEFAULT_RETRY.max,
         withRetryAfter: instanceWithRetryAfter = DEFAULT_RETRY.withRetryAfter,
-        withDelayMs: instanceWithDelayMs = DEFAULT_RETRY.withDelayMs,
+        delay: instanceDelay = DEFAULT_RETRY.delay,
         onStatus: instanceOnStatus = DEFAULT_RETRY.onStatus,
         onMethods: instanceOnMethods = DEFAULT_RETRY.onMethods,
       } = {},
@@ -53,12 +53,12 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     queryParams = {},
     read = DEFAULT_READ,
     wrapper = DEFAULT_WRAPPER,
-    timeoutMs,
+    timeout,
     signal = defaultSignal(),
     retry: {
       max,
       withRetryAfter,
-      withDelayMs,
+      delay,
       onStatus,
     } = {},
     progress: {
@@ -91,7 +91,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     retry: {
       max: max ?? instanceMax,
       withRetryAfter: withRetryAfter ?? instanceWithRetryAfter,
-      withDelayMs: withDelayMs ?? instanceWithDelayMs,
+      delay: delay ?? instanceDelay,
       onStatus: onStatus ?? instanceOnStatus,
       onMethods: instanceOnMethods,
     },
@@ -103,7 +103,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       //   inspect: uploadInspect ?? instanceUploadInspect,
       // },
     },
-    abortCtrl: (timeoutMs) ? mergeSignals(signal, timedSignal(timeoutMs))
+    abortCtrl: (timeout) ? mergeSignals(signal, timedSignal(timeout))
       : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))
         : mergeSignals(signal),
     fetch: reqFetch ?? instanceFetch,

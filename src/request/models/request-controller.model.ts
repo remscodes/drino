@@ -7,7 +7,7 @@ import type { HttpResponse } from '../../response';
 import type { RequestController } from '../request-controller';
 import type { RequestConfig } from './request-config.model';
 
-export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeoutMs' | 'retry' | 'signal' | 'progress'>> {
+export interface RequestControllerConfig extends Required<Omit<RequestConfig<any, any>, 'headers' | 'queryParams' | 'timeout' | 'retry' | 'signal' | 'progress'>> {
   baseUrl: URL;
   headers: Headers;
   queryParams: URLSearchParams;

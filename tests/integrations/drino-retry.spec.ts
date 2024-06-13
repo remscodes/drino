@@ -118,7 +118,7 @@ describe('Drino - Retry', () => {
 
   it('should retry with delay', (done: Mocha.Done) => {
     expectRetry({
-      request: instance.get('/503', { retry: { max: 1, withRetryAfter: false, withDelayMs: 200 } }),
+      request: instance.get('/503', { retry: { max: 1, withRetryAfter: false, delay: 200 } }),
       expectedRetry: 1,
       expectedDelayMs: 200,
       done,
