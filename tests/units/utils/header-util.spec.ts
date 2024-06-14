@@ -1,5 +1,6 @@
+import { expect } from '@esm-bundle/chai';
 import type { PlainObject } from '../../../src/models/shared.model';
-import { inferContentType, mergeHeaders } from '../../../src/utils/headers-util';
+import { getRetryAfter, inferContentType, mergeHeaders } from '../../../src/utils/headers-util';
 import { expectEqual } from '../../fixtures/utils/expect-util';
 
 describe('Util - Headers', () => {
@@ -35,5 +36,36 @@ describe('Util - Headers', () => {
       expectEqual(inferContentType(str), 'text/plain');
       expectEqual(inferContentType(obj), 'application/json');
     });
+  });
+
+  describe('getRetryAfter', () => {
+
+    it('should get delay of 0 ms', () => {
+      const delay = getRetryAfter(new Headers());
+      expect(delay).to.be.equal(0);
+    });
+
+    it('should get delay of 120_000 ms', () => {
+      const delay = getRetryAfter(new Headers({ 'retry-after': '120' }));
+      expect(delay).to.be.equal(120 * 1_000);
+    });
+
+    it('should get delay of 120_500 ms', () => {
+      const delay = getRetryAfter(new Headers({ 'retry-after': '120.5' }));
+      expect(delay).to.be.equal(120.5 * 1_000);
+    });
+
+    // it('should get delay of 120_000 ms', () => {
+    //   const now = new Date('Wed, 21 Oct 2015 07:28:00 GMT');
+    //   const nowSpy = stub(Date, 'now').returns(now.getTime());
+    //
+    //   console.log(Date.now());
+    //   console.log(now.getTime());
+    //
+    //   const delay = getRetryAfter(new Headers({ 'retry-after': 'Wed, 21 Oct 2015 07:30:00 GMT' }));
+    //   expect(delay).to.be.equal(120_000);
+    //
+    //   nowSpy.restore();
+    // });
   });
 });
