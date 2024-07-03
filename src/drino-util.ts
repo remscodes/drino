@@ -1,6 +1,5 @@
 import { DEFAULT_TIMEOUT } from './features/abort/abort.constants';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
-import { DEFAULT_PROGRESS } from './features/progress/progress.constants';
 import { DEFAULT_RETRY } from './features/retry/retry.constants';
 import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
 import { DEFAULT_BASE_URL, DEFAULT_CACHE, DEFAULT_CREDENTIALS, DEFAULT_FETCH, DEFAULT_INTEGRITY, DEFAULT_KEEPALIVE, DEFAULT_MODE, DEFAULT_PREFIX, DEFAULT_PRIORITY, DEFAULT_REDIRECT, DEFAULT_REFERRER_POLICY } from './request/request.constants';
@@ -22,14 +21,6 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         delay: parentDelay = DEFAULT_RETRY.delay,
         onStatus: parentOnStatus = DEFAULT_RETRY.onStatus,
         onMethods: parentOnMethods = DEFAULT_RETRY.onMethods,
-      } = {},
-      progress: {
-        download: {
-          inspect: parentDownloadInspect = DEFAULT_PROGRESS.download.inspect,
-        } = {},
-        // upload: {
-        //   inspect: parentUploadInspect = defaultProgress.upload.inspect,
-        // } = {},
       } = {},
       fetch: parentFetch = DEFAULT_FETCH,
       credentials: parentCredentials = DEFAULT_CREDENTIALS,
@@ -58,14 +49,6 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         onStatus = undefined,
         onMethods = undefined,
       } = {},
-      progress: {
-        download: {
-          inspect: downloadInspect = undefined,
-        } = {},
-        // upload: {
-        //   inspect: uploadInspect = undefined,
-        // } = {},
-      } = {},
       fetch: reqFetch,
       credentials,
       mode,
@@ -92,14 +75,6 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
         delay: delay ?? parentDelay,
         onStatus: onStatus ?? parentOnStatus,
         onMethods: onMethods ?? parentOnMethods,
-      },
-      progress: {
-        download: {
-          inspect: downloadInspect ?? parentDownloadInspect,
-        },
-        // upload: {
-        //   inspect: uploadInspect ?? parentUploadInspect,
-        // },
       },
       fetch: reqFetch ?? parentFetch,
       credentials: credentials ?? parentCredentials,

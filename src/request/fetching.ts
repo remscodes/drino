@@ -48,8 +48,9 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
     return Promise.reject(errorResponse);
   }
 
-  if (tools.progress.download.inspect && fetchResponse.status !== 204)
-    await inspectDownloadProgress(fetchResponse, tools).catch(console.error);
+  if (tools.dlCb && fetchResponse.status !== 204)
+    await inspectDownloadProgress(fetchResponse, tools)
+      .catch(console.error);
 
   const isHeadOrOptions: boolean = (request.method === 'HEAD' || request.method === 'OPTIONS');
 
@@ -82,7 +83,7 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
     const contentType: string = inferContentType(requestBody);
     headers.set('content-type', contentType);
 
-    // if (tools.progress.upload.inspect) {
+    // if (tools.ulCb) {
     //   fetchOptions.duplex = 'half';
     //   body = inspectUploadProgress(requestBody, tools, contentType);
     // }

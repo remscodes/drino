@@ -9,7 +9,7 @@ export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise
       : bodyFromReadType(fetchResponse, read);
   }
   catch (err: any) {
-    emitError('Fetch Response', `Cannot parse body because RequestConfig 'read' value (='${read}') is incompatible with 'content-type' response header (='${fetchResponse.headers.get('content-type')}').`, {
+    emitError('Fetch Response', `Cannot parse body because RequestConfig.read (='${read}') is incompatible with 'content-type' response header (='${fetchResponse.headers.get('content-type')}').`, {
       withStack: true,
       original: err,
     });

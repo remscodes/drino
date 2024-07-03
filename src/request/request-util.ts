@@ -1,7 +1,6 @@
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
 import { DEFAULT_TIMEOUT } from '../features/abort/abort.constants';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
-import { DEFAULT_PROGRESS } from '../features/progress/progress.constants';
 import { DEFAULT_RETRY } from '../features/retry/retry.constants';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
@@ -26,14 +25,6 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
         delay: instanceDelay = DEFAULT_RETRY.delay,
         onStatus: instanceOnStatus = DEFAULT_RETRY.onStatus,
         onMethods: instanceOnMethods = DEFAULT_RETRY.onMethods,
-      } = {},
-      progress: {
-        download: {
-          inspect: instanceDownloadInspect = DEFAULT_PROGRESS.download.inspect,
-        } = {},
-        // upload: {
-        //   inspect: instanceUploadInspect = defaultProgress.upload.inspect,
-        // } = {},
       } = {},
       fetch: instanceFetch = DEFAULT_FETCH,
       credentials: instanceCredentials = DEFAULT_CREDENTIALS,
@@ -61,14 +52,6 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       delay,
       onStatus,
     } = {},
-    progress: {
-      download: {
-        inspect: downloadInspect = undefined,
-      } = {},
-      // upload: {
-      //   inspect: uploadInspect = undefined,
-      // } = {},
-    } = {},
     fetch: reqFetch,
     credentials,
     mode,
@@ -94,14 +77,6 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       delay: delay ?? instanceDelay,
       onStatus: onStatus ?? instanceOnStatus,
       onMethods: instanceOnMethods,
-    },
-    progress: {
-      download: {
-        inspect: downloadInspect ?? instanceDownloadInspect,
-      },
-      // upload: {
-      //   inspect: uploadInspect ?? instanceUploadInspect,
-      // },
     },
     abortCtrl: (timeout) ? mergeSignals(signal, timedSignal(timeout))
       : (instanceTimeoutMs) ? mergeSignals(signal, timedSignal(instanceTimeoutMs))

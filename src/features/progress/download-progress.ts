@@ -1,3 +1,4 @@
+import { emitError } from 'thror';
 import type { Nullable } from '../../models/shared.model';
 import type { FetchTools } from '../../request/models/fetch-tools.model';
 import { now as dateNow } from '../../utils/date-util';
@@ -10,8 +11,7 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
 
   const contentLength: Nullable<string> = response.headers.get('content-length');
   if (!contentLength) {
-    console.error(`Cannot inspect download progress on ${response.url} because response "content-length" header is null.`);
-    return;
+    emitError('DrinoProgressException', `Cannot inspect download progress on ${response.url} because response "content-length" header is null.`)
   }
 
   const total: number = parseInt(contentLength, 10);
@@ -25,7 +25,7 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
     if (tools.abortCtrl.signal.aborted) return;
 
     const { done, value: chunk = new Uint8Array(0) }: ReadableStreamReadResult<Uint8Array> = await reader.read();
-    if (done) break;
+    if (done || !chunk) break;
 
     const now: number = dateNow();
     const bytes: number = chunk.byteLength;
