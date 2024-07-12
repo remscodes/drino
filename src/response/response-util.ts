@@ -9,7 +9,8 @@ export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise
       : bodyFromReadType(fetchResponse, read);
   }
   catch (err: any) {
-    emitError('Fetch Response', `Cannot parse body because RequestConfig.read (='${read}') is incompatible with 'content-type' response header (='${fetchResponse.headers.get('content-type')}').`, {
+    const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
+    emitError('Fetch Response', `Cannot parse body because RequestConfig.read (='${read}') is incompatible with 'content-type' response header (='${contentType}').`, {
       withStack: true,
       original: err,
     });
@@ -18,31 +19,43 @@ export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise
 
 export function inferBody(fetchResponse: Response): Promise<any> {
   const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
-  if (!contentType) return bodyFromReadType(fetchResponse, 'none');
+  let readType: ReadType = 'none';
 
-  const readType: ReadType
-    = (contentType.includes('text/plain')) ? 'string'
-    : (contentType.includes('application/octet-stream')) ? 'blob'
-      : (contentType.includes('multipart/form-data')) ? 'formData'
-        : (contentType.includes('application/json')) ? 'object'
-          : 'none';
+  switch (true) {
+    case contentType?.includes('application/json'):
+      readType = 'object';
+      break;
+
+    case contentType?.includes('text/plain'):
+      readType = 'string';
+      break;
+
+    case contentType?.includes('application/octet-stream'):
+      readType = 'blob';
+      break;
+
+    case contentType?.includes('multipart/form-data'):
+      readType = 'formData';
+      break;
+  }
 
   return bodyFromReadType(fetchResponse, readType);
 }
 
+const RESPONSE_METHOD_KEY_MAP: Record<ReadType, string | null> = {
+  string: 'text',
+  blob: 'blob',
+  arrayBuffer: 'arrayBuffer',
+  formData: 'formData',
+  object: 'json',
+  auto: null,
+  none: null,
+};
+
 export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promise<any> {
-  switch (read) {
-    case 'string':
-      return fetchResponse.text();
-    case 'blob':
-      return fetchResponse.blob();
-    case 'arrayBuffer':
-      return fetchResponse.arrayBuffer();
-    case 'formData':
-      return fetchResponse.formData();
-    case 'object':
-      return fetchResponse.json();
-    default :
-      return Promise.resolve();
-  }
+  const methodKey: Nullable<string> = RESPONSE_METHOD_KEY_MAP[read];
+  if (!methodKey) return Promise.resolve();
+
+  // @ts-ignore
+  return fetchResponse[methodKey]();
 }

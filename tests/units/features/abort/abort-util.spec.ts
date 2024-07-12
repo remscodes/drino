@@ -46,7 +46,7 @@ describe('Util - Abort', () => {
       const { signal } = mergeSignals(signal1, signal2);
 
       expectEqual(signal.aborted, true);
-      expectEqual(signal.abortedByTimeout, true);
+      expectEqual(signal.timeout, true);
     });
   });
 
