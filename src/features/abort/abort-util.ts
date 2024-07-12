@@ -27,7 +27,7 @@ export function mergeSignals(...signals: AbortSignal[]): AbortController {
 }
 
 function checkSignalAndAbort(signal: AbortSignal, abortCtrl: AbortController): void {
-  if (signal.hasTimeout) abortCtrl.signal.abortedByTimeout = true;
+  if (signal.hasTimeout) abortCtrl.signal.timeout = true;
   abortCtrl.abort(signal.reason);
 }
 

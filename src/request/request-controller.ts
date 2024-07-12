@@ -155,7 +155,7 @@ export class RequestController<Resource> {
   /** @internal */
   private reject(thrown: any): Promise<any> {
     const error: any = (this.config.abortCtrl.signal.aborted) ?
-      (this.config.abortCtrl.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
+      (this.config.abortCtrl.signal.timeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)
       : thrown;
 
