@@ -65,7 +65,7 @@
     "esbuild": "^0.23.0",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
-    "rollup": "^4.19.1",
+    "rollup": "^4.19.2",
     "rollup-plugin-bundle-size": "^1.0.3",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-esbuild": "^6.1.1",
