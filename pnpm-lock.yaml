@@ -40,8 +40,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@web/test-runner':
-        specifier: ^0.18.2
-        version: 0.18.2
+        specifier: ^0.18.3
+        version: 0.18.3
       '@web/test-runner-playwright':
         specifier: ^0.11.0
         version: 0.11.0
@@ -695,8 +695,8 @@ packages:
     resolution: {integrity: sha512-s+f43DSAcssKYVOD9SuzueUcctJdHzq1by45gAnSCKa9FQcaTbuYe8CzmxA21g+NcL5+ayo4z+MA9PO4H+PssQ==}
     engines: {node: '>=18.0.0'}
 
-  '@web/test-runner@0.18.2':
-    resolution: {integrity: sha512-jA+957ic31aG/f1mr1b+HYzf/uTu4QsvFhyVgTKi2s5YQYGBbtfzx9PnYi47MVC9K9OHRbW8cq2Urds9qwSU3w==}
+  '@web/test-runner@0.18.3':
+    resolution: {integrity: sha512-QkVK8Qguw3Zhyu8SYR7F4VdcjyXBeJNr8W8L++s4zO/Ok7DR/Wu7+rLswn3H7OH3xYoCHRmwteehcFejefz6ew==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -2579,7 +2579,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@web/test-runner@0.18.2':
+  '@web/test-runner@0.18.3':
     dependencies:
       '@web/browser-logs': 0.4.0
       '@web/config-loader': 0.3.1
