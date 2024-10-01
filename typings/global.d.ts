@@ -2,7 +2,7 @@ declare global {
 
   interface AbortSignal {
     hasTimeout?: boolean;
-    abortedByTimeout?: boolean;
+    timeout?: boolean;
   }
 
   interface RequestInit {

@@ -89,24 +89,38 @@ export class RequestController<Resource> {
   public consume(observer?: Observer<Resource>): Promise<Resource> | void {
     this.config.interceptors.beforeConsume(this.request);
 
+    const {
+      abortCtrl,
+      interceptors,
+      retry,
+      fetch,
+      credentials,
+      mode,
+      priority,
+      cache,
+      redirect,
+      keepalive,
+      referrerPolicy,
+      integrity,
+    } = this.config;
+
     const tools: FetchTools = {
-      abortCtrl: this.config.abortCtrl,
-      interceptors: this.config.interceptors,
-      retry: this.config.retry,
+      abortCtrl,
+      interceptors,
+      retry,
       retryCb: observer?.retry,
-      progress: this.config.progress,
       dlCb: observer?.download,
       // ulCb: observer?.uploadProgress,
-      fetch: this.config.fetch,
+      fetch,
       fetchInit: {
-        credentials: this.config.credentials,
-        mode: this.config.mode,
-        priority: this.config.priority,
-        cache: this.config.cache,
-        redirect: this.config.redirect,
-        keepalive: this.config.keepalive,
-        referrerPolicy: this.config.referrerPolicy,
-        integrity: this.config.integrity,
+        credentials,
+        mode,
+        priority,
+        cache,
+        redirect,
+        keepalive,
+        referrerPolicy,
+        integrity,
       },
     };
 
@@ -156,7 +170,7 @@ export class RequestController<Resource> {
   /** @internal */
   private reject(thrown: any): Promise<any> {
     const error: any = (this.config.abortCtrl.signal.aborted) ?
-      (this.config.abortCtrl.signal.abortedByTimeout) ? fixChromiumAndWebkitTimeoutError(thrown)
+      (this.config.abortCtrl.signal.timeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)
       : thrown;
 

@@ -1,4 +1,3 @@
-import type { ProgressConfig } from '../../features/progress/models/progress-config.model';
 import type { RetryConfig } from '../../features/retry/models/retry-config.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
@@ -53,10 +52,6 @@ export interface RequestConfig<
    * Retry a failed request a certain number of times on a specific http status.
    */
   retry?: RetryConfig;
-  /**
-   * Config to inspect download progress.
-   */
-  progress?: ProgressConfig;
   /**
    * The `fetch` function to be used to perform request.
    *
