@@ -25,7 +25,7 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
     if (tools.abortCtrl.signal.aborted) return;
 
     const { done, value: chunk = new Uint8Array(0) }: ReadableStreamReadResult<Uint8Array> = await reader.read();
-    if (done || !chunk) break;
+    if (done) break;
 
     const now: number = dateNow();
     const bytes: number = chunk.byteLength;

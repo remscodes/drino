@@ -89,23 +89,38 @@ export class RequestController<Resource> {
   public consume(observer?: Observer<Resource>): Promise<Resource> | void {
     this.config.interceptors.beforeConsume(this.request);
 
+    const {
+      abortCtrl,
+      interceptors,
+      retry,
+      fetch,
+      credentials,
+      mode,
+      priority,
+      cache,
+      redirect,
+      keepalive,
+      referrerPolicy,
+      integrity,
+    } = this.config;
+
     const tools: FetchTools = {
-      abortCtrl: this.config.abortCtrl,
-      interceptors: this.config.interceptors,
-      retry: this.config.retry,
+      abortCtrl,
+      interceptors,
+      retry,
       retryCb: observer?.retry,
       dlCb: observer?.download,
       // ulCb: observer?.uploadProgress,
-      fetch: this.config.fetch,
+      fetch,
       fetchInit: {
-        credentials: this.config.credentials,
-        mode: this.config.mode,
-        priority: this.config.priority,
-        cache: this.config.cache,
-        redirect: this.config.redirect,
-        keepalive: this.config.keepalive,
-        referrerPolicy: this.config.referrerPolicy,
-        integrity: this.config.integrity,
+        credentials,
+        mode,
+        priority,
+        cache,
+        redirect,
+        keepalive,
+        referrerPolicy,
+        integrity,
       },
     };
 
