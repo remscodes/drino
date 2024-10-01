@@ -25,13 +25,7 @@ export class HttpRequest<T = unknown> {
     this.body = body;
     this.read = read;
     this.wrapper = wrapper;
-
-    this.url = buildUrl({
-      baseUrl,
-      prefix,
-      url,
-      queryParams
-    });
+    this.url = buildUrl({ baseUrl, prefix, url, queryParams });
   }
 
   public readonly method: RequestMethodType;

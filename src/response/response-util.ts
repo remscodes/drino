@@ -10,7 +10,7 @@ export async function convertBody<T>(fetchResponse: Response, read: ReadType): P
   }
   catch (err: any) {
     const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
-    emitError('DrinoParseException', `Cannot parse body because RequestConfig.read (='${read}') is incompatible with 'content-type' response header (='${contentType}').`, {
+    emitError('DrinoParserException', `Cannot parse body because RequestConfig.read (='${read}') is incompatible with 'content-type' response header (='${contentType}').`, {
       withStack: true,
       original: err,
     });
