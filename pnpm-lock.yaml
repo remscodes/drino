@@ -15,9 +15,15 @@ importers:
       '@esm-bundle/chai':
         specifier: 4.3.4-fix.0
         version: 4.3.4-fix.0
+      '@esm-bundle/chai-as-promised':
+        specifier: ^7.1.1
+        version: 7.1.1
       '@types/chai':
         specifier: ^5.0.0
         version: 5.0.0
+      '@types/chai-as-promised':
+        specifier: ^8.0.1
+        version: 8.0.1
       '@types/cookie-parser':
         specifier: ^1.4.7
         version: 1.4.7
@@ -379,6 +385,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@esm-bundle/chai-as-promised@7.1.1':
+    resolution: {integrity: sha512-qhDeW3gK3ITAzzhZj8QfvuhX7iNqyzooVZJnoW5bjIotxxJM92O9EKxdxBg4B35hjh3tV1chlEgC/pfR9cVRlA==}
+
   '@esm-bundle/chai@4.3.4-fix.0':
     resolution: {integrity: sha512-26SKdM4uvDWlY8/OOOxSB1AqQWeBosCX3wRYUZO7enTAj03CtVxIiCimYVG2WpULcyV51qapK4qTovwkUr5Mlw==}
 
@@ -533,6 +542,9 @@ packages:
 
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
+
+  '@types/chai-as-promised@8.0.1':
+    resolution: {integrity: sha512-dAlDhLjJlABwAVYObo9TPWYTRg9NaQM5CXeaeJYcYAkvzUf0JRLIiog88ao2Wqy/20WUnhbbUZcgvngEbJ3YXQ==}
 
   '@types/chai@4.3.19':
     resolution: {integrity: sha512-2hHHvQBVE2FiSK4eN0Br6snX9MtolHaTo/batnLjlGRhoQzlCL61iVpxoqO7SfFyOw+P/pwv+0zNHzKoGWz9Cw==}
@@ -2182,6 +2194,8 @@ snapshots:
   '@esbuild/win32-x64@0.24.0':
     optional: true
 
+  '@esm-bundle/chai-as-promised@7.1.1': {}
+
   '@esm-bundle/chai@4.3.4-fix.0':
     dependencies:
       '@types/chai': 4.3.19
@@ -2317,6 +2331,10 @@ snapshots:
     dependencies:
       '@types/connect': 3.4.38
       '@types/node': 22.7.4
+
+  '@types/chai-as-promised@8.0.1':
+    dependencies:
+      '@types/chai': 5.0.0
 
   '@types/chai@4.3.19': {}
 

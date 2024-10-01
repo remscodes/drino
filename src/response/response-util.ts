@@ -3,14 +3,14 @@ import type { UnwrapHttpResponse } from '../models/http.model';
 import type { Nullable } from '../models/shared.model';
 import type { ReadType } from '../request/models/request-config.model';
 
-export function convertBody<T>(fetchResponse: Response, read: ReadType): Promise<UnwrapHttpResponse<T>> {
+export async function convertBody<T>(fetchResponse: Response, read: ReadType): Promise<UnwrapHttpResponse<T>> {
   try {
-    return (read === 'auto') ? inferBody(fetchResponse)
-      : bodyFromReadType(fetchResponse, read);
+    return (read === 'auto') ? await inferBody(fetchResponse)
+      : await bodyFromReadType(fetchResponse, read);
   }
   catch (err: any) {
     const contentType: Nullable<string> = fetchResponse.headers.get('content-type');
-    emitError('Fetch Response', `Cannot parse body because RequestConfig.read (='${read}') is incompatible with 'content-type' response header (='${contentType}').`, {
+    emitError('DrinoParseException', `Cannot parse body because RequestConfig.read (='${read}') is incompatible with 'content-type' response header (='${contentType}').`, {
       withStack: true,
       original: err,
     });
@@ -54,7 +54,8 @@ const RESPONSE_METHOD_KEY_MAP: Record<ReadType, string | null> = {
 
 export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promise<any> {
   const methodKey: Nullable<string> = RESPONSE_METHOD_KEY_MAP[read];
-  if (!methodKey) return Promise.resolve();
+  if (methodKey === undefined) return Promise.reject('Invalid read type');
+  if (methodKey === null) return Promise.resolve();
 
   // @ts-ignore
   return fetchResponse[methodKey]();
