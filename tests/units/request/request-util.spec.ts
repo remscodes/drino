@@ -5,7 +5,7 @@ import type { RequestConfig } from '../../../src';
 import type { DrinoDefaultConfigInit } from '../../../src/models/drino.model';
 import { mergeRequestConfigs } from '../../../src/request/request-util';
 import { convertBody, inferBody } from '../../../src/response/response-util';
-import { mockFetchResponse } from '../../fixtures/mocks/fetch-response.mock';
+import { makeMockFetchResponse, mockFetchResponse } from '../../fixtures/mocks/fetch-response.mock';
 import { expectType } from '../../fixtures/utils/expect-util';
 
 chai.use(chaiAsPromised);
@@ -36,6 +36,21 @@ describe('Util - Request', () => {
     it('should infer object type', async () => {
       const body = await inferBody(mockFetchResponse);
       expectType(body, 'object');
+    });
+
+    it('should infer string type', async () => {
+      const body = await inferBody(makeMockFetchResponse('text/plain'));
+      expectType(body, 'string');
+    });
+
+    it('should infer blob type', async () => {
+      const body = await inferBody(makeMockFetchResponse('application/octet-stream'));
+      expectType(body, 'blob');
+    });
+
+    it('should infer formData type', async () => {
+      const body = await inferBody(makeMockFetchResponse('multipart/form-data'));
+      expectType(body, 'formData');
     });
   });
 
