@@ -1,14 +1,16 @@
 import type { DrinoInstance } from '../../src';
 import drino from '../../src';
-import { expectNotEqual } from '../fixtures/utils/expect-util';
+import { expectEqual, expectNotEqual } from '../fixtures/utils/expect-util';
 
 describe('Drino', () => {
   let instance: DrinoInstance;
 
   beforeEach(() => {
-    instance = drino.create({
-      baseUrl: 'http://localhost'
-    });
+    instance = drino.create({});
+  });
+
+  it('should have default url origin', () => {
+    expectEqual(instance.default.baseUrl, window.location.origin);
   });
 
   it('should change default url origin', () => {

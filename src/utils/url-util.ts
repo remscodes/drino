@@ -39,8 +39,8 @@ export function createUrl(url: Url): URL {
   try {
     return new URL(url);
   }
-  catch (err: any) {
-    emitError('TypeError : Invalid URL', `${url}`, {
+  catch (err: unknown) {
+    emitError('DrinoUrlException', `Invalid URL: ${url}`, {
       withStack: true,
       original: err,
     });
