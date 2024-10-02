@@ -1,5 +1,4 @@
 import type { HeadersType } from '../models';
-import type { Nullable } from '../models/shared.model';
 import { dateToMs, now } from './date-util';
 import { mergeMapsLike } from './map-util';
 
@@ -16,7 +15,7 @@ export function inferContentType(body: unknown): string {
 }
 
 export function getRetryAfter(headers: Headers): number {
-  const retryAfter: Nullable<string> = headers.get('retry-after');
+  const retryAfter: string | null = headers.get('retry-after');
   if (!retryAfter) return 0;
   if (/^(\d*[.,])?\d+$/.test(retryAfter)) return parseFloat(retryAfter) * 1000;
 
