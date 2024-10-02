@@ -1,5 +1,9 @@
-import { expect } from '@esm-bundle/chai';
-import { buildUrl } from '../../../src/utils/url-util';
+import chai, { expect } from '@esm-bundle/chai';
+// @ts-ignore
+import chaiAsPromised from '@esm-bundle/chai-as-promised';
+import { buildUrl, createUrl } from '../../../src/utils/url-util';
+
+chai.use(chaiAsPromised);
 
 describe('Util - Url', () => {
 
@@ -24,5 +28,9 @@ describe('Util - Url', () => {
     });
 
     expect(url.href).to.be.equal('http://localhost:8080/user/one');
+  });
+
+  it('should throw', () => {
+    expect(() => createUrl('invalid')).to.throw('Invalid URL: \'invalid\'.');
   });
 });

@@ -41,17 +41,16 @@ export function inferBody(fetchResponse: Response): Promise<any> {
   return bodyFromReadType(fetchResponse, readType);
 }
 
-const RESPONSE_METHOD_KEY_MAP: Record<ReadType, string | null> = {
+const RESPONSE_METHOD_KEY_MAP: Record<ReadTypeWithoutAuto, string | null> = {
   string: 'text',
   blob: 'blob',
   arrayBuffer: 'arrayBuffer',
   formData: 'formData',
   object: 'json',
-  auto: null,
   none: null,
 };
 
-export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promise<any> {
+export function bodyFromReadType(fetchResponse: Response, read: ReadTypeWithoutAuto): Promise<any> {
   const methodKey: string | undefined | null = RESPONSE_METHOD_KEY_MAP[read];
   if (methodKey === undefined) return Promise.reject('Invalid read type');
   if (methodKey === null) return Promise.resolve();
@@ -59,3 +58,5 @@ export function bodyFromReadType(fetchResponse: Response, read: ReadType): Promi
   // @ts-ignore
   return fetchResponse[methodKey]();
 }
+
+type ReadTypeWithoutAuto = Exclude<ReadType, 'auto'>
