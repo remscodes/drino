@@ -17,11 +17,11 @@ export function buildUrl(args: BuildUrlArgs): URL {
   }
   else if (hasOrigin(prefix)) {
     finalUrl = createUrl(prefix);
-    buildPathname(finalUrl, url);
+    extendPathname(finalUrl, url);
   }
   else {
     finalUrl = createUrl(baseUrl);
-    buildPathname(finalUrl, `${prefix}/${url}`);
+    extendPathname(finalUrl, `${prefix}/${url}`);
   }
 
   queryParams.forEach((value: string, key: string) => {
@@ -31,8 +31,8 @@ export function buildUrl(args: BuildUrlArgs): URL {
   return finalUrl;
 }
 
-function buildPathname(finalUrl: URL, postPathname: Url): void {
-  finalUrl.pathname = `${finalUrl.pathname}/${postPathname}`.replace(/\/{2,}/g, '/');
+function extendPathname(finalUrl: URL, extraPathname: Url): void {
+  finalUrl.pathname = `${finalUrl.pathname}/${extraPathname}`.replace(/\/{2,}/g, '/');
 }
 
 export function createUrl(url: Url): URL {

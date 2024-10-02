@@ -6,12 +6,13 @@ export function mergeHeaders(...manyHeaders: HeadersType[]): Headers {
   return mergeMapsLike(Headers, ...manyHeaders);
 }
 
-export function inferContentType(body: unknown): string {
+export function inferContentType(body: unknown): string | null {
   return (body instanceof FormData) ? 'multipart/form-data'
     : (body instanceof URLSearchParams) ? 'application/x-www-form-urlencoded'
       : (body instanceof Blob) ? 'application/octet-stream'
         : (typeof body === 'string') ? 'text/plain'
-          : 'application/json';
+          : (typeof body === 'object') ? 'application/json'
+            : null;
 }
 
 export function getRetryAfter(headers: Headers): number {

@@ -37,13 +37,8 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
       return performHttpRequest(request, tools, retried);
     }
 
-    const errorResponse: HttpErrorResponse = new HttpErrorResponse({
-      error,
-      headers,
-      status,
-      statusText,
-      url,
-    });
+    const errorResponse = new HttpErrorResponse({ error, headers, status, statusText, url });
+
     tools.interceptors.beforeError(errorResponse);
     return Promise.reject(errorResponse);
   }
@@ -80,8 +75,8 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
   let body: any;
 
   if (requestBody) {
-    const contentType: string = inferContentType(requestBody);
-    headers.set('content-type', contentType);
+    const contentType: string | null = inferContentType(requestBody);
+    if (contentType) headers.set('content-type', contentType);
 
     // if (tools.ulCb) {
     //   fetchOptions.duplex = 'half';
