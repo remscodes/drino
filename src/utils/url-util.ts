@@ -40,7 +40,7 @@ export function createUrl(url: Url): URL {
     return new URL(url);
   }
   catch (err: unknown) {
-    emitError('DrinoUrlException', `Invalid URL: ${url}`, {
+    emitError('DrinoUrlException', `Invalid URL: '${url}'.`, {
       withStack: true,
       original: err,
     });

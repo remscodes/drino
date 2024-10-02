@@ -1,5 +1,6 @@
 import type { DrinoInstance } from '../../src';
 import drino from '../../src';
+import { DEFAULT_BASE_URL } from '../../src/request/request.constants';
 import { expectEqual, expectNotEqual } from '../fixtures/utils/expect-util';
 
 describe('Drino', () => {
@@ -10,7 +11,9 @@ describe('Drino', () => {
   });
 
   it('should have default url origin', () => {
-    expectEqual(instance.default.baseUrl, window.location.origin);
+    const url = DEFAULT_BASE_URL;
+    expectEqual(url, 'http://localhost:8000');
+    expectEqual(instance.default.baseUrl, url);
   });
 
   it('should change default url origin', () => {
