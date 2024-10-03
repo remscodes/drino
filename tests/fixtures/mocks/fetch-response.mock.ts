@@ -1,32 +1,20 @@
 export function makeMockFetchResponse(contentType: string): Response {
   return {
-    arrayBuffer(): Promise<ArrayBuffer> {
-      return Promise.resolve(new ArrayBuffer(1));
-    },
-    blob(): Promise<Blob> {
-      return Promise.resolve(new Blob());
-    },
+    arrayBuffer: async () => new ArrayBuffer(1),
+    blob: async () => new Blob(),
     body: null,
     bodyUsed: false,
     clone(): Response {
       return this;
     },
-    formData(): Promise<FormData> {
-      return Promise.resolve(new FormData());
-    },
-    headers: new Headers({
-      'content-type': contentType,
-    }),
-    json(): Promise<object> {
-      return Promise.resolve({});
-    },
+    formData: async () => new FormData(),
+    headers: new Headers({ 'content-type': contentType }),
+    json: async () => ({}),
     ok: true,
     redirected: false,
     status: 200,
     statusText: 'OK',
-    text(): Promise<string> {
-      return Promise.resolve('');
-    },
+    text: async () => '',
     type: 'default',
     url: '',
   };
