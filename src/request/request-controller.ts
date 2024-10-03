@@ -22,9 +22,6 @@ export class RequestController<Resource> {
 
     this.config = mergeRequestConfigs(config, defaultConfig);
 
-    // Disable upload for http methods without body
-    // if (!method.startsWith('P')) this.config.progress.upload.inspect = false;
-
     this.request = new HttpRequest({
       method,
       url,
@@ -110,7 +107,6 @@ export class RequestController<Resource> {
       retry,
       retryCb: observer?.retry,
       dlCb: observer?.download,
-      // ulCb: observer?.uploadProgress,
       fetch,
       fetchInit: {
         credentials,
@@ -168,12 +164,10 @@ export class RequestController<Resource> {
   }
 
   /** @internal */
-  private reject(thrown: any): Promise<any> {
-    const error: any = (this.config.abortCtrl.signal.aborted) ?
+  private reject(thrown: any): any {
+    throw (this.config.abortCtrl.signal.aborted) ?
       (this.config.abortCtrl.signal.timeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)
       : thrown;
-
-    return Promise.reject(error);
   }
 }

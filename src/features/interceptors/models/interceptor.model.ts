@@ -1,11 +1,11 @@
-import type { HttpRequest } from '../../../request';
-import type { HttpErrorResponse } from '../../../response';
+import type { HttpRequest, RequestController } from '../../../request';
+import type { HttpErrorResponse, HttpResponse } from '../../../response';
 
-export interface Interceptors<T = unknown> {
+export interface Interceptors {
   beforeConsume: (req: HttpRequest) => void;
-  afterConsume: (req: HttpRequest, res: Response) => void;
+  afterConsume: (req: HttpRequest, res: HttpResponse<any> | HttpErrorResponse, isError?: boolean) => (void | RequestController<any>);
   // beforeRedirect: () => void;
-  beforeResult: (res: T) => void;
+  beforeResult: (res: any) => void;
   beforeError: (errRes: HttpErrorResponse) => void;
   beforeFinish: () => void;
 }

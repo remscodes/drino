@@ -9,9 +9,7 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
   const reader: ReadableStreamDefaultReader<Uint8Array> = body.getReader();
 
   const contentLength: string | null = response.headers.get('content-length');
-  if (!contentLength) {
-    emitError('DrinoProgressException', `Cannot inspect download progress on ${response.url} because response "content-length" header is null.`);
-  }
+  if (!contentLength) emitError('DrinoProgressException', `Cannot inspect download progress on ${response.url} because response "content-length" header is null.`);
 
   const total: number = parseInt(contentLength, 10);
 

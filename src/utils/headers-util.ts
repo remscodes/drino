@@ -23,3 +23,10 @@ export function getRetryAfter(headers: Headers): number {
   const delay: number = dateToMs(retryAfter) - now();
   return (delay > 0) ? delay : 0;
 }
+
+export function isJsonContentType(headers: HeadersType): boolean {
+  const contentType: string | null = headers.get('content-type');
+  if (!contentType) return false;
+
+  return contentType.includes('application/json');
+}
