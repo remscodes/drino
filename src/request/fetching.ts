@@ -3,7 +3,7 @@ import { needRetry } from '../features/retry/retry-util';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import { HttpErrorResponse, HttpResponse } from '../response';
 import { convertBody } from '../response/response-util';
-import { getRetryAfter, inferContentType, isJsonContentType } from '../utils/headers-util';
+import { getRetryAfter, inferContentType, isJsonContentType, setContentType } from '../utils/headers-util';
 import { sleep } from '../utils/promise-util';
 import type { HttpRequest } from './http-request';
 import type { FetchTools } from './models/fetch-tools.model';
@@ -68,7 +68,7 @@ function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response
 
   if (requestBody) {
     const contentType: string | null = inferContentType(requestBody);
-    if (contentType) headers.set('content-type', contentType);
+    if (contentType) setContentType(headers, contentType);
 
     fetchOptions.body = JSON.stringify(requestBody);
   }
