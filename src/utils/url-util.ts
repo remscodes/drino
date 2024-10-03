@@ -3,10 +3,6 @@ import type { Url } from '../models/http.model';
 import type { Prefix } from '../models/shared.model';
 import type { RequestControllerConfig } from '../request/models/request-controller.model';
 
-interface BuildUrlArgs extends Pick<RequestControllerConfig, 'baseUrl' | 'prefix' | 'queryParams'> {
-  url: Url;
-}
-
 export function buildUrl(args: BuildUrlArgs): URL {
   const { baseUrl, prefix, url, queryParams } = args;
 
@@ -29,6 +25,10 @@ export function buildUrl(args: BuildUrlArgs): URL {
   });
 
   return finalUrl;
+}
+
+interface BuildUrlArgs extends Pick<RequestControllerConfig, 'baseUrl' | 'prefix' | 'queryParams'> {
+  url: Url;
 }
 
 function extendPathname(finalUrl: URL, extraPathname: Url): void {

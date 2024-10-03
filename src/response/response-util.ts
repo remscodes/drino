@@ -1,6 +1,7 @@
 import { emitError } from 'thror';
 import type { UnwrapHttpResponse } from '../models/http.model';
 import type { ReadType } from '../request/models/request-config.model';
+import { getContentType } from '../utils/headers-util';
 
 export async function convertBody<T>(fetchResponse: Response, read: ReadType): Promise<UnwrapHttpResponse<T>> {
   try {
@@ -8,7 +9,7 @@ export async function convertBody<T>(fetchResponse: Response, read: ReadType): P
       : await bodyFromReadType(fetchResponse, read);
   }
   catch (err: any) {
-    const contentType: string | null = fetchResponse.headers.get('content-type');
+    const contentType: string | null = getContentType(fetchResponse.headers);
     emitError('DrinoParserException', `Cannot parse body because RequestConfig.read (='${read}') is incompatible with 'content-type' response header (='${contentType}').`, {
       withStack: true,
       original: err,
@@ -17,7 +18,7 @@ export async function convertBody<T>(fetchResponse: Response, read: ReadType): P
 }
 
 export function inferBody(fetchResponse: Response): Promise<any> {
-  const contentType: string | null = fetchResponse.headers.get('content-type');
+  const contentType: string | null = getContentType(fetchResponse.headers);
   if (!contentType) return bodyFromReadType(fetchResponse, 'none');
 
   let readType: ReadType;
