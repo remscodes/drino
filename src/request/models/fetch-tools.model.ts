@@ -8,7 +8,6 @@ export interface FetchTools {
   retry: Required<InstanceRetryConfig>;
   retryCb?: Observer<unknown>['retry'];
   dlCb?: Observer<unknown>['download'];
-  // ulCb?: Observer<unknown>['uploadProgress'];
   fetch: typeof fetch;
   fetchInit: RequestInit;
 }
