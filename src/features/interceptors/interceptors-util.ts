@@ -2,14 +2,15 @@ import { EMPTY_FN, mergeVoidFns } from '../../utils/fn-util';
 import type { Interceptors } from './models/interceptor.model';
 
 export function initInterceptors(interceptors: Partial<Interceptors>): Interceptors {
-  const { beforeConsume, afterConsume, beforeResult, beforeError, beforeFinish } = interceptors;
-  return {
-    beforeConsume: beforeConsume ?? EMPTY_FN,
-    afterConsume: afterConsume ?? EMPTY_FN,
-    beforeResult: beforeResult ?? EMPTY_FN,
-    beforeError: beforeError ?? EMPTY_FN,
-    beforeFinish: beforeFinish ?? EMPTY_FN,
-  };
+  const {
+    beforeConsume = EMPTY_FN,
+    afterConsume = EMPTY_FN,
+    beforeResult = EMPTY_FN,
+    beforeError = EMPTY_FN,
+    beforeFinish = EMPTY_FN,
+  } = interceptors;
+
+  return { beforeConsume, afterConsume, beforeResult, beforeError, beforeFinish };
 }
 
 export function mergeInterceptors(...interceptors: Partial<Interceptors>[]): Interceptors {
