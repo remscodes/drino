@@ -1,5 +1,7 @@
 import { defaultSignal, mergeSignals, timedSignal } from '../features/abort/abort-util';
 import { DEFAULT_TIMEOUT } from '../features/abort/abort.constants';
+import { HttpContext } from '../features/interceptors/context/http-context';
+import { mergeContext } from '../features/interceptors/context/http-context-util';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
 import { DEFAULT_RETRY } from '../features/retry/retry.constants';
 import type { DrinoDefaultConfigInit } from '../models/drino.model';
@@ -18,6 +20,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
       prefix: instancePrefix = DEFAULT_PREFIX,
       headers: instanceHeaders = {},
       queryParams: instanceQueryParams = {},
+      context: instanceContext = new HttpContext(),
       timeout: instanceTimeoutMs = DEFAULT_TIMEOUT,
       retry: {
         max: instanceMax = DEFAULT_RETRY.max,
@@ -42,6 +45,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     prefix,
     headers = {},
     queryParams = {},
+    context = new HttpContext(),
     read = DEFAULT_READ,
     wrapper = DEFAULT_WRAPPER,
     timeout,
@@ -68,6 +72,7 @@ export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defa
     prefix: prefix ?? instancePrefix,
     headers: mergeHeaders(instanceHeaders, headers),
     queryParams: mergeQueryParams(instanceQueryParams, queryParams),
+    context: mergeContext(instanceContext, context),
     read,
     wrapper,
     interceptors: initInterceptors(instanceInterceptors),

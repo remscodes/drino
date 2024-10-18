@@ -1,3 +1,4 @@
+import type { HttpContext } from '../../features/interceptors/context/http-context';
 import type { RetryConfig } from '../../features/retry/models/retry-config.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
@@ -19,6 +20,10 @@ export interface RequestConfig<
    * HTTP Parameters.
    */
   queryParams?: QueryParamsType;
+  /**
+   * Context to be used with interceptors.
+   */
+  context?: HttpContext;
   /**
    * Response type that will be passed into :
    *  - `result` callback when using Observer.

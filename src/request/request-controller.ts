@@ -68,8 +68,8 @@ export class RequestController<Resource> {
 
   public finalize(finalFn: FinalCallback): RequestController<Resource> {
     const original = this.config.interceptors.beforeFinish;
-    this.config.interceptors.beforeFinish = () => {
-      original();
+    this.config.interceptors.beforeFinish = (args) => {
+      original(args);
       finalFn();
     };
     return this;
@@ -84,11 +84,10 @@ export class RequestController<Resource> {
   public consume(): Promise<Resource>;
   public consume(observer: Observer<Resource>): void;
   public consume(observer?: Observer<Resource>): Promise<Resource> | void {
-    this.config.interceptors.beforeConsume(this.request);
-
     const {
       abortCtrl,
       interceptors,
+      context,
       retry,
       fetch,
       credentials,
@@ -101,10 +100,13 @@ export class RequestController<Resource> {
       integrity,
     } = this.config;
 
+    this.config.interceptors.beforeConsume({ req: this.request, context });
+
     const tools: FetchTools = {
       abortCtrl,
       interceptors,
       retry,
+      context,
       retryCb: observer?.retry,
       dlCb: observer?.download,
       fetch,
@@ -135,7 +137,7 @@ export class RequestController<Resource> {
       return this.reject(err);
     }
     finally {
-      this.config.interceptors.beforeFinish();
+      this.config.interceptors.beforeFinish({ req: this.request, context: tools.context });
     }
   }
 
@@ -158,7 +160,7 @@ export class RequestController<Resource> {
         observer.error?.(err);
       })
       .finally(() => {
-        this.config.interceptors.beforeFinish();
+        this.config.interceptors.beforeFinish({ req: this.request, context: tools.context });
         observer.finish?.();
       });
   }

@@ -1,4 +1,6 @@
 import { DEFAULT_TIMEOUT } from './features/abort/abort.constants';
+import { HttpContext } from './features/interceptors/context/http-context';
+import { mergeContext } from './features/interceptors/context/http-context-util';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
 import { DEFAULT_RETRY } from './features/retry/retry.constants';
 import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
@@ -14,6 +16,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix: parentPrefix = DEFAULT_PREFIX,
       headers: parentHeaders = {},
       queryParams: parentQueryParams = {},
+      context: parentContext = new HttpContext(),
       timeout: parentTimeout = DEFAULT_TIMEOUT,
       retry: {
         max: parentMax = DEFAULT_RETRY.max,
@@ -41,13 +44,14 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix,
       headers = {},
       queryParams = {},
+      context = new HttpContext(),
       timeout,
       retry: {
-        max = undefined,
-        withRetryAfter = undefined,
-        delay = undefined,
-        onStatus = undefined,
-        onMethods = undefined,
+        max,
+        withRetryAfter,
+        delay,
+        onStatus,
+        onMethods,
       } = {},
       fetch: reqFetch,
       credentials,
@@ -68,6 +72,7 @@ export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, paren
       prefix: prefix ?? parentPrefix,
       headers: mergeHeaders(parentHeaders, headers),
       queryParams: mergeQueryParams(parentQueryParams, queryParams),
+      context: mergeContext(parentContext, context),
       timeout: timeout ?? parentTimeout,
       retry: {
         max: max ?? parentMax,

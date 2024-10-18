@@ -1,6 +1,6 @@
 import type { SinonSandbox, SinonSpy } from 'sinon';
 import sinon from 'sinon';
-import type { DrinoInstance, HttpErrorResponse, HttpRequest, RequestController } from '../../src';
+import type { DrinoInstance, HttpErrorResponse, HttpRequest } from '../../src';
 import drino from '../../src';
 import type { TestItem } from '../fixtures/services/item-service';
 import { expectEqual, expectToBeCalled, expectToBeCalledWith } from '../fixtures/utils/expect-util';
@@ -11,9 +11,7 @@ describe('Drino - Interceptors', () => {
   let instance: DrinoInstance;
 
   beforeEach(() => {
-    instance = drino.create({
-      baseUrl: 'http://localhost:8080/item'
-    });
+    instance = drino.create({ baseUrl: 'http://localhost:8080/item' });
   });
 
   afterEach(() => {
@@ -23,14 +21,27 @@ describe('Drino - Interceptors', () => {
   describe('beforeConsume', () => {
 
     it('should set default header before consume', async () => {
-      const { key, value } = { key: 'Cat-Mood', value: 'Good' };
+      const key = 'Cat-Mood';
+      const value = 'Good';
 
-      instance.default.interceptors.beforeConsume = (request: HttpRequest) => {
-        request.headers.set(key, value);
-      };
+      instance.default.interceptors.beforeConsume = ({ req }) => req.headers.set(key, value);
 
-      const requestCtrl: RequestController<TestItem> = instance.get(`/1`);
-      const headers: Headers = requestCtrl['request'].headers;
+      const requestCtrl = instance.get<TestItem>(`/1`);
+      const { headers } = requestCtrl.request;
+
+      await requestCtrl.consume();
+
+      expectEqual(headers.get(key), value);
+    });
+
+    it('should not set default header before consume because of context', async () => {
+      const key = 'Cat-Mood';
+      const value = 'Good';
+
+      instance.default.interceptors.beforeConsume = ({ req }) => req.headers.set(key, value);
+
+      const requestCtrl = instance.get<TestItem>(`/1`);
+      const { headers } = requestCtrl.request;
 
       await requestCtrl.consume();
 
@@ -41,19 +52,19 @@ describe('Drino - Interceptors', () => {
   describe('afterConsume', () => {
 
     it('should call function after consume', (done: Mocha.Done) => {
-      function handle(_request: HttpRequest): void {}
+      function handle(_req: HttpRequest): void {}
 
-      const spy: SinonSpy<[request: HttpRequest], void> = sandbox.spy(handle);
+      const spy: SinonSpy<[req: HttpRequest], void> = sandbox.spy(handle);
 
-      instance.default.interceptors.afterConsume = (request: HttpRequest) => {
-        spy(request);
-      };
+      instance.default.interceptors.afterConsume = ({ req, res, ok }) => {
+        spy(req);
+      }
 
       instance.get('/').consume({
         finish: () => {
           expectToBeCalled(spy);
           done();
-        }
+        },
       });
     });
   });
@@ -61,19 +72,17 @@ describe('Drino - Interceptors', () => {
   describe('beforeResult', () => {
 
     it('should call function before result', (done: Mocha.Done) => {
-      function handle(_result: unknown): void {}
+      function handle(_req: unknown): void {}
 
-      const spy: SinonSpy<[result: unknown], void> = sandbox.spy(handle);
+      const spy: SinonSpy<[res: unknown], void> = sandbox.spy(handle);
 
-      instance.default.interceptors.beforeResult = (result: any) => {
-        spy(result);
-      };
+      instance.default.interceptors.beforeResult = (res: any) => spy(res);
 
       instance.get('/1').consume({
-        result: (result: unknown) => {
-          expectToBeCalledWith(spy, result);
+        result: (res: unknown) => {
+          expectToBeCalledWith(spy, res);
           done();
-        }
+        },
       });
     });
   });
@@ -85,15 +94,13 @@ describe('Drino - Interceptors', () => {
 
       const spy: SinonSpy<[errorResponse: HttpErrorResponse], void> = sandbox.spy(handleError);
 
-      instance.default.interceptors.beforeError = (errorResponse: HttpErrorResponse) => {
-        spy(errorResponse);
-      };
+      instance.default.interceptors.beforeError = ({ errRes }) => spy(errRes);
 
       instance.get('/route/unknown').consume({
-        error: (errorResponse: HttpErrorResponse) => {
-          expectToBeCalledWith(spy, errorResponse);
+        error: (errRes: HttpErrorResponse) => {
+          expectToBeCalledWith(spy, errRes);
           done();
-        }
+        },
       });
     });
   });
@@ -105,15 +112,13 @@ describe('Drino - Interceptors', () => {
 
       const spy: SinonSpy<[], void> = sandbox.spy(handle);
 
-      instance.default.interceptors.beforeFinish = () => {
-        spy();
-      };
+      instance.default.interceptors.beforeFinish = () => spy();
 
       instance.get('/1').consume({
         finish: () => {
           expectToBeCalled(spy);
           done();
-        }
+        },
       });
     });
   });
