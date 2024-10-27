@@ -5,4 +5,8 @@ export class HttpContextToken<T> {
   public constructor(
     private factory: () => T,
   ) { }
+
+  public get default() {
+    return this.factory();
+  }
 }

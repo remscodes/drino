@@ -1,17 +1,25 @@
 import type { SinonSandbox, SinonSpy } from 'sinon';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import type { DrinoInstance, HttpErrorResponse, HttpRequest } from '../../src';
 import drino from '../../src';
+import { HttpContextToken } from '../../src/features/interceptors/context/http-context-token';
 import type { TestItem } from '../fixtures/services/item-service';
-import { expectEqual, expectToBeCalled, expectToBeCalledWith } from '../fixtures/utils/expect-util';
+import { expectEqual, expectNotEqual, expectToBeCalled, expectToBeCalledWith } from '../fixtures/utils/expect-util';
 
 describe('Drino - Interceptors', () => {
   const sandbox: SinonSandbox = sinon.createSandbox();
+  const headerSetToken = new HttpContextToken(() => true);
 
   let instance: DrinoInstance;
 
   beforeEach(() => {
-    instance = drino.create({ baseUrl: 'http://localhost:8080/item' });
+    instance = drino.create({
+      baseUrl: 'http://localhost:8080/item',
+      requestsConfig: {
+        context: (ctx) => ctx.set(headerSetToken, true),
+
+      },
+    });
   });
 
   afterEach(() => {
@@ -34,11 +42,14 @@ describe('Drino - Interceptors', () => {
       expectEqual(headers.get(key), value);
     });
 
-    it('should not set default header before consume because of context', async () => {
+    it('should set default header before consume', async () => {
       const key = 'Cat-Mood';
       const value = 'Good';
 
-      instance.default.interceptors.beforeConsume = ({ req }) => req.headers.set(key, value);
+      instance.default.interceptors.beforeConsume = ({ req, ctx }) => {
+        const hasToSet = ctx.get(headerSetToken);
+        if (hasToSet) req.headers.set(key, value);
+      };
 
       const requestCtrl = instance.get<TestItem>(`/1`);
       const { headers } = requestCtrl.request;
@@ -46,6 +57,24 @@ describe('Drino - Interceptors', () => {
       await requestCtrl.consume();
 
       expectEqual(headers.get(key), value);
+    });
+
+    it('should not set default header before consume because of context', async () => {
+      const key = 'Cat-Mood';
+      const value = 'Good';
+
+      instance.default.interceptors.beforeConsume = ({ req, ctx }) => {
+        if (ctx.get(headerSetToken)) req.headers.set(key, value);
+      };
+
+      const requestCtrl = instance.get<TestItem>(`/1`, {
+        context: (ctx) => ctx.set(headerSetToken, false),
+      });
+      const { headers } = requestCtrl.request;
+
+      await requestCtrl.consume();
+
+      expectNotEqual(headers.get(key), value);
     });
   });
 
@@ -58,7 +87,7 @@ describe('Drino - Interceptors', () => {
 
       instance.default.interceptors.afterConsume = ({ req, res, ok }) => {
         spy(req);
-      }
+      };
 
       instance.get('/').consume({
         finish: () => {

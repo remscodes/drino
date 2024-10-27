@@ -1,6 +1,6 @@
-import { HttpRequest } from '../../../request';
+import type { HttpRequest } from '../../../request';
 import type { HttpErrorResponse, HttpResponse } from '../../../response';
-import { HttpContext } from '../context/http-context';
+import type { HttpContext } from '../context/http-context';
 
 export interface Interceptors {
   beforeConsume: (args: BeforeConsumeArgs) => void;
@@ -19,22 +19,22 @@ interface ReqAndContext {
   /**
    * @see HttpContext
    */
-  context: HttpContext;
+  ctx: HttpContext;
 }
 
-interface BeforeConsumeArgs extends ReqAndContext {}
+export interface BeforeConsumeArgs extends ReqAndContext {}
 
-type AfterConsumeArgs<T = any> = ReqAndContext &
+export type AfterConsumeArgs<T = any> = ReqAndContext &
   (
     | { res: HttpResponse<T>; ok: true; }
     | { res: HttpErrorResponse; ok: false; }
     )
 
-interface BeforeResultArgs extends ReqAndContext {
+export interface BeforeResultArgs extends ReqAndContext {
   res: any;
 }
 
-interface BeforeErrorArgs extends ReqAndContext {
+export interface BeforeErrorArgs extends ReqAndContext {
   /**
    * @see HttpErrorResponse
    */
@@ -42,4 +42,4 @@ interface BeforeErrorArgs extends ReqAndContext {
   err: any;
 }
 
-interface BeforeFinishArgs extends ReqAndContext {}
+export interface BeforeFinishArgs extends ReqAndContext {}

@@ -20,7 +20,9 @@ export class HttpContext {
   }
 
   public get<T>(token: HttpContextToken<T>): T {
-    return this.map.get(token);
+    const value = this.map.get(token);
+    if (value === undefined) return token.default;
+    return value;
   }
 
   public delete(token: HttpContextToken<any>): HttpContext {
@@ -28,6 +30,11 @@ export class HttpContext {
     return this;
   }
 
-  public keys = this.map.keys;
-  public entries = this.map.entries;
+  public keys(): HttpContextToken<any>[] {
+    return Array.from(this.map.keys());
+  }
+
+  public entries(): [HttpContextToken<any>, any][] {
+    return Array.from(this.map.entries());
+  }
 }

@@ -1,4 +1,7 @@
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
+import type { HttpContext } from '../features/interceptors/context/http-context';
+import { DEFAULT_HTTP_CONTEXT_CHAIN } from '../features/interceptors/context/http-context.constants';
+import type { BeforeErrorArgs } from '../features/interceptors/models/interceptor.model';
 import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { performHttpRequest } from './fetching';
@@ -59,9 +62,9 @@ export class RequestController<Resource> {
 
   public report(reportFn: ReportCallback): RequestController<Resource> {
     const original = this.config.interceptors.beforeError;
-    this.config.interceptors.beforeError = (err: any) => {
-      original(err);
-      reportFn(err);
+    this.config.interceptors.beforeError = (args: BeforeErrorArgs) => {
+      original(args);
+      reportFn(args.errRes);
     };
     return this;
   }
@@ -87,7 +90,7 @@ export class RequestController<Resource> {
     const {
       abortCtrl,
       interceptors,
-      context,
+      context: contextChain,
       retry,
       fetch,
       credentials,
@@ -100,13 +103,15 @@ export class RequestController<Resource> {
       integrity,
     } = this.config;
 
-    this.config.interceptors.beforeConsume({ req: this.request, context });
+    const context: HttpContext = contextChain(DEFAULT_HTTP_CONTEXT_CHAIN());
+
+    this.config.interceptors.beforeConsume({ req: this.request, ctx: context });
 
     const tools: FetchTools = {
       abortCtrl,
       interceptors,
       retry,
-      context,
+      context: context,
       retryCb: observer?.retry,
       dlCb: observer?.download,
       fetch,
@@ -137,7 +142,7 @@ export class RequestController<Resource> {
       return this.reject(err);
     }
     finally {
-      this.config.interceptors.beforeFinish({ req: this.request, context: tools.context });
+      this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context });
     }
   }
 
@@ -160,7 +165,7 @@ export class RequestController<Resource> {
         observer.error?.(err);
       })
       .finally(() => {
-        this.config.interceptors.beforeFinish({ req: this.request, context: tools.context });
+        this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context });
         observer.finish?.();
       });
   }

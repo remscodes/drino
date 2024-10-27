@@ -18,7 +18,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
 
     const errorResponse = new HttpErrorResponse({ error, headers, status, statusText, url });
 
-    if (retryCount === 0) tools.interceptors.afterConsume({ req: request, res: errorResponse, ok, context: tools.context });
+    if (retryCount === 0) tools.interceptors.afterConsume({ req: request, res: errorResponse, ok, ctx: tools.context });
 
     const hasToRetry: boolean = needRetry(tools.retry, status, request.method, retryCount, tools.abortCtrl);
     if (hasToRetry) {
@@ -32,7 +32,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
       return performHttpRequest(request, tools, retryCount);
     }
 
-    tools.interceptors.beforeError({ req: request, errRes: errorResponse, err: error, context: tools.context });
+    tools.interceptors.beforeError({ req: request, errRes: errorResponse, err: error, ctx: tools.context });
 
     throw errorResponse;
   }
@@ -49,7 +49,7 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
     url,
   });
 
-  if (retryCount === 0) tools.interceptors.afterConsume({ req: request, res: httpResponse, ok, context: tools.context });
+  if (retryCount === 0) tools.interceptors.afterConsume({ req: request, res: httpResponse, ok, ctx: tools.context });
 
   if (tools.dlCb && fetchResponse.status !== 204) await inspectDownloadProgress(fetchResponse, tools).catch(console.error);
 

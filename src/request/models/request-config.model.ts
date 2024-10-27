@@ -1,4 +1,4 @@
-import type { HttpContext } from '../../features/interceptors/context/http-context';
+import type { ContextChain } from '../../features/interceptors/models/context-chain.model';
 import type { RetryConfig } from '../../features/retry/models/retry-config.model';
 import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
 
@@ -23,7 +23,7 @@ export interface RequestConfig<
   /**
    * Context to be used with interceptors.
    */
-  context?: HttpContext;
+  context?: ContextChain;
   /**
    * Response type that will be passed into :
    *  - `result` callback when using Observer.

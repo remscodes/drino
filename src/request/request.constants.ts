@@ -9,7 +9,7 @@ export const DEFAULT_READ: ReadType = 'auto';
 
 export const DEFAULT_WRAPPER: WrapperType = 'none';
 
-export const DEFAULT_FETCH: typeof fetch = fetch;
+export const DEFAULT_FETCH: typeof fetch = globalThis.fetch;
 
 export const DEFAULT_CREDENTIALS: RequestCredentials = 'same-origin';
 
