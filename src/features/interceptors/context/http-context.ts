@@ -3,9 +3,9 @@ import type { HttpContextToken } from './http-context-token';
 export class HttpContext {
 
   public constructor(
-    init?: [HttpContextToken<any>, any][],
+    init?: HttpContextInit[],
   ) {
-    init?.forEach(([token, value]) => this.set(token, value));
+    init?.forEach(({ token, value }) => this.set(token, value));
   }
 
   private map = new Map<HttpContextToken<any>, any>();
@@ -37,4 +37,9 @@ export class HttpContext {
   public entries(): [HttpContextToken<any>, any][] {
     return Array.from(this.map.entries());
   }
+}
+
+interface HttpContextInit<T = any> {
+  token: HttpContextToken<T>;
+  value: T;
 }

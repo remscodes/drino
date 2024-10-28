@@ -9,7 +9,7 @@ export function needRetry(retryConfig: Required<InstanceRetryConfig>, status: nu
     && !abortCtrl.signal.aborted;
 }
 
-function matchStatus(onStatus: OnStatusCodes, status: number): boolean {
+export function matchStatus(onStatus: OnStatusCodes, status: number): boolean {
   if (isNumberRange(onStatus)) {
     const { start, end }: NumberRange = onStatus;
     return (start <= status)

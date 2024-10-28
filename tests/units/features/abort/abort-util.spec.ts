@@ -1,4 +1,4 @@
-import { defaultSignal, mergeSignals, timedSignal } from '../../../../src/features/abort/abort-util';
+import { defaultSignal, fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError, mergeSignals, timedSignal } from '../../../../src/features/abort/abort-util';
 import { sleep } from '../../../../src/utils/promise-util';
 import { expectEqual, expectProperty, expectType } from '../../../fixtures/utils/expect-util';
 
@@ -50,11 +50,41 @@ describe('Util - Abort', () => {
     });
   });
 
-  describe('fixFirefoxAbortError', () => {
+  describe('FirefoxAbortError', () => {
 
+    it('should pass', () => {
+      const original = new Error();
+      original.name = 'AbortError';
+
+      const error = fixFirefoxAbortError(original);
+      expectEqual(error.message, '');
+    });
+
+    it('should create', () => {
+      const original = new Error();
+      original.name = 'AnyAbortError';
+
+      const error = fixFirefoxAbortError(original);
+      expectEqual(error.message, 'The user aborted a request.');
+    });
   });
 
-  describe('fixFirefoxAbortError', () => {
+  describe('ChromiumAndWebkitTimeout', () => {
 
+    it('should pass', () => {
+      const original = new Error();
+      original.name = 'TimeoutError';
+
+      const error = fixChromiumAndWebkitTimeoutError(original);
+      expectEqual(error.message, '');
+    });
+
+    it('should create', () => {
+      const original = new Error();
+      original.name = 'AnyTimeoutError';
+
+      const error = fixChromiumAndWebkitTimeoutError(original);
+      expectEqual(error.message, 'The operation timed out.');
+    });
   });
 });
