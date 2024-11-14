@@ -1,14 +1,15 @@
+import type { Promisable } from '../../../models/shared.model';
 import type { HttpRequest } from '../../../request';
 import type { HttpErrorResponse, HttpResponse } from '../../../response';
 import type { HttpContext } from '../context/http-context';
 
 export interface Interceptors {
-  beforeConsume: (args: BeforeConsumeArgs) => void;
-  afterConsume: (args: AfterConsumeArgs) => void;
-  // beforeRedirect: () => void;
-  beforeResult: (args: BeforeResultArgs) => void;
-  beforeError: (args: BeforeErrorArgs) => void;
-  beforeFinish: (args: BeforeFinishArgs) => void;
+  beforeConsume: (args: BeforeConsumeArgs) => Promisable<void>;
+  afterConsume: (args: AfterConsumeArgs) => Promisable<void>;
+  // beforeRedirect: () => Promisable<void>;
+  beforeResult: (args: BeforeResultArgs) => Promisable<void>;
+  beforeError: (args: BeforeErrorArgs) => Promisable<void>;
+  beforeFinish: (args: BeforeFinishArgs) => Promisable<void>;
 }
 
 interface ReqAndContext {
