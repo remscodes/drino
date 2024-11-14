@@ -17,7 +17,6 @@ describe('Drino - Interceptors', () => {
       baseUrl: 'http://localhost:8080/item',
       requestsConfig: {
         context: (ctx) => ctx.set(headerSetToken, true),
-
       },
     });
   });

@@ -24,18 +24,9 @@ export class RequestController<Resource> {
     const { method, url, body, config = {} } = init;
 
     this.config = mergeRequestConfigs(config, defaultConfig);
+    const { headers, read, wrapper, prefix, queryParams, baseUrl } = this.config;
 
-    this.request = new HttpRequest({
-      method,
-      url,
-      body,
-      headers: this.config.headers,
-      read: this.config.read,
-      wrapper: this.config.wrapper,
-      prefix: this.config.prefix,
-      queryParams: this.config.queryParams,
-      baseUrl: this.config.baseUrl,
-    });
+    this.request = new HttpRequest({ method, url, body, headers, read, wrapper, prefix, queryParams, baseUrl });
   }
 
   /** @internal */
@@ -105,8 +96,6 @@ export class RequestController<Resource> {
 
     const context: HttpContext = contextChain(DEFAULT_HTTP_CONTEXT_CHAIN());
 
-    this.config.interceptors.beforeConsume({ req: this.request, ctx: context });
-
     const tools: FetchTools = {
       abortCtrl,
       interceptors,
@@ -134,6 +123,7 @@ export class RequestController<Resource> {
   /** @internal */
   private async makePromise(tools: FetchTools): Promise<Resource> {
     try {
+      this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: tools.abortCtrl.abort });
       let result = await performHttpRequest<Resource>(this.request, tools);
       for (const modifier of this.modifiers) result = await modifier(result);
       return result;
@@ -148,6 +138,15 @@ export class RequestController<Resource> {
 
   /** @internal */
   private useObserver(observer: Observer<Resource>, tools: FetchTools): void {
+    try {
+      this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: tools.abortCtrl.abort });
+    }
+    catch (err: unknown) {
+      const signal: AbortSignal = this.config.abortCtrl.signal;
+      if (signal.aborted) return observer.abort?.(signal.reason);
+
+      observer.error?.(err);
+    }
     performHttpRequest<Resource>(this.request, tools)
       .then(async (result) => {
         try {

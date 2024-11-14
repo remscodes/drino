@@ -22,7 +22,9 @@ interface ReqAndContext {
   ctx: HttpContext;
 }
 
-export interface BeforeConsumeArgs extends ReqAndContext {}
+export interface BeforeConsumeArgs extends ReqAndContext {
+  abort: (reason?: string) => void;
+}
 
 export type AfterConsumeArgs<T = any> = ReqAndContext &
   (

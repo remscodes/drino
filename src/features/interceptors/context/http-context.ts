@@ -2,9 +2,7 @@ import type { HttpContextToken } from './http-context-token';
 
 export class HttpContext {
 
-  public constructor(
-    init?: HttpContextInit[],
-  ) {
+  public constructor(init?: HttpContextInit[]) {
     init?.forEach(({ token, value }) => this.set(token, value));
   }
 
