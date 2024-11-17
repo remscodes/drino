@@ -1,8 +1,9 @@
 import type { SinonSandbox, SinonSpy } from 'sinon';
 import * as sinon from 'sinon';
-import type { DrinoInstance, HttpErrorResponse, HttpRequest } from '../../src';
+import type { DrinoInstance, HttpErrorResponse, HttpResponse } from '../../src';
 import drino from '../../src';
 import { HttpContextToken } from '../../src/features/interceptors/context/http-context-token';
+import type { AfterConsumeArgs, BeforeFinishArgs, BeforeResultArgs } from '../../src/features/interceptors/models/interceptor.model';
 import type { TestItem } from '../fixtures/services/item-service';
 import { expectEqual, expectNotEqual, expectToBeCalled, expectToBeCalledWith } from '../fixtures/utils/expect-util';
 
@@ -33,7 +34,7 @@ describe('Drino - Interceptors', () => {
 
       instance.default.interceptors.beforeConsume = ({ req }) => req.headers.set(key, value);
 
-      const requestCtrl = instance.get<TestItem>(`/1`);
+      const requestCtrl = instance.get<TestItem>('/1');
       const { headers } = requestCtrl.request;
 
       await requestCtrl.consume();
@@ -41,7 +42,7 @@ describe('Drino - Interceptors', () => {
       expectEqual(headers.get(key), value);
     });
 
-    it('should set default header before consume', async () => {
+    it('should set default header before consume because of context', async () => {
       const key = 'Cat-Mood';
       const value = 'Good';
 
@@ -50,7 +51,7 @@ describe('Drino - Interceptors', () => {
         if (hasToSet) req.headers.set(key, value);
       };
 
-      const requestCtrl = instance.get<TestItem>(`/1`);
+      const requestCtrl = instance.get<TestItem>('/1');
       const { headers } = requestCtrl.request;
 
       await requestCtrl.consume();
@@ -66,7 +67,7 @@ describe('Drino - Interceptors', () => {
         if (ctx.get(headerSetToken)) req.headers.set(key, value);
       };
 
-      const requestCtrl = instance.get<TestItem>(`/1`, {
+      const requestCtrl = instance.get<TestItem>('/1', {
         context: (ctx) => ctx.set(headerSetToken, false),
       });
       const { headers } = requestCtrl.request;
@@ -75,18 +76,32 @@ describe('Drino - Interceptors', () => {
 
       expectNotEqual(headers.get(key), value);
     });
+
+    it('should abort request in before consume', (done: Mocha.Done) => {
+      const abortReason = 'cancelled';
+
+      instance.default.interceptors.beforeConsume = ({ abort }) => abort(abortReason);
+
+      const abortCtrl = new AbortController();
+      const { signal } = abortCtrl;
+
+      instance.get<TestItem>('/1', { signal }).consume({
+        abort: (reason) => {
+          expectEqual(reason, abortReason);
+          done();
+        },
+      });
+    });
   });
 
   describe('afterConsume', () => {
 
     it('should call function after consume', (done: Mocha.Done) => {
-      function handle(_req: HttpRequest): void {}
+      function handle({}: AfterConsumeArgs): void {}
 
-      const spy: SinonSpy<[req: HttpRequest], void> = sandbox.spy(handle);
+      const spy: SinonSpy<[args: AfterConsumeArgs], void> = sandbox.spy(handle);
 
-      instance.default.interceptors.afterConsume = ({ req, res, ok }) => {
-        spy(req);
-      };
+      instance.default.interceptors.afterConsume = (args) => spy(args);
 
       instance.get('/').consume({
         finish: () => {
@@ -100,14 +115,14 @@ describe('Drino - Interceptors', () => {
   describe('beforeResult', () => {
 
     it('should call function before result', (done: Mocha.Done) => {
-      function handle(_req: unknown): void {}
+      function handle(_res: HttpResponse<any>): void {}
 
-      const spy: SinonSpy<[res: unknown], void> = sandbox.spy(handle);
+      const spy: SinonSpy<[res: HttpResponse<any>], void> = sandbox.spy(handle);
 
-      instance.default.interceptors.beforeResult = (res: any) => spy(res);
+      instance.default.interceptors.beforeResult = (args: BeforeResultArgs) => spy(args.res);
 
-      instance.get('/1').consume({
-        result: (res: unknown) => {
+      instance.get('/1', { wrapper: 'response' }).consume({
+        result: (res: HttpResponse<unknown>) => {
           expectToBeCalledWith(spy, res);
           done();
         },
@@ -118,11 +133,11 @@ describe('Drino - Interceptors', () => {
   describe('beforeError', () => {
 
     it('should call function before error', (done: Mocha.Done) => {
-      function handleError(_errorResponse: HttpErrorResponse): void {}
+      function handleError(_errRes: HttpErrorResponse): void {}
 
-      const spy: SinonSpy<[errorResponse: HttpErrorResponse], void> = sandbox.spy(handleError);
+      const spy: SinonSpy<[errRes: HttpErrorResponse], void> = sandbox.spy(handleError);
 
-      instance.default.interceptors.beforeError = ({ errRes }) => spy(errRes);
+      instance.default.interceptors.beforeError = (args) => spy(args.errRes);
 
       instance.get('/route/unknown').consume({
         error: (errRes: HttpErrorResponse) => {
@@ -136,11 +151,11 @@ describe('Drino - Interceptors', () => {
   describe('beforeFinish', () => {
 
     it('should call function before finish', (done: Mocha.Done) => {
-      function handle(): void {}
+      function handle({}: BeforeFinishArgs): void {}
 
-      const spy: SinonSpy<[], void> = sandbox.spy(handle);
+      const spy: SinonSpy<[args: BeforeFinishArgs], void> = sandbox.spy(handle);
 
-      instance.default.interceptors.beforeFinish = () => spy();
+      instance.default.interceptors.beforeFinish = (args) => spy(args);
 
       instance.get('/1').consume({
         finish: () => {
