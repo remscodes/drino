@@ -33,8 +33,8 @@ export type AfterConsumeArgs<T = any> = ReqAndContext &
     | { res: HttpErrorResponse; ok: false; }
     )
 
-export interface BeforeResultArgs extends ReqAndContext {
-  res: any;
+export interface BeforeResultArgs<T = any> extends ReqAndContext {
+  res: HttpResponse<T>;
 }
 
 export interface BeforeErrorArgs extends ReqAndContext {

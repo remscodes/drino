@@ -8,8 +8,8 @@ import { sleep } from '../utils/promise-util';
 import type { HttpRequest } from './http-request';
 import type { FetchTools } from './models/fetch-tools.model';
 
-export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTools, retryCount: number = 0): Promise<T> {
-  const fetchResponse: Response = await performFetch(request, tools);
+export async function performHttpRequest<T>(req: HttpRequest, tools: FetchTools, retryCount: number = 0): Promise<T> {
+  const fetchResponse: Response = await performFetch(req, tools);
   const { headers, ok, status, statusText, url } = fetchResponse;
 
   if (!ok) {
@@ -18,28 +18,28 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
 
     const errorResponse = new HttpErrorResponse({ error, headers, status, statusText, url });
 
-    if (retryCount === 0) await tools.interceptors.afterConsume({ req: request, res: errorResponse, ok, ctx: tools.context });
+    if (retryCount === 0) await tools.interceptors.afterConsume({ req, res: errorResponse, ok, ctx: tools.context });
 
-    const hasToRetry: boolean = needRetry(tools.retry, status, request.method, retryCount, tools.abortCtrl);
+    const hasToRetry: boolean = needRetry(tools.retry, status, req.method, retryCount, tools.abortCtrl);
     if (hasToRetry) {
       const delay: number = (tools.retry.withRetryAfter && getRetryAfter(headers)) || tools.retry.delay;
       if (delay) await sleep(delay);
 
       retryCount ++;
 
-      tools.retryCb?.({ abort: tools.abortCtrl.abort, count: retryCount, delay, error });
+      tools.retryCb?.({ abort: (r) => tools.abortCtrl.abort(r), count: retryCount, delay, error });
 
-      return performHttpRequest(request, tools, retryCount);
+      return performHttpRequest(req, tools, retryCount);
     }
 
-    await tools.interceptors.beforeError({ req: request, errRes: errorResponse, err: error, ctx: tools.context });
+    await tools.interceptors.beforeError({ req, errRes: errorResponse, err: error, ctx: tools.context });
 
     throw errorResponse;
   }
 
-  const isHeadOrOptions: boolean = (request.method === 'HEAD' || request.method === 'OPTIONS');
+  const isHeadOrOptions: boolean = (req.method === 'HEAD' || req.method === 'OPTIONS');
   const body: Headers | UnwrapHttpResponse<T> = (isHeadOrOptions) ? headers
-    : await convertBody<T>(fetchResponse, request.read);
+    : await convertBody<T>(fetchResponse, req.read);
 
   const httpResponse = new HttpResponse<UnwrapHttpResponse<T>>({
     body: (isHeadOrOptions) ? undefined : body,
@@ -49,19 +49,19 @@ export async function performHttpRequest<T>(request: HttpRequest, tools: FetchTo
     url,
   });
 
-  if (retryCount === 0) await tools.interceptors.afterConsume({ req: request, res: httpResponse, ok, ctx: tools.context });
+  if (retryCount === 0) await tools.interceptors.afterConsume({ req: req, res: httpResponse, ok, ctx: tools.context });
 
   if (tools.dlCb && fetchResponse.status !== 204) await inspectDownloadProgress(fetchResponse, tools).catch(console.error);
 
-  const result = (request.wrapper === 'response') ? httpResponse : body as any;
+  const result = (req.wrapper === 'response') ? httpResponse : body as any;
 
-  await tools.interceptors.beforeResult(result);
+  await tools.interceptors.beforeResult({ req: req, ctx: tools.context, res: httpResponse });
 
   return result;
 }
 
-function performFetch(request: HttpRequest, tools: FetchTools): Promise<Response> {
-  const { headers, method, url, body: requestBody } = request;
+function performFetch(req: HttpRequest, tools: FetchTools): Promise<Response> {
+  const { headers, method, url, body: requestBody } = req;
   const { abortCtrl: { signal }, fetchInit, fetch: fetchFn } = tools;
 
   const fetchOptions: RequestInit = { ...fetchInit, method, headers, signal };

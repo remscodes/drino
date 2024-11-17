@@ -123,7 +123,8 @@ export class RequestController<Resource> {
   /** @internal */
   private async makePromise(tools: FetchTools): Promise<Resource> {
     try {
-      await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: tools.abortCtrl.abort });
+      await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) });
+      if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
       let result = await performHttpRequest<Resource>(this.request, tools);
       for (const modifier of this.modifiers) result = await modifier(result);
       return result;
@@ -138,7 +139,10 @@ export class RequestController<Resource> {
 
   /** @internal */
   private useObserver(observer: Observer<Resource>, tools: FetchTools): void {
-    Promise.resolve(this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: tools.abortCtrl.abort }))
+    Promise.resolve(this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) }))
+      .then(() => {
+        if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
+      })
       .then(() => performHttpRequest<Resource>(this.request, tools))
       .then(async (result) => {
         try {
@@ -150,15 +154,13 @@ export class RequestController<Resource> {
         }
       })
       .catch((err: any) => {
-        const signal: AbortSignal = this.config.abortCtrl.signal;
+        const signal: AbortSignal = tools.abortCtrl.signal;
         if (signal.aborted) return observer.abort?.(signal.reason);
 
         observer.error?.(err);
       })
       .then(() => this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context }))
-      .finally(() => {
-        observer.finish?.();
-      });
+      .finally(() => observer.finish?.());
   }
 
   /** @internal */
