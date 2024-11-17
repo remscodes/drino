@@ -23,3 +23,25 @@ export function getRetryAfter(headers: Headers): number {
   const delay: number = dateToMs(retryAfter) - now();
   return (delay > 0) ? delay : 0;
 }
+
+export function isJsonContentType(headers: Headers): boolean {
+  const contentType: string | null = getContentType(headers);
+  if (!contentType) return false;
+
+  return contentType.includes('application/json');
+}
+
+export function getContentLength(headers: Headers): number | null {
+  const contentLength: string | null = headers.get('content-length');
+  if (!contentLength) return null;
+
+  return parseInt(contentLength, 10);
+}
+
+export function getContentType(headers: Headers): string | null {
+  return headers.get('content-type');
+}
+
+export function setContentType(headers: Headers, value: string): void {
+  headers.set('content-type', value);
+}

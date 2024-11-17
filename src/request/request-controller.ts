@@ -1,4 +1,7 @@
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
+import type { HttpContext } from '../features/interceptors/context/http-context';
+import { DEFAULT_HTTP_CONTEXT_CHAIN } from '../features/interceptors/context/http-context.constants';
+import type { BeforeErrorArgs } from '../features/interceptors/models/interceptor.model';
 import type { DrinoDefaultConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { performHttpRequest } from './fetching';
@@ -21,21 +24,9 @@ export class RequestController<Resource> {
     const { method, url, body, config = {} } = init;
 
     this.config = mergeRequestConfigs(config, defaultConfig);
+    const { headers, read, wrapper, prefix, queryParams, baseUrl } = this.config;
 
-    // Disable upload for http methods without body
-    // if (!method.startsWith('P')) this.config.progress.upload.inspect = false;
-
-    this.request = new HttpRequest({
-      method,
-      url,
-      body,
-      headers: this.config.headers,
-      read: this.config.read,
-      wrapper: this.config.wrapper,
-      prefix: this.config.prefix,
-      queryParams: this.config.queryParams,
-      baseUrl: this.config.baseUrl,
-    });
+    this.request = new HttpRequest({ method, url, body, headers, read, wrapper, prefix, queryParams, baseUrl });
   }
 
   /** @internal */
@@ -62,17 +53,17 @@ export class RequestController<Resource> {
 
   public report(reportFn: ReportCallback): RequestController<Resource> {
     const original = this.config.interceptors.beforeError;
-    this.config.interceptors.beforeError = (err: any) => {
-      original(err);
-      reportFn(err);
+    this.config.interceptors.beforeError = async (args: BeforeErrorArgs) => {
+      await original(args);
+      reportFn(args.errRes);
     };
     return this;
   }
 
   public finalize(finalFn: FinalCallback): RequestController<Resource> {
     const original = this.config.interceptors.beforeFinish;
-    this.config.interceptors.beforeFinish = () => {
-      original();
+    this.config.interceptors.beforeFinish = async (args) => {
+      await original(args);
       finalFn();
     };
     return this;
@@ -87,11 +78,10 @@ export class RequestController<Resource> {
   public consume(): Promise<Resource>;
   public consume(observer: Observer<Resource>): void;
   public consume(observer?: Observer<Resource>): Promise<Resource> | void {
-    this.config.interceptors.beforeConsume(this.request);
-
     const {
       abortCtrl,
       interceptors,
+      context: contextChain,
       retry,
       fetch,
       credentials,
@@ -104,13 +94,15 @@ export class RequestController<Resource> {
       integrity,
     } = this.config;
 
+    const context: HttpContext = contextChain(DEFAULT_HTTP_CONTEXT_CHAIN());
+
     const tools: FetchTools = {
       abortCtrl,
       interceptors,
       retry,
+      context: context,
       retryCb: observer?.retry,
       dlCb: observer?.download,
-      // ulCb: observer?.uploadProgress,
       fetch,
       fetchInit: {
         credentials,
@@ -131,6 +123,8 @@ export class RequestController<Resource> {
   /** @internal */
   private async makePromise(tools: FetchTools): Promise<Resource> {
     try {
+      await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) });
+      if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
       let result = await performHttpRequest<Resource>(this.request, tools);
       for (const modifier of this.modifiers) result = await modifier(result);
       return result;
@@ -139,13 +133,17 @@ export class RequestController<Resource> {
       return this.reject(err);
     }
     finally {
-      this.config.interceptors.beforeFinish();
+      await this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context });
     }
   }
 
   /** @internal */
   private useObserver(observer: Observer<Resource>, tools: FetchTools): void {
-    performHttpRequest<Resource>(this.request, tools)
+    Promise.resolve(this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) }))
+      .then(() => {
+        if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
+      })
+      .then(() => performHttpRequest<Resource>(this.request, tools))
       .then(async (result) => {
         try {
           for (const modifier of this.modifiers) result = await modifier(result);
@@ -156,24 +154,20 @@ export class RequestController<Resource> {
         }
       })
       .catch((err: any) => {
-        const signal: AbortSignal = this.config.abortCtrl.signal;
+        const signal: AbortSignal = tools.abortCtrl.signal;
         if (signal.aborted) return observer.abort?.(signal.reason);
 
         observer.error?.(err);
       })
-      .finally(() => {
-        this.config.interceptors.beforeFinish();
-        observer.finish?.();
-      });
+      .then(() => this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context }))
+      .finally(() => observer.finish?.());
   }
 
   /** @internal */
-  private reject(thrown: any): Promise<any> {
-    const error: any = (this.config.abortCtrl.signal.aborted) ?
+  private reject(thrown: any): any {
+    throw (this.config.abortCtrl.signal.aborted) ?
       (this.config.abortCtrl.signal.timeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)
       : thrown;
-
-    return Promise.reject(error);
   }
 }

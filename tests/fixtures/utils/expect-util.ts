@@ -1,3 +1,4 @@
+// @ts-ignore
 import { expect } from '@esm-bundle/chai';
 import type { SinonSpy } from 'sinon';
 

@@ -1,3 +1,4 @@
+// @ts-ignore
 import { expect } from '@esm-bundle/chai';
 import type { HttpResponse, RequestConfig } from '../../src';
 import drino from '../../src';

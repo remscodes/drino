@@ -1,5 +1,5 @@
 import type { SinonSandbox, SinonSpy } from 'sinon';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import type { DrinoInstance } from '../../src';
 import drino from '../../src';
 import type { TestItem } from '../fixtures/services/item-service';
@@ -14,7 +14,7 @@ describe('Drino - Pipe Methods', () => {
 
   beforeEach(() => {
     instance = drino.create({
-      baseUrl: 'http://localhost:8080/item'
+      baseUrl: 'http://localhost:8080/item',
     });
   });
 
@@ -112,7 +112,7 @@ describe('Drino - Pipe Methods', () => {
             expectProperty(item, 'name', 'string', name);
             expectProperty(item, 'id', 'number');
             done();
-          }
+          },
         });
     });
   });

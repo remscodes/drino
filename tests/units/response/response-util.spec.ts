@@ -1,6 +1,6 @@
 import { bodyFromReadType } from '../../../src/response/response-util';
-import { expectType } from '../../fixtures/utils/expect-util';
 import { mockFetchResponse } from '../../fixtures/mocks/fetch-response.mock';
+import { expectType } from '../../fixtures/utils/expect-util';
 
 describe('Util - Response', () => {
 

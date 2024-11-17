@@ -10,3 +10,7 @@ export interface NumberRange {
   start: number;
   end: number;
 }
+
+export type Promisable<T> =
+  | T
+  | PromiseLike<T>;
