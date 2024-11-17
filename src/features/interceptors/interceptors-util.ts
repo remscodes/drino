@@ -1,4 +1,4 @@
-import { EMPTY_FN, mergeVoidFns } from '../../utils/fn-util';
+import { EMPTY_FN } from '../../utils/fn-util';
 import type { Interceptors } from './models/interceptor.model';
 
 export function initInterceptors(interceptors: Partial<Interceptors>): Interceptors {
@@ -15,10 +15,20 @@ export function initInterceptors(interceptors: Partial<Interceptors>): Intercept
 
 export function mergeInterceptors(...interceptors: Partial<Interceptors>[]): Interceptors {
   return {
-    beforeConsume: mergeVoidFns(...interceptors.map(i => i.beforeConsume)),
-    afterConsume: mergeVoidFns(...interceptors.map(i => i.afterConsume)),
-    beforeResult: mergeVoidFns(...interceptors.map(i => i.beforeResult)),
-    beforeError: mergeVoidFns(...interceptors.map(i => i.beforeError)),
-    beforeFinish: mergeVoidFns(...interceptors.map(i => i.beforeFinish)),
+    beforeConsume: async (args) => {
+      await Promise.all(interceptors.map(i => i.beforeConsume?.(args)));
+    },
+    afterConsume: async (args) => {
+      await Promise.all(interceptors.map(i => i.afterConsume?.(args)));
+    },
+    beforeResult: async (args) => {
+      await Promise.all(interceptors.map(i => i.beforeResult?.(args)));
+    },
+    beforeError: async (args) => {
+      await Promise.all(interceptors.map(i => i.beforeError?.(args)));
+    },
+    beforeFinish: async (args) => {
+      await Promise.all(interceptors.map(i => i.beforeFinish?.(args)));
+    },
   };
 }
