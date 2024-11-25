@@ -2,6 +2,7 @@ export function makeMockFetchResponse(contentType: string): Response {
   return {
     arrayBuffer: async () => new ArrayBuffer(1),
     blob: async () => new Blob(),
+    bytes: async () => new Uint8Array(),
     body: null,
     bodyUsed: false,
     clone(): Response {
