@@ -57,7 +57,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.13.0",
     "@types/sinon": "^17.0.3",
     "@web/dev-server-esbuild": "^1.0.3",
     "@web/test-runner": "^0.19.0",
