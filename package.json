@@ -16,8 +16,7 @@
     "start-web-runner": "web-test-runner",
     "start-test-server": "node ./tests/fixtures/server/server.mjs",
     "rm-dist": "node ./scripts/rm-dist.cjs",
-    "playwright": "node ./node_modules/.pnpm/playwright@1.42.1/node_modules/playwright/cli.js",
-    "install-playwright": "pnpm run playwright install --with-deps",
+    "install-playwright": "playwright install --with-deps",
     "prebuild": "pnpm run rm-dist",
     "pretest": "pnpm run types:all"
   },
@@ -67,6 +66,7 @@
     "esbuild": "^0.24.0",
     "express": "^4.21.2",
     "helmet": "^8.0.0",
+    "playwright": "^1.52.0",
     "rollup": "^4.28.1",
     "rollup-plugin-bundle-size": "^1.0.3",
     "rollup-plugin-dts": "^6.1.1",
@@ -81,6 +81,6 @@
     "promise",
     "callback"
   ],
-  "packageManager": "pnpm@9.13.2",
+  "packageManager": "pnpm@9.15.4",
   "sideEffects": false
 }
