@@ -51,7 +51,7 @@
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@esm-bundle/chai-as-promised": "^7.1.1",
     "@types/chai": "^5.0.1",
-    "@types/chai-as-promised": "^8.0.1",
+    "@types/chai-as-promised": "^8.0.2",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.0",
