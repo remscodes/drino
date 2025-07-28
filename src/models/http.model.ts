@@ -24,19 +24,6 @@ export type Url =
   | URL
   | string
 
-export type StatusType =
-  | StatusSuccessType
-  | StatusErrorType
-
-type StatusSuccessType =
-  | 'Info'
-  | 'Success'
-  | 'Redirection'
-
-type StatusErrorType =
-  | 'ClientError'
-  | 'ServerError'
-
 export type UnwrapHttpResponse<T>
   = T extends HttpResponse<infer F> ? F
   : T
