@@ -123,11 +123,7 @@ export class RequestController<Resource> {
   /** @internal */
   private async makePromise(tools: FetchTools): Promise<Resource> {
     try {
-      await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) });
-      if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
-      let result = await performHttpRequest<Resource>(this.request, tools);
-      for (const modifier of this.modifiers) result = await modifier(result);
-      return result;
+      return await this.consumeAndGetResult(tools);
     }
     catch (err: unknown) {
       return this.reject(err);
@@ -139,28 +135,38 @@ export class RequestController<Resource> {
 
   /** @internal */
   private useObserver(observer: Observer<Resource>, tools: FetchTools): void {
-    Promise.resolve(this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) }))
-      .then(() => {
-        if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
-      })
-      .then(() => performHttpRequest<Resource>(this.request, tools))
-      .then(async (result) => {
-        try {
-          for (const modifier of this.modifiers) result = await modifier(result);
-          observer.result?.(result);
-        }
-        catch (err: unknown) {
-          return this.reject(err);
-        }
-      })
-      .catch((err: any) => {
+    Promise.resolve().then(async () => {
+      try {
+        const result = await this.consumeAndGetResult(tools);
+        observer.result?.(result);
+      }
+      catch (thrown: unknown) {
         const signal: AbortSignal = tools.abortCtrl.signal;
         if (signal.aborted) return observer.abort?.(signal.reason);
 
+        const err = (this.config.abortCtrl.signal.aborted) ?
+          (this.config.abortCtrl.signal.timeout) ? fixChromiumAndWebkitTimeoutError(thrown)
+            : fixFirefoxAbortError(thrown)
+          : thrown;
+
         observer.error?.(err);
-      })
-      .then(() => this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context }))
-      .finally(() => observer.finish?.());
+      }
+      finally {
+        await this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context });
+        observer.finish?.();
+      }
+    });
+  }
+
+  private async consumeAndGetResult(tools: FetchTools): Promise<Resource> {
+    await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) });
+
+    if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
+
+    let result = await performHttpRequest<Resource>(this.request, tools);
+    for (const modifier of this.modifiers) result = await modifier(result);
+
+    return result;
   }
 
   /** @internal */
