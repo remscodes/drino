@@ -9,7 +9,7 @@ import { mergeQueryParams } from './utils/params-util';
 
 export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, parentDefaultConfig?: DrinoDefaultConfig): DrinoDefaultConfig {
   const {
-    baseUrl: parentBaseUrl = DEFAULT_BASE_URL,
+    baseUrl: parentBaseUrl = DEFAULT_BASE_URL(),
     interceptors: parentInterceptors = {},
     requestsConfig: {
       prefix: parentPrefix = DEFAULT_PREFIX,

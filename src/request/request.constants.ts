@@ -1,7 +1,7 @@
 import type { Url } from '../models/http.model';
 import type { ReadType, WrapperType } from './models/request-config.model';
 
-export const DEFAULT_BASE_URL: Url = globalThis.window?.location?.origin || '';
+export const DEFAULT_BASE_URL: () => Url = () => globalThis.window?.location?.origin || '';
 
 export const DEFAULT_PREFIX: string = '/';
 

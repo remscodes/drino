@@ -11,7 +11,7 @@ describe('Drino', () => {
   });
 
   it('should have default url origin', () => {
-    const url = DEFAULT_BASE_URL;
+    const url = DEFAULT_BASE_URL();
     expectEqual(url, 'http://localhost:8000');
     expectEqual(instance.default.baseUrl, url);
   });

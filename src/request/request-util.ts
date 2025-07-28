@@ -13,7 +13,7 @@ import { DEFAULT_BASE_URL, DEFAULT_CACHE, DEFAULT_CREDENTIALS, DEFAULT_FETCH, DE
 
 export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): RequestControllerConfig {
   const {
-    baseUrl = DEFAULT_BASE_URL,
+    baseUrl = DEFAULT_BASE_URL(),
     interceptors: instanceInterceptors = {},
     requestsConfig: {
       prefix: instancePrefix = DEFAULT_PREFIX,
