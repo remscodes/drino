@@ -137,7 +137,7 @@ interface RequestConfig {
 
 ### Instance
 
-Instance can be created to embded common configuration to all requests produced from this instance.
+Instance can be created to embde common configuration to all requests produced from this instance.
 
 ```ts
 import drino from 'drino';
@@ -199,7 +199,7 @@ drino.get('/cat/meow').consume(); // GET -> https://example.com/cat/meow (header
 
 ### Plugin
 
-You can use third-party plugin to add more features.
+You can use a third-party plugin to add more features.
 
 ```ts
 drino.use(myPlugin);
@@ -213,7 +213,7 @@ Plugin example : [drino-rx](https://github.com/remscodes/drino-rx)
 
 You can intercept request, result or error throughout the http request lifecycle.
 
-Interceptors can be passed into instance config .
+Interceptors can be passed into instance config.
 
 ```ts
 const instance = drino.create({
@@ -450,7 +450,7 @@ drino.get('/cat/meow')
 
 #### Follow
 
-Make another http request sequentially that depends on previous one.
+Make another http request sequentially that depends on the previous one.
 
 Example :
 
@@ -464,7 +464,7 @@ drino.get('/cat/meow')
   });
 ```
 
-#### Methods combination
+#### Method combination
 
 Pipe methods can be combined.
 
@@ -486,7 +486,7 @@ drino.get('/cat/meow')
 
 #### AbortController
 
-You can cancel a send request (before receive response) by using `AbortSignal` and `AbortController`.
+You can cancel a sent request (before receive response) by using `AbortSignal` and `AbortController`.
 
 Example :
 
@@ -557,7 +557,7 @@ async function getCatInfo() {
 
 ### Request Retry
 
-You can automatically retry failed request on conditions.
+You can automatically retry a failed request on conditions.
 
 ```ts
 interface RetryConfig {
@@ -609,7 +609,7 @@ instance.get('/my-failed-api', {
 });
 ```
 
-When using Observer you can use the `retry` callback to get info about current retry via `RetryEvent`.
+When using Observer, you can use the `retry` callback to get info about current retry via `RetryEvent`.
 
 ```ts
 export interface RetryEvent {

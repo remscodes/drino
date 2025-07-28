@@ -2,7 +2,7 @@
 
 ### Fixes
 
-- Do not throw error when content-type missing with download inspection.
+- Do not throw an error when the content-type is missing with download inspection.
 - Export `QueryParamsType` and `HeadersType` types.
 - Rename `downloadProgress` observe callback to `download`.
 
@@ -13,7 +13,7 @@
 ### Features
 
 - Access `HttpRequest` built by `RequestController`.
-- Allow to set any value to `headers` and `queryParams`.
+- Allow setting any value to `headers` and `queryParams`.
 - Add new request
   options : `fetch`, `credentials`, `mode`, `priority`, `cache`, `redirect`, `keepalive`, `referrerPolicy`
   and `integrity`.
@@ -42,7 +42,7 @@
 ### Fixes
 
 - Fix CommonJS default import.
-- Increase Node engine minimum version to 20.
+- Increase the Node engine minimum version to 20.
 
 > Commits : https://github.com/remscodes/drino/commits/v1.8.1
 
