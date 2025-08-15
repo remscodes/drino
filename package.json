@@ -63,7 +63,7 @@
     "@web/test-runner-playwright": "^0.11.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "esbuild": "^0.25.5",
+    "esbuild": "^0.25.9",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "playwright": "^1.53.2",
