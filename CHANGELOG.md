@@ -1,3 +1,21 @@
+# 2.0.0 (2025-09-13)
+
+### Features
+
+- Add HttpContext.
+
+### Improvements
+
+- Remove useless HttpCommonResponse.statusType.
+- Use the location origin as the default baseUrl.
+- Remove the inspect option from the download configuration.
+
+### Fixes
+
+- Fix interceptors execution.
+
+> Commits : https://github.com/remscodes/drino/commits/v2.0.0
+
 # 1.9.1 (2024-06-08) 
 
 ### Fixes
