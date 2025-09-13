@@ -1,6 +1,6 @@
 {
   "name": "drino",
-  "version": "1.9.1",
+  "version": "2.0.0",
   "description": "Flexible and Reactive HTTP Client",
   "license": "MIT",
   "author": {
