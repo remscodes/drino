@@ -49,13 +49,13 @@ export async function performHttpRequest<T>(req: HttpRequest, tools: FetchTools,
     url,
   });
 
-  if (retryCount === 0) await tools.interceptors.afterConsume({ req: req, res: httpResponse, ok, ctx: tools.context });
+  if (retryCount === 0) await tools.interceptors.afterConsume({ req, res: httpResponse, ok, ctx: tools.context });
 
   if (tools.dlCb && fetchResponse.status !== 204) await inspectDownloadProgress(fetchResponse, tools).catch(console.error);
 
   const result = (req.wrapper === 'response') ? httpResponse : body as any;
 
-  await tools.interceptors.beforeResult({ req: req, ctx: tools.context, res: httpResponse });
+  await tools.interceptors.beforeResult({ req, ctx: tools.context, res: httpResponse });
 
   return result;
 }

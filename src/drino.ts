@@ -7,7 +7,7 @@ import type { RequestConfig } from './request';
 import { RequestController } from './request';
 import type { ArrayBufferBody, BlobBody, FormDataBody, ObjectBody, StringBody, VoidBody } from './request/models/request-controller.model';
 
-const pluginIdsUsed: Set<string> = new Set();
+const USED_PLUGIN_IDS = new Set<string>();
 
 export class Drino {
 
@@ -25,10 +25,10 @@ export class Drino {
    * Use third-party plugin to add more features.
    */
   public use(plugin: DrinoPlugin): void {
-    if (pluginIdsUsed.has(plugin.id)) return;
+    if (USED_PLUGIN_IDS.has(plugin.id)) return;
 
     plugin.run({ reqCtrlPrototype: RequestController.prototype });
-    pluginIdsUsed.add(plugin.id);
+    USED_PLUGIN_IDS.add(plugin.id);
   }
 
   /**
@@ -178,7 +178,7 @@ export class Drino {
    */
   public delete<T>(url: Url, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
   /**
-   * Builds a `DELETE` request controller that interprets the response body as an `Blob` and returns it wrapped into a `HttpResponse`.
+   * Builds a `DELETE` request controller that interprets the response body as a `Blob` and returns it wrapped into a `HttpResponse`.
    */
   public delete<T>(url: Url, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
   /**

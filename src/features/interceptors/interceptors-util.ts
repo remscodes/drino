@@ -16,19 +16,19 @@ export function initInterceptors(interceptors: Partial<Interceptors>): Intercept
 export function mergeInterceptors(...interceptors: Partial<Interceptors>[]): Interceptors {
   return {
     beforeConsume: async (args) => {
-      await Promise.all(interceptors.map(i => i.beforeConsume?.(args)));
+      for (const interceptor of interceptors) await interceptor.beforeConsume?.(args);
     },
     afterConsume: async (args) => {
-      await Promise.all(interceptors.map(i => i.afterConsume?.(args)));
+      for (const interceptor of interceptors) await interceptor.afterConsume?.(args);
     },
     beforeResult: async (args) => {
-      await Promise.all(interceptors.map(i => i.beforeResult?.(args)));
+      for (const interceptor of interceptors) await interceptor.beforeResult?.(args);
     },
     beforeError: async (args) => {
-      await Promise.all(interceptors.map(i => i.beforeError?.(args)));
+      for (const interceptor of interceptors) await interceptor.beforeError?.(args);
     },
     beforeFinish: async (args) => {
-      await Promise.all(interceptors.map(i => i.beforeFinish?.(args)));
+      for (const interceptor of interceptors) await interceptor.beforeFinish?.(args);
     },
   };
 }

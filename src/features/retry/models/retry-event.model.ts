@@ -10,11 +10,9 @@ export interface RetryEvent {
   /**
    * Function to abort retrying.
    */
-  readonly abort: RetryAbortFn;
+  readonly abort: (reason?: any) => void;
   /**
    * Current retry delay.
    */
   readonly delay: number;
 }
-
-type RetryAbortFn = (reason?: any) => void;

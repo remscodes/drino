@@ -158,6 +158,7 @@ export class RequestController<Resource> {
     });
   }
 
+  /** @internal */
   private async consumeAndGetResult(tools: FetchTools): Promise<Resource> {
     await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) });
 

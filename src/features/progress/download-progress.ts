@@ -12,9 +12,9 @@ export async function inspectDownloadProgress(response: Response, tools: FetchTo
   const total: number | null = getContentLength(response.headers);
   if (!total) emitError('DrinoProgressException', `Cannot inspect download progress on ${response.url} because response "content-length" header is null or 0.`);
 
-  let loaded: number = 0;
-  let speed: number = 0;
-  let remainingTime: number = 0;
+  let loaded = 0;
+  let speed = 0;
+  let remainingTime = 0;
   let reminder: number = dateNow();
 
   for (let i = 1; ; i ++) {

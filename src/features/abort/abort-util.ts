@@ -5,7 +5,7 @@ export function defaultSignal(): AbortSignal {
 }
 
 export function timedSignal(timeoutMs: number): AbortSignal {
-  const signal: AbortSignal = AbortSignal.timeout(timeoutMs);
+  const signal = AbortSignal.timeout(timeoutMs);
   signal.hasTimeout = true;
   return signal;
 }
