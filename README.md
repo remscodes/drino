@@ -171,15 +171,15 @@ interface DrinoDefaultConfig {
   // default: 'http://localhost'
   baseUrl?: string | URL;
 
-  // Interceptors in order to take action during http request lifecyle.
+  // Interceptors to take action during http request lifecyle.
   //
   // See below in section 'Interceptors'
   interceptors?: {
-    beforeConsume?: (req: HttpRequest) => void;
-    afterConsume?: (req: HttpRequest) => void;
-    beforeResult?: (res: any) => void;
-    beforeError?: (errRes: HttpErrorResponse) => void;
-    beforeFinish?: () => void;
+    beforeConsume?: ({ req, ctx, abort }) => Promise<void> | void;
+    afterConsume?: ({ req, ctx, res, ok }) => Promise<void> | void;
+    beforeResult?: ({ req, ctx, res }) => Promise<void> | void;
+    beforeError?: ({ req, ctx, errRes, err }) => Promise<void> | void;
+    beforeFinish?: ({ req, ctx }) => Promise<void> | void;
   };
 
   // Default requestConfig applied to all requests hosted by the instance
