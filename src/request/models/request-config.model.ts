@@ -25,26 +25,26 @@ export interface RequestConfig<
    */
   context?: ContextChain;
   /**
-   * Response type that will be passed into :
+   * Response type that will be passed into:
    *  - `result` callback when using Observer.
    *  - `then` callback when using Promise.
    *
-   * If 'auto' is specified, read will be inferred from "content-type" response header.
+   * If 'auto' is specified, read will be inferred from the "content-type" response header.
    *
    * @default 'auto'
    */
   read?: Read;
   /**
-   * Wrap response body into a specific Object.
+   * Wrap the response body into a specific Object.
    *
-   * - 'response' : HttpResponse
-   * - 'none' : no wrapper
+   * - 'response': HttpResponse
+   * - 'none': no wrapper
    *
    * @default 'none'
    */
   wrapper?: Wrapper;
   /**
-   * AbortSignal to cancel HTTP Request with an AbortController.
+   * AbortSignal to cancel the HTTP Request with an AbortController.
    */
   signal?: AbortSignal;
   /**
@@ -58,19 +58,19 @@ export interface RequestConfig<
    */
   retry?: RetryConfig;
   /**
-   * The `fetch` function to be used to perform request.
+   * The `fetch` function to be used to perform the request.
    *
    * @default fetch
    */
   fetch?: typeof fetch;
   /**
-   * A string indicating whether credentials will be sent with the request always, never, or only when sent to a same-origin URL.
+   * A string indicating whether credentials will be sent with the request: always, never or only when sent to a same-origin URL.
    *
    * @default 'same-origin'
    */
   credentials?: RequestCredentials;
   /**
-   * A string to indicate whether the request will use CORS, or will be restricted to same-origin URLs.
+   * A string to indicate whether the request will use CORS or will be restricted to same-origin URLs.
    *
    * @default 'cors'
    */
@@ -82,13 +82,13 @@ export interface RequestConfig<
    */
   priority?: RequestPriority;
   /**
-   * A string indicating how the request will interact with the browser's cache to set request's cache.
+   * A string indicating how the request will interact with the browser's cache to set the request's cache.
    *
    * @default 'default'
    */
   cache?: RequestCache;
   /**
-   * A string indicating whether request follows redirects, results in an error upon encountering a redirect, or returns the redirect (in an opaque fashion).
+   * A string indicating whether the request follows redirects results in an error upon encountering a redirect or returns the redirect (in an opaque fashion).
    *
    * @default 'follow'
    */
@@ -102,7 +102,7 @@ export interface RequestConfig<
    */
   keepalive?: boolean;
   /**
-   * A referrer policy to set request's referrerPolicy.
+   * A referrer policy to set the request's referrerPolicy.
    *
    * @default 'strict-origin-when-cross-origin'
    */
