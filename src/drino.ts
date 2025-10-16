@@ -257,7 +257,7 @@ export class Drino {
    * Builds a `POST` request controller.
    * @internal
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
+  public post<T>(url: Url, body?: any, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('POST', url, body, config);
   }
 
@@ -321,7 +321,7 @@ export class Drino {
    * Builds a `PUT` request controller.
    * @internal
    */
-  public put<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
+  public put<T>(url: Url, body?: any, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('PUT', url, body, config);
   }
 
@@ -385,7 +385,7 @@ export class Drino {
    * Builds a `PATCH` request controller.
    * @internal
    */
-  public patch<T>(url: Url, body: any, config?: RequestConfig<any, any>): RequestController<any> {
+  public patch<T>(url: Url, body?: any, config?: RequestConfig<any, any>): RequestController<any> {
     return this.request<T>('PATCH', url, body, config);
   }
 }

@@ -21,7 +21,7 @@ interface DrinoRequestInit {
 export class RequestController<Resource> {
 
   public constructor(init: DrinoRequestInit, defaultConfig: DrinoDefaultConfig) {
-    const { method, url, body, config = {} } = init;
+    const { method, url, body = null, config = {} } = init;
 
     this.config = mergeRequestConfigs(config, defaultConfig);
     const { headers, read, wrapper, prefix, queryParams, baseUrl } = this.config;
