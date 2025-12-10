@@ -11,8 +11,8 @@ const USED_PLUGIN_IDS = new Set<string>();
 
 export class Drino {
 
-  /** @internal */
   public constructor(config: DrinoConfig);
+  public constructor(config: DrinoConfig, parentConfig: DrinoParentConfig);
   public constructor(config: DrinoConfig, parentConfig?: DrinoParentConfig) {
     this.default = mergeInstanceConfig(config, parentConfig);
   }

@@ -21,8 +21,63 @@ interface DrinoRequestInit {
 
 export class RequestController<Resource> {
 
-  public clone<Resource>(): RequestController<Resource> {
-    return new RequestController<Resource>(this.init, this.defaultConfig);
+  public clone<NewResource = Resource>(): RequestController<NewResource> {
+    const cloned = new RequestController<NewResource>(this.init, this.defaultConfig);
+    cloned.modifiers.push(...this.modifiers);
+    Object.assign(cloned.observerChain, this.observerChain);
+    return cloned;
+  }
+
+  /** @internal */
+  public addObserver(observer: Partial<Observer<Resource>>): void {
+    // Merge observer callbacks
+    if (observer.result) {
+      const existingResult = this.observerChain.result;
+      const newResult = observer.result;
+      this.observerChain.result = existingResult
+        ? (res) => { existingResult(res); newResult(res); }
+        : newResult;
+    }
+
+    if (observer.error) {
+      const existingError = this.observerChain.error;
+      const newError = observer.error;
+      this.observerChain.error = existingError
+        ? (err) => { existingError(err); newError(err); }
+        : newError;
+    }
+
+    if (observer.finish) {
+      const existingFinish = this.observerChain.finish;
+      const newFinish = observer.finish;
+      this.observerChain.finish = existingFinish
+        ? () => { existingFinish(); newFinish(); }
+        : newFinish;
+    }
+
+    if (observer.abort) {
+      const existingAbort = this.observerChain.abort;
+      const newAbort = observer.abort;
+      this.observerChain.abort = existingAbort
+        ? (reason) => { existingAbort(reason); newAbort(reason); }
+        : newAbort;
+    }
+
+    if (observer.retry) {
+      const existingRetry = this.observerChain.retry;
+      const newRetry = observer.retry;
+      this.observerChain.retry = existingRetry
+        ? (ev) => { existingRetry(ev); newRetry(ev); }
+        : newRetry;
+    }
+
+    if (observer.download) {
+      const existingDownload = this.observerChain.download;
+      const newDownload = observer.download;
+      this.observerChain.download = existingDownload
+        ? (ev) => { existingDownload(ev); newDownload(ev); }
+        : newDownload;
+    }
   }
 
   public constructor(init: DrinoRequestInit, defaultConfig: DrinoParentConfig) {
@@ -49,22 +104,54 @@ export class RequestController<Resource> {
   /** @internal */
   private readonly modifiers: Modifier<any, any>[] = [];
 
+  /** @internal */
+  private readonly observerChain: Partial<Observer<Resource>> = {};
+
   public readonly request: HttpRequest<Resource>;
 
+  /**
+   * Pipe operators style RxJS. Allows chaining of PipeFunction operators.
+   * @example
+   * request.pipe(
+   *   mapResult(x => x * 2),
+   *   reportError(err => console.error(err))
+   * )
+   */
+  public pipe(): RequestController<Resource>;
+  public pipe<A>(op1: PipeFunction<Resource, A>): RequestController<A>;
+  public pipe<A, B>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>): RequestController<B>;
+  public pipe<A, B, C>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>): RequestController<C>;
+  public pipe<A, B, C, D>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>): RequestController<D>;
+  public pipe<A, B, C, D, E>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>, op5: PipeFunction<D, E>): RequestController<E>;
+  public pipe(...operators: PipeFunction<any, any>[]): RequestController<any> {
+    if (operators.length === 0) return this;
+
+    return operators.reduce((source, operator) => operator(source), this as RequestController<any>);
+  }
+
+  /**
+   * @deprecated
+   */
   public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
   public transform(modifiers: Modifier<any, any>): RequestController<any> {
-    this.pipes.push(modifiers);
+    this.modifiers.push(modifiers);
     return this;
   }
 
+  /**
+   * @deprecated
+   */
   public check(checkFn: CheckCallback<Resource>): RequestController<Resource> {
-    this.pipes.push((result: Resource) => {
+    this.modifiers.push((result: Resource) => {
       checkFn(result);
       return result;
     });
     return this;
   }
 
+  /**
+   * @deprecated
+   */
   public report(reportFn: ReportCallback): RequestController<Resource> {
     const original = this.config.interceptors.beforeError;
     this.config.interceptors.beforeError = async (args: BeforeErrorArgs) => {
@@ -74,6 +161,9 @@ export class RequestController<Resource> {
     return this;
   }
 
+  /**
+   * @deprecated
+   */
   public finalize(finalFn: FinalCallback): RequestController<Resource> {
     const original = this.config.interceptors.beforeFinish;
     this.config.interceptors.beforeFinish = async (args) => {
@@ -83,9 +173,12 @@ export class RequestController<Resource> {
     return this;
   }
 
+  /**
+   * @deprecated
+   */
   public follow<NewResource>(followFn: FollowCallback<Resource, NewResource>): RequestController<NewResource>;
   public follow(followFn: FollowCallback<any, any>): RequestController<any> {
-    this.pipes.push((result: Resource) => followFn(result).consume());
+    this.modifiers.push((result: Resource) => followFn(result).consume());
     return this;
   }
 
@@ -110,13 +203,16 @@ export class RequestController<Resource> {
 
     const context: HttpContext = contextChain(DEFAULT_HTTP_CONTEXT_CHAIN());
 
+    // Merge the observer chain with the passed observer
+    const mergedObserver = this.mergeObservers(observer);
+
     const tools: FetchTools = {
       abortCtrl,
       interceptors,
       retry,
       context,
-      retryCb: observer?.retry,
-      dlCb: observer?.download,
+      retryCb: mergedObserver?.retry,
+      dlCb: mergedObserver?.download,
       fetch,
       fetchInit: {
         credentials,
@@ -130,8 +226,70 @@ export class RequestController<Resource> {
       },
     };
 
-    if (!observer) return this.makePromise(tools);
-    this.useObserver(observer, tools);
+    if (!observer && Object.keys(this.observerChain).length === 0) {
+      return this.makePromise(tools);
+    }
+
+    if (!observer) {
+      // Use observerChain as observer
+      this.useObserver(this.observerChain as Observer<Resource>, tools);
+    } else {
+      this.useObserver(mergedObserver!, tools);
+    }
+  }
+
+  /** @internal */
+  private mergeObservers(observer?: Observer<Resource>): Observer<Resource> | undefined {
+    if (!observer && Object.keys(this.observerChain).length === 0) return undefined;
+    if (!observer) return this.observerChain as Observer<Resource>;
+    if (Object.keys(this.observerChain).length === 0) return observer;
+
+    // Merge both observers
+    const merged: Partial<Observer<Resource>> = {};
+
+    if (this.observerChain.result || observer.result) {
+      merged.result = (res) => {
+        this.observerChain.result?.(res);
+        observer.result?.(res);
+      };
+    }
+
+    if (this.observerChain.error || observer.error) {
+      merged.error = (err) => {
+        this.observerChain.error?.(err);
+        observer.error?.(err);
+      };
+    }
+
+    if (this.observerChain.finish || observer.finish) {
+      merged.finish = () => {
+        this.observerChain.finish?.();
+        observer.finish?.();
+      };
+    }
+
+    if (this.observerChain.abort || observer.abort) {
+      merged.abort = (reason) => {
+        this.observerChain.abort?.(reason);
+        observer.abort?.(reason);
+      };
+    }
+
+    if (this.observerChain.retry || observer.retry) {
+      merged.retry = (ev) => {
+        this.observerChain.retry?.(ev);
+        observer.retry?.(ev);
+      };
+    }
+
+    if (this.observerChain.download || observer.download) {
+      merged.download = (ev) => {
+        this.observerChain.download?.(ev);
+        observer.download?.(ev);
+      };
+    }
+
+    return merged as Observer<Resource>;
   }
 
   /** @internal */
@@ -170,20 +328,6 @@ export class RequestController<Resource> {
   }
 
   /** @internal */
-  private async runPipeFns(tools: FetchTools): Promise<any> {
-    try {
-      return this.pipes.reduce(async (acc, current) => {
-        return acc.then(async () => {
-          return await current();
-        });
-      }, Promise.resolve());
-    }
-    catch (err: unknown) {
-
-    }
-  }
-
-  /** @internal */
   private async consumeAndGetResult(tools: FetchTools): Promise<Resource> {
     await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) });
 
@@ -191,7 +335,7 @@ export class RequestController<Resource> {
 
     let result = await performHttpRequest<Resource>(this.request, tools);
 
-    for (const modifier of this.pipes) result = await modifier(result);
+    for (const modifier of this.modifiers) result = await modifier(result);
 
     return result;
   }
