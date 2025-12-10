@@ -2,12 +2,12 @@ import { DEFAULT_TIMEOUT } from './features/abort/abort.constants';
 import { DEFAULT_HTTP_CONTEXT_CHAIN } from './features/interceptors/context/http-context.constants';
 import { mergeInterceptors } from './features/interceptors/interceptors-util';
 import { DEFAULT_RETRY } from './features/retry/retry.constants';
-import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
+import type { DrinoParentConfig, DrinoConfig } from './models/drino.model';
 import { DEFAULT_BASE_URL, DEFAULT_CACHE, DEFAULT_CREDENTIALS, DEFAULT_FETCH, DEFAULT_INTEGRITY, DEFAULT_KEEPALIVE, DEFAULT_MODE, DEFAULT_PREFIX, DEFAULT_PRIORITY, DEFAULT_REDIRECT, DEFAULT_REFERRER_POLICY } from './request/request.constants';
 import { mergeHeaders } from './utils/headers-util';
 import { mergeQueryParams } from './utils/params-util';
 
-export function mergeInstanceConfig(defaultConfig: DrinoDefaultConfigInit, parentDefaultConfig?: DrinoDefaultConfig): DrinoDefaultConfig {
+export function mergeInstanceConfig(defaultConfig: DrinoConfig, parentDefaultConfig?: DrinoParentConfig): DrinoParentConfig {
   const {
     baseUrl: parentBaseUrl = DEFAULT_BASE_URL(),
     interceptors: parentInterceptors = {},

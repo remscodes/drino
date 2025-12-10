@@ -1,6 +1,6 @@
 import type { ContextChain } from '../../features/interceptors/models/context-chain.model';
 import type { RetryConfig } from '../../features/retry/models/retry-config.model';
-import type { HeadersType, QueryParamsType, Url } from '../../models/http.model';
+import type { HeadersType, QueryParamsType } from '../../models';
 
 export interface RequestConfig<
   Read extends ReadType = 'auto',
@@ -11,7 +11,7 @@ export interface RequestConfig<
    *
    * Example : 'https://example.com' OR '/v1/api'
    */
-  prefix?: Exclude<Url, URL>;
+  prefix?: string;
   /**
    * HTTP Headers.
    */

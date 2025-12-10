@@ -2,7 +2,8 @@ import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../featu
 import type { HttpContext } from '../features/interceptors/context/http-context';
 import { DEFAULT_HTTP_CONTEXT_CHAIN } from '../features/interceptors/context/http-context.constants';
 import type { BeforeErrorArgs } from '../features/interceptors/models/interceptor.model';
-import type { DrinoDefaultConfig } from '../models/drino.model';
+import type { PipeFunction } from '../features/pipe/pipe-function';
+import type { DrinoParentConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
@@ -20,7 +21,14 @@ interface DrinoRequestInit {
 
 export class RequestController<Resource> {
 
-  public constructor(init: DrinoRequestInit, defaultConfig: DrinoDefaultConfig) {
+  public clone<Resource>(): RequestController<Resource> {
+    return new RequestController<Resource>(this.init, this.defaultConfig);
+  }
+
+  public constructor(init: DrinoRequestInit, defaultConfig: DrinoParentConfig) {
+    this.init = init;
+    this.defaultConfig = defaultConfig;
+
     const { method, url, body = null, config = {} } = init;
 
     this.config = mergeRequestConfigs(config, defaultConfig);
@@ -28,6 +36,12 @@ export class RequestController<Resource> {
 
     this.request = new HttpRequest({ method, url, body, headers, read, wrapper, prefix, queryParams, baseUrl });
   }
+
+  /** @internal */
+  private readonly init: DrinoRequestInit;
+
+  /** @internal */
+  private readonly defaultConfig: DrinoParentConfig;
 
   /** @internal */
   private readonly config: RequestControllerConfig;
@@ -39,12 +53,12 @@ export class RequestController<Resource> {
 
   public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
   public transform(modifiers: Modifier<any, any>): RequestController<any> {
-    this.modifiers.push(modifiers);
+    this.pipes.push(modifiers);
     return this;
   }
 
   public check(checkFn: CheckCallback<Resource>): RequestController<Resource> {
-    this.modifiers.push((result: Resource) => {
+    this.pipes.push((result: Resource) => {
       checkFn(result);
       return result;
     });
@@ -71,7 +85,7 @@ export class RequestController<Resource> {
 
   public follow<NewResource>(followFn: FollowCallback<Resource, NewResource>): RequestController<NewResource>;
   public follow(followFn: FollowCallback<any, any>): RequestController<any> {
-    this.modifiers.push((result: Resource) => followFn(result).consume());
+    this.pipes.push((result: Resource) => followFn(result).consume());
     return this;
   }
 
@@ -100,7 +114,7 @@ export class RequestController<Resource> {
       abortCtrl,
       interceptors,
       retry,
-      context: context,
+      context,
       retryCb: observer?.retry,
       dlCb: observer?.download,
       fetch,
@@ -126,7 +140,7 @@ export class RequestController<Resource> {
       return await this.consumeAndGetResult(tools);
     }
     catch (err: unknown) {
-      return this.reject(err);
+      throw this.reject(err);
     }
     finally {
       await this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context });
@@ -144,10 +158,7 @@ export class RequestController<Resource> {
         const signal: AbortSignal = tools.abortCtrl.signal;
         if (signal.aborted) return observer.abort?.(signal.reason);
 
-        const err = (this.config.abortCtrl.signal.aborted) ?
-          (this.config.abortCtrl.signal.timeout) ? fixChromiumAndWebkitTimeoutError(thrown)
-            : fixFirefoxAbortError(thrown)
-          : thrown;
+        const err = this.reject(thrown);
 
         observer.error?.(err);
       }
@@ -159,20 +170,35 @@ export class RequestController<Resource> {
   }
 
   /** @internal */
+  private async runPipeFns(tools: FetchTools): Promise<any> {
+    try {
+      return this.pipes.reduce(async (acc, current) => {
+        return acc.then(async () => {
+          return await current();
+        });
+      }, Promise.resolve());
+    }
+    catch (err: unknown) {
+
+    }
+  }
+
+  /** @internal */
   private async consumeAndGetResult(tools: FetchTools): Promise<Resource> {
     await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) });
 
     if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
 
     let result = await performHttpRequest<Resource>(this.request, tools);
-    for (const modifier of this.modifiers) result = await modifier(result);
+
+    for (const modifier of this.pipes) result = await modifier(result);
 
     return result;
   }
 
   /** @internal */
   private reject(thrown: any): any {
-    throw (this.config.abortCtrl.signal.aborted) ?
+    return (this.config.abortCtrl.signal.aborted) ?
       (this.config.abortCtrl.signal.timeout) ? fixChromiumAndWebkitTimeoutError(thrown)
         : fixFirefoxAbortError(thrown)
       : thrown;

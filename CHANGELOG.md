@@ -1,3 +1,15 @@
+# 2.1.0 (2025-10-16)
+
+### Improvements
+
+- Make body parameter optional for all kinds of requests.
+
+### Fixes
+
+- Fix interceptors documentation.
+
+> Commits : https://github.com/remscodes/drino/commits/v2.1.0
+
 # 2.0.0 (2025-09-13)
 
 ### Features

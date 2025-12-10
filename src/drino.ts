@@ -1,7 +1,7 @@
 import type { DrinoInstance, HttpResponse } from './';
 import { mergeInstanceConfig } from './drino-util';
 import type { DrinoPlugin } from './models';
-import type { DrinoDefaultConfig, DrinoDefaultConfigInit } from './models/drino.model';
+import type { DrinoParentConfig, DrinoConfig } from './models/drino.model';
 import type { RequestMethodType, Url } from './models/http.model';
 import type { RequestConfig } from './request';
 import { RequestController } from './request';
@@ -12,14 +12,15 @@ const USED_PLUGIN_IDS = new Set<string>();
 export class Drino {
 
   /** @internal */
-  public constructor(config: DrinoDefaultConfigInit, parentConfig?: DrinoDefaultConfig) {
+  public constructor(config: DrinoConfig);
+  public constructor(config: DrinoConfig, parentConfig?: DrinoParentConfig) {
     this.default = mergeInstanceConfig(config, parentConfig);
   }
 
   /**
    * Default config applied to the instance.
    */
-  public default: DrinoDefaultConfig;
+  public default: DrinoParentConfig;
 
   /**
    * Use third-party plugin to add more features.
@@ -34,14 +35,14 @@ export class Drino {
   /**
    * Creates a new Drino instance with a configuration that will be propagated to all requests produced from this instance.
    */
-  public create(config: DrinoDefaultConfigInit): DrinoInstance {
+  public create(config: DrinoConfig): DrinoInstance {
     return new Drino(config);
   }
 
   /**
    * Creates a new Drino instance from another to inherit its configuration.
    */
-  public child(config: DrinoDefaultConfigInit): DrinoInstance {
+  public child(config: DrinoConfig): DrinoInstance {
     return new Drino(config, this.default);
   }
 
@@ -200,59 +201,59 @@ export class Drino {
   /**
    * Builds a `POST` request controller that interprets the response body according to the response "content-type" header and returns it.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig): RequestController<T>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig): RequestController<T>;
   /**
    * Builds a `POST` request controller that interprets the response body as an `object` and returns it.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'object'>): RequestController<ObjectBody<T>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'object'>): RequestController<ObjectBody<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body as a `string` and returns it.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'string'>): RequestController<StringBody<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body as `void` and returns it.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'none'>): RequestController<VoidBody<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body as a `Blob` and returns it.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'blob'>): RequestController<BlobBody<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body as an `ArrayBuffer` and returns it.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'arrayBuffer'>): RequestController<ArrayBufferBody<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body as a `FormData` and returns it.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'formData'>): RequestController<FormDataBody<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body according to the response "content-type" header and returns it wrapped into a `HttpResponse`.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'auto', 'response'>): RequestController<HttpResponse<T>>;
   /**
    * Builds a `POST` request controller that interprets the response body as an `object` and returns it wrapped into a `HttpResponse`.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'object', 'response'>): RequestController<HttpResponse<ObjectBody<T>>>;
   /**
    * Builds a `POST` request controller that interprets the response body as a `string` and returns it wrapped into a `HttpResponse`.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'string', 'response'>): RequestController<HttpResponse<StringBody<T>>>;
   /**
    * Builds a `POST` request controller that interprets the response body as `void` and returns it wrapped into a `HttpResponse`.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'none', 'response'>): RequestController<HttpResponse<VoidBody<T>>>;
   /**
    * Builds a `POST` request controller that interprets the response body as a `Blob` and returns it wrapped into a `HttpResponse`.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'blob', 'response'>): RequestController<HttpResponse<BlobBody<T>>>;
   /**
    * Builds a `POST` request controller that interprets the response body as an `ArrayBuffer` and returns it wrapped into a `HttpResponse`.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'arrayBuffer', 'response'>): RequestController<HttpResponse<ArrayBufferBody<T>>>;
   /**
    * Builds a `POST` request controller that interprets the response body as a `FormData` and returns it wrapped into a `HttpResponse`.
    */
-  public post<T>(url: Url, body: any, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
+  public post<T>(url: Url, body?: any, config?: RequestConfig<'formData', 'response'>): RequestController<HttpResponse<FormDataBody<T>>>;
   /**
    * Builds a `POST` request controller.
    * @internal

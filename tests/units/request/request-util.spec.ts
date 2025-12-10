@@ -2,7 +2,7 @@ import chai, { expect } from '@esm-bundle/chai';
 // @ts-ignore
 import chaiAsPromised from '@esm-bundle/chai-as-promised';
 import type { RequestConfig } from '../../../src';
-import type { DrinoDefaultConfigInit } from '../../../src/models/drino.model';
+import type { DrinoConfig } from '../../../src/models/drino.model';
 import { mergeRequestConfigs } from '../../../src/request/request-util';
 import { convertBody, inferBody } from '../../../src/response/response-util';
 import { makeMockFetchResponse, mockFetchResponse } from '../../fixtures/mocks/fetch-response.mock';
@@ -58,7 +58,7 @@ describe('Util - Request', () => {
 
     it('should work', () => {
       const requestConfig: RequestConfig<any, any> = {};
-      const drinoConfig: DrinoDefaultConfigInit = {};
+      const drinoConfig: DrinoConfig = {};
 
       mergeRequestConfigs(requestConfig, drinoConfig);
     });

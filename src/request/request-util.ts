@@ -3,7 +3,7 @@ import { DEFAULT_TIMEOUT } from '../features/abort/abort.constants';
 import { DEFAULT_HTTP_CONTEXT_CHAIN } from '../features/interceptors/context/http-context.constants';
 import { initInterceptors } from '../features/interceptors/interceptors-util';
 import { DEFAULT_RETRY } from '../features/retry/retry.constants';
-import type { DrinoDefaultConfigInit } from '../models/drino.model';
+import type { DrinoConfig } from '../models/drino.model';
 import { mergeHeaders } from '../utils/headers-util';
 import { mergeQueryParams } from '../utils/params-util';
 import { createUrl } from '../utils/url-util';
@@ -11,7 +11,7 @@ import type { RequestConfig } from './models';
 import type { RequestControllerConfig } from './models/request-controller.model';
 import { DEFAULT_BASE_URL, DEFAULT_CACHE, DEFAULT_CREDENTIALS, DEFAULT_FETCH, DEFAULT_INTEGRITY, DEFAULT_KEEPALIVE, DEFAULT_MODE, DEFAULT_PREFIX, DEFAULT_PRIORITY, DEFAULT_READ, DEFAULT_REDIRECT, DEFAULT_REFERRER_POLICY, DEFAULT_WRAPPER } from './request.constants';
 
-export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoDefaultConfigInit): RequestControllerConfig {
+export function mergeRequestConfigs(requestConfig: RequestConfig<any, any>, defaultConfig: DrinoConfig): RequestControllerConfig {
   const {
     baseUrl = DEFAULT_BASE_URL(),
     interceptors: instanceInterceptors = {},

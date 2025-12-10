@@ -3,12 +3,11 @@ import type { Interceptors } from '../features/interceptors/models/interceptor.m
 import type { InstanceRetryConfig } from '../features/retry/models/retry-config.model';
 import type { RequestConfig } from '../request';
 import type { Url } from './http.model';
-import type { Prefix } from './shared.model';
 
 export type DrinoInstance = Omit<Drino, 'create' | 'use'>
 
-export interface DrinoDefaultConfigInit {
-  baseUrl?: Exclude<Url, Prefix<string, '/'>>;
+export interface DrinoConfig {
+  baseUrl?: Url;
   interceptors?: Partial<Interceptors>;
   requestsConfig?: DrinoDefaultRequestsConfigInit;
 }
@@ -17,7 +16,7 @@ export interface DrinoDefaultRequestsConfigInit extends Omit<RequestConfig<any, 
   retry?: InstanceRetryConfig;
 }
 
-export interface DrinoDefaultConfig extends Required<Omit<DrinoDefaultConfigInit, 'requestsConfig'>> {
+export interface DrinoParentConfig extends Required<Omit<DrinoConfig, 'requestsConfig'>> {
   requestsConfig: DrinoDefaultRequestsConfig;
 }
 

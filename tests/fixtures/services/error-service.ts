@@ -1,4 +1,4 @@
-import type { DrinoInstance, RequestController } from '../../../src';
+import type { RequestController } from '../../../src';
 import drino from '../../../src/drino';
 
 export interface TestError {
@@ -7,7 +7,7 @@ export interface TestError {
 
 export class ErrorService {
 
-  private client: DrinoInstance = drino.create({
+  private client = drino.create({
     baseUrl: 'http://localhost:8080/error'
   });
 

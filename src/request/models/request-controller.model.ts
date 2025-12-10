@@ -37,3 +37,13 @@ export interface Observer<T> {
   download?: (ev: StreamProgressEvent) => void;
   // upload?: (ev: StreamProgressEvent) => void;
 }
+
+export interface ObserverChain<T> {
+  result?: (res: T) => any
+  error?:  (err: any) => any;
+  finish?: () => any;
+  abort?: (reason: any) => any;
+  retry?:  (ev: RetryEvent) => any;
+  download?: (ev: StreamProgressEvent) => any;
+  // upload?: (ev: StreamProgressEvent) => void;
+}

@@ -2,6 +2,7 @@ import type { SinonSandbox, SinonSpy } from 'sinon';
 import * as sinon from 'sinon';
 import type { DrinoInstance } from '../../src';
 import drino from '../../src';
+import { mapResult } from '../../src/features/pipe/functions/map-result.pipe';
 import type { TestItem } from '../fixtures/services/item-service';
 import { ItemService } from '../fixtures/services/item-service';
 import { expectProperty, expectToBeCalled, expectToBeCalledWith, expectType } from '../fixtures/utils/expect-util';
@@ -116,4 +117,13 @@ describe('Drino - Pipe Methods', () => {
         });
     });
   });
+
+  describe('pipe', () => {
+
+    it('should pipe another request controller', (done: Mocha.Done) => {
+      instance.get<TestItem>('/1').pipe(
+        mapResult((val) => 1),
+      )
+    })
+  })
 });
