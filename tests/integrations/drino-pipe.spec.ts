@@ -123,7 +123,7 @@ describe('Drino - Pipe Methods', () => {
     it('should pipe another request controller', async () => {
       const result = await instance.get<TestItem>('/1').pipe(
         mapResult((val) => val.name),
-      ).consume();
+      ).build().consume();
 
       expectType(result, 'string');
     });

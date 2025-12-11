@@ -10,6 +10,7 @@ import { HttpRequest } from './http-request';
 import type { RequestConfig } from './models';
 import type { FetchTools } from './models/fetch-tools.model';
 import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback, RequestControllerConfig } from './models/request-controller.model';
+import { PipeBuilder } from './pipe-builder';
 import { mergeRequestConfigs } from './request-util';
 
 interface DrinoRequestInit {
@@ -21,20 +22,26 @@ interface DrinoRequestInit {
 
 export class RequestController<Resource> {
 
-  public clone<NewResource = Resource>(): RequestController<NewResource> {
-    const cloned = new RequestController<NewResource>(this.init, this.defaultConfig);
+  /**
+   * Converts this RequestController to a PipeBuilder.
+   * The PipeBuilder accumulates operations without creating new instances.
+   * @returns A PipeBuilder that can be used to chain pipe operations efficiently
+   */
+  public clone<NewResource = Resource>(): PipeBuilder<NewResource> {
+    // Convert existing modifiers and observers to pending operations
+    const operations: Array<{ type: 'modifier' | 'observer'; payload: any }> = [];
 
-    // Copy-on-Write optimization: share references instead of copying
-    (cloned as any).modifiers = this.modifiers;
-    (cloned as any).observerChain = this.observerChain;
+    // Add existing modifiers as operations
+    for (const modifier of this.modifiers) {
+      operations.push({ type: 'modifier', payload: modifier });
+    }
 
-    // Mark both instances as sharing state
-    (cloned as any).modifiersOwned = false;
-    (cloned as any).observerChainOwned = false;
-    this.modifiersOwned = false;
-    this.observerChainOwned = false;
+    // Add existing observers as operations
+    if (Object.keys(this.observerChain).length > 0) {
+      operations.push({ type: 'observer', payload: this.observerChain });
+    }
 
-    return cloned;
+    return new PipeBuilder<NewResource>(this.init, this.defaultConfig, operations);
   }
 
   /**
@@ -157,22 +164,26 @@ export class RequestController<Resource> {
 
   /**
    * Pipe operators style RxJS. Allows chaining of PipeFunction operators.
+   * Returns a PipeBuilder for efficient operation accumulation.
    * @example
    * request.pipe(
    *   mapResult(x => x * 2),
    *   reportError(err => console.error(err))
    * )
    */
-  public pipe(): RequestController<Resource>;
-  public pipe<NewResource>(op1: PipeFunction<Resource, NewResource>): RequestController<NewResource>;
-  public pipe<A, B>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>): RequestController<B>;
-  public pipe<A, B, C>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>): RequestController<C>;
-  public pipe<A, B, C, D>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>): RequestController<D>;
-  public pipe<A, B, C, D, E>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>, op5: PipeFunction<D, E>): RequestController<E>;
-  public pipe(...operators: PipeFunction<any, any>[]): RequestController<any> {
-    if (operators.length === 0) return this;
+  public pipe(): PipeBuilder<Resource>;
+  public pipe<NewResource>(op1: PipeFunction<Resource, NewResource>): PipeBuilder<NewResource>;
+  public pipe<A, B>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>): PipeBuilder<B>;
+  public pipe<A, B, C>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>): PipeBuilder<C>;
+  public pipe<A, B, C, D>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>): PipeBuilder<D>;
+  public pipe<A, B, C, D, E>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>, op5: PipeFunction<D, E>): PipeBuilder<E>;
+  public pipe(...operators: PipeFunction<any, any>[]): PipeBuilder<any> {
+    if (operators.length === 0) {
+      // Convert to PipeBuilder without any additional operations
+      return this.clone<Resource>();
+    }
 
-    return operators.reduce((source, operator) => operator(source), this as RequestController<any>);
+    return operators.reduce((source, operator) => operator(source), this as RequestController<any> | PipeBuilder<any>) as PipeBuilder<any>;
   }
 
   /**
