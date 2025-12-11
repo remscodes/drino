@@ -123,7 +123,7 @@ describe('Drino - Pipe Methods', () => {
     it('should pipe another request controller', async () => {
       const result = await instance.get<TestItem>('/1').pipe(
         mapResult((val) => val.name),
-      ).build().consume();
+      ).consume();
 
       expectType(result, 'string');
     });
@@ -141,35 +141,26 @@ describe('Drino - Pipe Methods', () => {
       expectProperty({ result1, result2 }, 'result1', 'string', result2);
     });
 
-    it('should isolate cloned pipelines', async () => {
-      const base = instance.get<TestItem>('/1');
-      const pipe1 = base.pipe(mapResult(item => item.name));
-      const pipe2 = base.pipe(mapResult(item => item.id));
+    it('should accumulate operations on same instance', async () => {
+      const req = instance.get<TestItem>('/1');
 
-      const result1 = await pipe1.consume();
-      const result2 = await pipe2.consume();
+      // First pipe - extract name
+      req.pipe(mapResult(item => item.name));
 
-      expectType(result1, 'string');
-      expectType(result2, 'number');
+      const result = await req.consume();
+
+      expectType(result, 'string');
     });
 
-    it('should maintain isolation with multiple pipe operations', async () => {
-      const base = instance.get<TestItem>('/1');
+    it('should allow chaining multiple pipe operations', async () => {
+      const result = await instance.get<TestItem>('/1')
+        .pipe(
+          mapResult(item => item.name),
+          mapResult((name: string) => name.toUpperCase())
+        )
+        .consume();
 
-      // Create two different pipelines from the same base
-      const pipeline1 = base.pipe(mapResult(item => item.name));
-      const pipeline2 = base.pipe(mapResult(item => item.id));
-
-      // Further extend pipeline1 without affecting pipeline2
-      const extended1 = pipeline1.pipe(mapResult(name => name.toUpperCase()));
-
-      const result1 = await extended1.consume();
-      const result2 = await pipeline2.consume();
-      const result3 = await pipeline1.consume(); // Original pipeline1 unchanged
-
-      expectType(result1, 'string');
-      expectType(result2, 'number');
-      expectType(result3, 'string');
+      expectType(result, 'string');
     });
   });
 });

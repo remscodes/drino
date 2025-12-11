@@ -1,4 +1,3 @@
-import { PipeBuilder } from '../../../request/pipe-builder';
 import { RequestController } from '../../../request/request-controller';
 import { FollowCallback } from '../../../request/models/request-controller.model';
 import { PipeFunction } from '../pipe-function';
@@ -16,8 +15,7 @@ import { PipeFunction } from '../pipe-function';
  *   .consume();
  */
 export function follow<T1, T2>(cb: FollowCallback<T1, T2>): PipeFunction<T1, T2> {
-  return (source: RequestController<T1> | PipeBuilder<T1>) => {
-    const builder = source instanceof PipeBuilder ? source : source.clone<T1>();
-    return builder.addModifier((result: T1) => cb(result).consume()) as unknown as PipeBuilder<T2>;
+  return (source: RequestController<T1>) => {
+    return source.addModifier((result: T1) => cb(result).consume()) as unknown as RequestController<T2>;
   };
 }

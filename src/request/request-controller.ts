@@ -10,7 +10,6 @@ import { HttpRequest } from './http-request';
 import type { RequestConfig } from './models';
 import type { FetchTools } from './models/fetch-tools.model';
 import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback, RequestControllerConfig } from './models/request-controller.model';
-import { PipeBuilder } from './pipe-builder';
 import { mergeRequestConfigs } from './request-util';
 
 interface DrinoRequestInit {
@@ -23,54 +22,19 @@ interface DrinoRequestInit {
 export class RequestController<Resource> {
 
   /**
-   * Converts this RequestController to a PipeBuilder.
-   * The PipeBuilder accumulates operations without creating new instances.
-   * @returns A PipeBuilder that can be used to chain pipe operations efficiently
+   * Adds a modifier to the transformation chain.
+   * The modifier will be applied when consume() is called.
+   * @param modifier - Transformation function to apply to the result
+   * @returns this instance for chaining
+   * @internal (only called by pipe operators)
    */
-  public clone<NewResource = Resource>(): PipeBuilder<NewResource> {
-    // Convert existing modifiers and observers to pending operations
-    const operations: Array<{ type: 'modifier' | 'observer'; payload: any }> = [];
-
-    // Add existing modifiers as operations
-    for (const modifier of this.modifiers) {
-      operations.push({ type: 'modifier', payload: modifier });
-    }
-
-    // Add existing observers as operations
-    if (Object.keys(this.observerChain).length > 0) {
-      operations.push({ type: 'observer', payload: this.observerChain });
-    }
-
-    return new PipeBuilder<NewResource>(this.init, this.defaultConfig, operations);
-  }
-
-  /**
-   * Ensures modifiers array is uniquely owned before mutation
-   * @internal
-   */
-  private ensureModifiersOwned(): void {
-    if (!this.modifiersOwned) {
-      (this as any).modifiers = [...this.modifiers];
-      this.modifiersOwned = true;
-    }
-  }
-
-  /**
-   * Ensures observerChain is uniquely owned before mutation
-   * @internal
-   */
-  private ensureObserverChainOwned(): void {
-    if (!this.observerChainOwned) {
-      (this as any).observerChain = { ...this.observerChain };
-      this.observerChainOwned = true;
-    }
+  public addModifier<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource> {
+    this.modifiers.push(modifier as Modifier<any, any>);
+    return this as any;
   }
 
   /** @internal */
-  public addObserver(observer: Partial<Observer<Resource>>): void {
-    // Copy-on-write: ensure we own observerChain before mutating
-    this.ensureObserverChainOwned();
-
+  public addObserver(observer: Partial<Observer<Resource>>): this {
     // Merge observer callbacks
     if (observer.result) {
       const existingResult = this.observerChain.result;
@@ -119,6 +83,8 @@ export class RequestController<Resource> {
         ? (ev) => { existingDownload(ev); newDownload(ev); }
         : newDownload;
     }
+
+    return this;
   }
 
   public constructor(init: DrinoRequestInit, defaultConfig: DrinoParentConfig) {
@@ -148,42 +114,26 @@ export class RequestController<Resource> {
   /** @internal */
   private readonly observerChain: Partial<Observer<Resource>> = {};
 
-  /**
-   * Tracks whether this instance owns the modifiers array (true) or shares it with clones (false)
-   * @internal
-   */
-  private modifiersOwned = true;
-
-  /**
-   * Tracks whether this instance owns the observerChain object (true) or shares it with clones (false)
-   * @internal
-   */
-  private observerChainOwned = true;
-
   public readonly request: HttpRequest<Resource>;
 
   /**
    * Pipe operators style RxJS. Allows chaining of PipeFunction operators.
-   * Returns a PipeBuilder for efficient operation accumulation.
+   * Mutates this instance and returns it for chaining.
    * @example
    * request.pipe(
    *   mapResult(x => x * 2),
    *   reportError(err => console.error(err))
    * )
    */
-  public pipe(): PipeBuilder<Resource>;
-  public pipe<NewResource>(op1: PipeFunction<Resource, NewResource>): PipeBuilder<NewResource>;
-  public pipe<A, B>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>): PipeBuilder<B>;
-  public pipe<A, B, C>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>): PipeBuilder<C>;
-  public pipe<A, B, C, D>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>): PipeBuilder<D>;
-  public pipe<A, B, C, D, E>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>, op5: PipeFunction<D, E>): PipeBuilder<E>;
-  public pipe(...operators: PipeFunction<any, any>[]): PipeBuilder<any> {
-    if (operators.length === 0) {
-      // Convert to PipeBuilder without any additional operations
-      return this.clone<Resource>();
-    }
-
-    return operators.reduce((source, operator) => operator(source), this as RequestController<any> | PipeBuilder<any>) as PipeBuilder<any>;
+  public pipe(): this;
+  public pipe<NewResource>(op1: PipeFunction<Resource, NewResource>): RequestController<NewResource>;
+  public pipe<A, B>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>): RequestController<B>;
+  public pipe<A, B, C>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>): RequestController<C>;
+  public pipe<A, B, C, D>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>): RequestController<D>;
+  public pipe<A, B, C, D, E>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>, op5: PipeFunction<D, E>): RequestController<E>;
+  public pipe(...operators: PipeFunction<any, any>[]): RequestController<any> {
+    if (operators.length === 0) return this;
+    return operators.reduce((source, operator) => operator(source), this as RequestController<any>);
   }
 
   /**
@@ -191,7 +141,6 @@ export class RequestController<Resource> {
    */
   public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
   public transform(modifiers: Modifier<any, any>): RequestController<any> {
-    this.ensureModifiersOwned();
     this.modifiers.push(modifiers);
     return this;
   }
@@ -200,7 +149,6 @@ export class RequestController<Resource> {
    * @deprecated
    */
   public check(checkFn: CheckCallback<Resource>): RequestController<Resource> {
-    this.ensureModifiersOwned();
     this.modifiers.push((result: Resource) => {
       checkFn(result);
       return result;
@@ -237,7 +185,6 @@ export class RequestController<Resource> {
    */
   public follow<NewResource>(followFn: FollowCallback<Resource, NewResource>): RequestController<NewResource>;
   public follow(followFn: FollowCallback<any, any>): RequestController<any> {
-    this.ensureModifiersOwned();
     this.modifiers.push((result: Resource) => followFn(result).consume());
     return this;
   }
