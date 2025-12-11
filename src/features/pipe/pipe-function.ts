@@ -28,6 +28,8 @@ export function createPipeFromObserver<T1, T2 = T1>(observer: Partial<Observer<a
 export function createPipeFromModifier<T1, T2>(modifier: Modifier<T1, T2>): PipeFunction<T1, T2> {
   return (source: RequestController<T1>) => {
     const cloned = source.clone<T2>();
+    // Copy-on-write: ensure we own modifiers before mutating
+    (cloned as any).ensureModifiersOwned();
     (cloned as any).modifiers.push(modifier);
     return cloned;
   };

@@ -16,6 +16,8 @@ import { PipeFunction } from '../pipe-function';
 export function follow<T1, T2>(cb: FollowCallback<T1, T2>): PipeFunction<T1, T2> {
   return (source) => {
     const cloned = source.clone<T2>();
+    // Copy-on-write: ensure we own modifiers before mutating
+    (cloned as any).ensureModifiersOwned();
     (cloned as any).modifiers.push((result: T1) => cb(result).consume());
     return cloned;
   };

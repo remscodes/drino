@@ -120,10 +120,56 @@ describe('Drino - Pipe Methods', () => {
 
   describe('pipe', () => {
 
-    it('should pipe another request controller', (done: Mocha.Done) => {
-      instance.get<TestItem>('/1').pipe(
-        mapResult((val) => 1),
-      )
-    })
-  })
+    it('should pipe another request controller', async () => {
+      const result = await instance.get<TestItem>('/1').pipe(
+        mapResult((val) => val.name),
+      ).consume();
+
+      expectType(result, 'string');
+    });
+
+    it('should allow pipeline reuse', async () => {
+      const pipeline = instance.get<TestItem>('/1').pipe(
+        mapResult(item => item.name),
+      );
+
+      const result1 = await pipeline.consume();
+      const result2 = await pipeline.consume();
+
+      expectType(result1, 'string');
+      expectType(result2, 'string');
+      expectProperty({ result1, result2 }, 'result1', 'string', result2);
+    });
+
+    it('should isolate cloned pipelines', async () => {
+      const base = instance.get<TestItem>('/1');
+      const pipe1 = base.pipe(mapResult(item => item.name));
+      const pipe2 = base.pipe(mapResult(item => item.id));
+
+      const result1 = await pipe1.consume();
+      const result2 = await pipe2.consume();
+
+      expectType(result1, 'string');
+      expectType(result2, 'number');
+    });
+
+    it('should maintain isolation with multiple pipe operations', async () => {
+      const base = instance.get<TestItem>('/1');
+
+      // Create two different pipelines from the same base
+      const pipeline1 = base.pipe(mapResult(item => item.name));
+      const pipeline2 = base.pipe(mapResult(item => item.id));
+
+      // Further extend pipeline1 without affecting pipeline2
+      const extended1 = pipeline1.pipe(mapResult(name => name.toUpperCase()));
+
+      const result1 = await extended1.consume();
+      const result2 = await pipeline2.consume();
+      const result3 = await pipeline1.consume(); // Original pipeline1 unchanged
+
+      expectType(result1, 'string');
+      expectType(result2, 'number');
+      expectType(result3, 'string');
+    });
+  });
 });

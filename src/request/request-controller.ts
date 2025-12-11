@@ -23,13 +23,47 @@ export class RequestController<Resource> {
 
   public clone<NewResource = Resource>(): RequestController<NewResource> {
     const cloned = new RequestController<NewResource>(this.init, this.defaultConfig);
-    cloned.modifiers.push(...this.modifiers);
-    Object.assign(cloned.observerChain, this.observerChain);
+
+    // Copy-on-Write optimization: share references instead of copying
+    (cloned as any).modifiers = this.modifiers;
+    (cloned as any).observerChain = this.observerChain;
+
+    // Mark both instances as sharing state
+    (cloned as any).modifiersOwned = false;
+    (cloned as any).observerChainOwned = false;
+    this.modifiersOwned = false;
+    this.observerChainOwned = false;
+
     return cloned;
+  }
+
+  /**
+   * Ensures modifiers array is uniquely owned before mutation
+   * @internal
+   */
+  private ensureModifiersOwned(): void {
+    if (!this.modifiersOwned) {
+      (this as any).modifiers = [...this.modifiers];
+      this.modifiersOwned = true;
+    }
+  }
+
+  /**
+   * Ensures observerChain is uniquely owned before mutation
+   * @internal
+   */
+  private ensureObserverChainOwned(): void {
+    if (!this.observerChainOwned) {
+      (this as any).observerChain = { ...this.observerChain };
+      this.observerChainOwned = true;
+    }
   }
 
   /** @internal */
   public addObserver(observer: Partial<Observer<Resource>>): void {
+    // Copy-on-write: ensure we own observerChain before mutating
+    this.ensureObserverChainOwned();
+
     // Merge observer callbacks
     if (observer.result) {
       const existingResult = this.observerChain.result;
@@ -107,6 +141,18 @@ export class RequestController<Resource> {
   /** @internal */
   private readonly observerChain: Partial<Observer<Resource>> = {};
 
+  /**
+   * Tracks whether this instance owns the modifiers array (true) or shares it with clones (false)
+   * @internal
+   */
+  private modifiersOwned = true;
+
+  /**
+   * Tracks whether this instance owns the observerChain object (true) or shares it with clones (false)
+   * @internal
+   */
+  private observerChainOwned = true;
+
   public readonly request: HttpRequest<Resource>;
 
   /**
@@ -134,6 +180,7 @@ export class RequestController<Resource> {
    */
   public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
   public transform(modifiers: Modifier<any, any>): RequestController<any> {
+    this.ensureModifiersOwned();
     this.modifiers.push(modifiers);
     return this;
   }
@@ -142,6 +189,7 @@ export class RequestController<Resource> {
    * @deprecated
    */
   public check(checkFn: CheckCallback<Resource>): RequestController<Resource> {
+    this.ensureModifiersOwned();
     this.modifiers.push((result: Resource) => {
       checkFn(result);
       return result;
@@ -178,6 +226,7 @@ export class RequestController<Resource> {
    */
   public follow<NewResource>(followFn: FollowCallback<Resource, NewResource>): RequestController<NewResource>;
   public follow(followFn: FollowCallback<any, any>): RequestController<any> {
+    this.ensureModifiersOwned();
     this.modifiers.push((result: Resource) => followFn(result).consume());
     return this;
   }
