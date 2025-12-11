@@ -1,5 +1,5 @@
+import { Observer } from '../../../request/models/request-controller.model';
 import { createPipeFromObserver, PipeFunction } from '../pipe-function';
-import type { RetryEvent } from '../../retry';
 
 /**
  * Executes a callback when a retry occurs
@@ -8,8 +8,6 @@ import type { RetryEvent } from '../../retry';
  *   onRetry(event => console.log('Retry attempt', event))
  * )
  */
-export function onRetry<T>(callback: (event: RetryEvent) => void): PipeFunction<T, T> {
-  return createPipeFromObserver<T, T>({
-    retry: callback
-  });
+export function onRetry<T>(cb: Observer<T>['retry']): PipeFunction<T, T> {
+  return createPipeFromObserver({ retry: cb });
 }

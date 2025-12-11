@@ -1,8 +1,8 @@
+import type { PipeFunction } from '../features';
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
 import type { HttpContext } from '../features/interceptors/context/http-context';
 import { DEFAULT_HTTP_CONTEXT_CHAIN } from '../features/interceptors/context/http-context.constants';
 import type { BeforeErrorArgs } from '../features/interceptors/models/interceptor.model';
-import type { PipeFunction } from '../features/pipe/pipe-function';
 import type { DrinoParentConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { performHttpRequest } from './fetching';
@@ -118,7 +118,7 @@ export class RequestController<Resource> {
    * )
    */
   public pipe(): RequestController<Resource>;
-  public pipe<A>(op1: PipeFunction<Resource, A>): RequestController<A>;
+  public pipe<NewResource>(op1: PipeFunction<Resource, NewResource>): RequestController<NewResource>;
   public pipe<A, B>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>): RequestController<B>;
   public pipe<A, B, C>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>): RequestController<C>;
   public pipe<A, B, C, D>(op1: PipeFunction<Resource, A>, op2: PipeFunction<A, B>, op3: PipeFunction<B, C>, op4: PipeFunction<C, D>): RequestController<D>;

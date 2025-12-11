@@ -1,5 +1,5 @@
+import { Observer } from '../../../request/models/request-controller.model';
 import { createPipeFromObserver, PipeFunction } from '../pipe-function';
-import type { StreamProgressEvent } from '../../progress/models/progress-event.model';
 
 /**
  * Executes a callback on download progress events
@@ -8,8 +8,6 @@ import type { StreamProgressEvent } from '../../progress/models/progress-event.m
  *   onDownload(event => console.log('Progress:', event.progress))
  * )
  */
-export function onDownload<T>(callback: (event: StreamProgressEvent) => void): PipeFunction<T, T> {
-  return createPipeFromObserver<T, T>({
-    download: callback
-  });
+export function onDownload<T>(cb: Observer<T>['download']): PipeFunction<T, T> {
+  return createPipeFromObserver({ download: cb });
 }

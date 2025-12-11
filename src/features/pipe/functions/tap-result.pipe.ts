@@ -1,3 +1,4 @@
+import { Observer } from '../../../request/models/request-controller.model';
 import { createPipeFromObserver, PipeFunction } from '../pipe-function';
 
 /**
@@ -8,10 +9,6 @@ import { createPipeFromObserver, PipeFunction } from '../pipe-function';
  *   tapResult(user => console.log('User loaded:', user))
  * )
  */
-export function tapResult<T>(callback: (result: T) => void): PipeFunction<T, T> {
-  return createPipeFromObserver<T, T>({
-    result: (res) => {
-      callback(res);
-    }
-  });
+export function tapResult<T>(cb: Observer<T>['result']): PipeFunction<T, T> {
+  return createPipeFromObserver({ result: cb });
 }

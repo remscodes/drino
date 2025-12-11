@@ -11,6 +11,7 @@ import {
   onAbort,
   onRetry,
   onDownload,
+  follow,
   type PipeFunction
 } from '../src';
 
@@ -231,10 +232,50 @@ async function example9() {
 }
 
 // ============================================
-// Exemple 10 : Composition complexe
+// Exemple 10 : Enchaînement de requêtes avec follow
 // ============================================
 
+interface Post {
+  id: number;
+  title: string;
+  userId: number;
+}
+
+interface Comment {
+  id: number;
+  postId: number;
+  text: string;
+}
+
 async function example10() {
+  // Chaîner des requêtes : user -> posts -> comments du premier post
+  const comments = await drino
+    .get<User>('/api/user/123')
+    .pipe(
+      tapResult(user => console.log('User loaded:', user.name)),
+
+      // Récupérer les posts de l'utilisateur
+      follow(user => drino.get<Post[]>(`/api/users/${user.id}/posts`)),
+      tapResult(posts => console.log(`Found ${posts.length} posts`)),
+
+      // Extraire le premier post
+      mapResult(posts => posts[0]),
+      tapResult(post => console.log('First post:', post.title)),
+
+      // Récupérer les commentaires du premier post
+      follow(post => drino.get<Comment[]>(`/api/posts/${post.id}/comments`)),
+      tapResult(comments => console.log(`Found ${comments.length} comments`))
+    )
+    .consume();
+
+  return comments;
+}
+
+// ============================================
+// Exemple 11 : Composition complexe
+// ============================================
+
+async function example11() {
   const activeUserEmails = await drino
     .get<ApiResponse<User[]>>('/api/users')
     .pipe(
@@ -299,8 +340,11 @@ async function runExamples() {
   console.log('\n=== Example 9: Reusable pipeline ===');
   // await example9();
 
-  console.log('\n=== Example 10: Complex composition ===');
+  console.log('\n=== Example 10: Request chaining with follow ===');
   // await example10();
+
+  console.log('\n=== Example 11: Complex composition ===');
+  // await example11();
 }
 
 // runExamples();
