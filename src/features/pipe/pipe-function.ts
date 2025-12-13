@@ -11,20 +11,17 @@ export interface PipeFunction<T1, T2> {
 
 /**
  * Creates a pipe function from an observer
- * The returned function will add the observer to the RequestController's chain
+ * The returned function will add the observer to a cloned RequestController
+ * Observers don't change the type, so T1 and T2 are the same
  */
-export function createPipeFromObserver<T1, T2 = T1>(observer: Partial<Observer<any>>): PipeFunction<T1, T2> {
-  return (source: RequestController<T1>) => {
-    return source.addObserver(observer) as unknown as RequestController<T2>;
-  };
+export function createPipeFromObserver<T>(observer: Partial<Observer<T>>): PipeFunction<T, T> {
+  return (source: RequestController<T>) => source.addObserver(observer);
 }
 
 /**
- * Creates a pipe function from a modifier (transformation function)
+ * Creates a pipe function from a modifier
  * The returned function will add the modifier to the RequestController to transform the result
  */
 export function createPipeFromModifier<T1, T2>(modifier: Modifier<T1, T2>): PipeFunction<T1, T2> {
-  return (source: RequestController<T1>) => {
-    return source.addModifier(modifier);
-  };
+  return (source: RequestController<T1>) => source.addModifier(modifier);
 }

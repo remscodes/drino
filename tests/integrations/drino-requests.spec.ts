@@ -185,8 +185,12 @@ describe('Drino - Requests', () => {
     it('should receive and send httpOnly cookie', async () => {
       const config = { credentials: 'include',  } as const;
 
-      const { token } = await drino.post<''>('http://localhost:8080/auth/login', {}, { read: 'string' })
-        .follow(() => drino.get<{ token: string }>('http://localhost:8080/auth/context', config))
+      // First request sets the cookie
+      await drino.post<''>('http://localhost:8080/auth/login', {}, { read: 'string' })
+        .consume();
+
+      // Second request uses the cookie
+      const { token } = await drino.get<{ token: string }>('http://localhost:8080/auth/context', config)
         .consume();
       expectEqual(token, '1234');
     });

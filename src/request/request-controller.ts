@@ -2,14 +2,13 @@ import type { PipeFunction } from '../features';
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
 import type { HttpContext } from '../features/interceptors/context/http-context';
 import { DEFAULT_HTTP_CONTEXT_CHAIN } from '../features/interceptors/context/http-context.constants';
-import type { BeforeErrorArgs } from '../features/interceptors/models/interceptor.model';
 import type { DrinoParentConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { performHttpRequest } from './fetching';
 import { HttpRequest } from './http-request';
 import type { RequestConfig } from './models';
 import type { FetchTools } from './models/fetch-tools.model';
-import type { CheckCallback, FinalCallback, FollowCallback, Modifier, Observer, ReportCallback, RequestControllerConfig } from './models/request-controller.model';
+import type { Modifier, Observer, RequestControllerConfig } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
 interface DrinoRequestInit {
@@ -24,67 +23,107 @@ export class RequestController<Resource> {
   /**
    * Adds a modifier to the transformation chain.
    * The modifier will be applied when consume() is called.
+   * Creates a new RequestController instance (immutable operation).
    * @param modifier - Transformation function to apply to the result
-   * @returns this instance for chaining
+   * @returns new instance with the modifier added
    * @internal (only called by pipe operators)
    */
   public addModifier<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource> {
-    this.modifiers.push(modifier as Modifier<any, any>);
-    return this as any;
+    const cloned = this.clone<NewResource>();
+    cloned.modifiers.push(modifier);
+    return cloned;
   }
 
-  /** @internal */
-  public addObserver(observer: Partial<Observer<Resource>>): this {
+  /**
+   * Adds an observer to the observer chain.
+   * Creates a new RequestController instance (immutable operation).
+   * @param observer - Observer callbacks to add
+   * @returns new instance with the observer added
+   * @internal (only called by pipe operators)
+   */
+  public addObserver(observer: Partial<Observer<Resource>>): RequestController<Resource> {
+    const cloned = this.clone();
+
     // Merge observer callbacks
     if (observer.result) {
-      const existingResult = this.observerChain.result;
+      const existingResult = cloned.observerChain.result;
       const newResult = observer.result;
-      this.observerChain.result = existingResult
-        ? (res) => { existingResult(res); newResult(res); }
+      cloned.observerChain.result = existingResult
+        ? (res) => {
+          existingResult(res);
+          newResult(res);
+        }
         : newResult;
     }
 
     if (observer.error) {
-      const existingError = this.observerChain.error;
+      const existingError = cloned.observerChain.error;
       const newError = observer.error;
-      this.observerChain.error = existingError
-        ? (err) => { existingError(err); newError(err); }
+      cloned.observerChain.error = existingError
+        ? (err) => {
+          existingError(err);
+          newError(err);
+        }
         : newError;
     }
 
     if (observer.finish) {
-      const existingFinish = this.observerChain.finish;
+      const existingFinish = cloned.observerChain.finish;
       const newFinish = observer.finish;
-      this.observerChain.finish = existingFinish
-        ? () => { existingFinish(); newFinish(); }
+      cloned.observerChain.finish = existingFinish
+        ? () => {
+          existingFinish();
+          newFinish();
+        }
         : newFinish;
     }
 
     if (observer.abort) {
-      const existingAbort = this.observerChain.abort;
+      const existingAbort = cloned.observerChain.abort;
       const newAbort = observer.abort;
-      this.observerChain.abort = existingAbort
-        ? (reason) => { existingAbort(reason); newAbort(reason); }
+      cloned.observerChain.abort = existingAbort
+        ? (reason) => {
+          existingAbort(reason);
+          newAbort(reason);
+        }
         : newAbort;
     }
 
     if (observer.retry) {
-      const existingRetry = this.observerChain.retry;
+      const existingRetry = cloned.observerChain.retry;
       const newRetry = observer.retry;
-      this.observerChain.retry = existingRetry
-        ? (ev) => { existingRetry(ev); newRetry(ev); }
+      cloned.observerChain.retry = existingRetry
+        ? (ev) => {
+          existingRetry(ev);
+          newRetry(ev);
+        }
         : newRetry;
     }
 
     if (observer.download) {
-      const existingDownload = this.observerChain.download;
+      const existingDownload = cloned.observerChain.download;
       const newDownload = observer.download;
-      this.observerChain.download = existingDownload
-        ? (ev) => { existingDownload(ev); newDownload(ev); }
+      cloned.observerChain.download = existingDownload
+        ? (ev) => {
+          existingDownload(ev);
+          newDownload(ev);
+        }
         : newDownload;
     }
 
-    return this;
+    return cloned;
+  }
+
+  /**
+   * Creates a shallow clone of this RequestController.
+   * Copies modifiers and observer chain to the new instance.
+   * @internal
+   */
+  private clone<NewResource = Resource>(): RequestController<NewResource> {
+    const cloned = new RequestController<NewResource>(this.init as any, this.defaultConfig);
+    cloned.modifiers.push(...this.modifiers);
+    Object.assign(cloned.observerChain, this.observerChain);
+    return cloned;
   }
 
   public constructor(init: DrinoRequestInit, defaultConfig: DrinoParentConfig) {
@@ -118,12 +157,11 @@ export class RequestController<Resource> {
 
   /**
    * Pipe operators style RxJS. Allows chaining of PipeFunction operators.
-   * Mutates this instance and returns it for chaining.
+   * Returns a new RequestController instance (immutable operation).
    * @example
-   * request.pipe(
-   *   mapResult(x => x * 2),
-   *   reportError(err => console.error(err))
-   * )
+   * const base = drino.get('/users');
+   * const transformed = base.pipe(mapResult(x => x * 2));
+   * // base and transformed are independent instances
    */
   public pipe(): this;
   public pipe<NewResource>(op1: PipeFunction<Resource, NewResource>): RequestController<NewResource>;
@@ -136,58 +174,6 @@ export class RequestController<Resource> {
     return operators.reduce((source, operator) => operator(source), this as RequestController<any>);
   }
 
-  /**
-   * @deprecated
-   */
-  public transform<NewResource>(modifier: Modifier<Resource, NewResource>): RequestController<NewResource>;
-  public transform(modifiers: Modifier<any, any>): RequestController<any> {
-    this.modifiers.push(modifiers);
-    return this;
-  }
-
-  /**
-   * @deprecated
-   */
-  public check(checkFn: CheckCallback<Resource>): RequestController<Resource> {
-    this.modifiers.push((result: Resource) => {
-      checkFn(result);
-      return result;
-    });
-    return this;
-  }
-
-  /**
-   * @deprecated
-   */
-  public report(reportFn: ReportCallback): RequestController<Resource> {
-    const original = this.config.interceptors.beforeError;
-    this.config.interceptors.beforeError = async (args: BeforeErrorArgs) => {
-      await original(args);
-      reportFn(args.errRes);
-    };
-    return this;
-  }
-
-  /**
-   * @deprecated
-   */
-  public finalize(finalFn: FinalCallback): RequestController<Resource> {
-    const original = this.config.interceptors.beforeFinish;
-    this.config.interceptors.beforeFinish = async (args) => {
-      await original(args);
-      finalFn();
-    };
-    return this;
-  }
-
-  /**
-   * @deprecated
-   */
-  public follow<NewResource>(followFn: FollowCallback<Resource, NewResource>): RequestController<NewResource>;
-  public follow(followFn: FollowCallback<any, any>): RequestController<any> {
-    this.modifiers.push((result: Resource) => followFn(result).consume());
-    return this;
-  }
 
   public consume(): Promise<Resource>;
   public consume(observer: Observer<Resource>): void;
@@ -240,7 +226,8 @@ export class RequestController<Resource> {
     if (!observer) {
       // Use observerChain as observer
       this.useObserver(this.observerChain as Observer<Resource>, tools);
-    } else {
+    }
+    else {
       this.useObserver(mergedObserver!, tools);
     }
   }
