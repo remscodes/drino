@@ -1,6 +1,6 @@
 export { mapResult } from './map-result.pipe';
 export { reportError } from './report-error.pipe';
-export { tapResult } from './tap-result.pipe';
+export { tap } from './tap.pipe';
 export { finalize } from './finalize.pipe';
 export { onAbort } from './on-abort.pipe';
 export { onRetry } from './on-retry.pipe';

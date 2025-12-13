@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import type { DrinoInstance } from '../../src';
 import drino from '../../src';
 import { mapResult } from '../../src/features/pipe/functions/map-result.pipe';
+import { tap } from '../../src/features/pipe/functions/tap.pipe';
 import type { TestItem } from '../fixtures/services/item-service';
 import { ItemService } from '../fixtures/services/item-service';
 import { expectProperty, expectToBeCalled, expectToBeCalledWith, expectType } from '../fixtures/utils/expect-util';
@@ -160,6 +161,108 @@ describe('Drino - Pipe Methods', () => {
         )
         .consume();
 
+      expectType(result, 'string');
+    });
+  });
+
+  describe('tap', () => {
+
+    it('should call result callback without modifying result', async () => {
+      function tapResultFn(_item: TestItem) {}
+
+      const spy: SinonSpy<[item: TestItem], void> = sandbox.spy(tapResultFn);
+
+      const result = await instance
+        .get<TestItem>('/1')
+        .pipe(
+          tap({
+            result: (item) => spy(item)
+          })
+        )
+        .consume();
+
+      expectToBeCalled(spy);
+      expectToBeCalledWith(spy, result);
+      expectProperty(result, 'name', 'string');
+      expectProperty(result, 'id', 'number');
+    });
+
+    it('should call error callback', async () => {
+      function tapErrorFn(_error: any) {}
+
+      const spy: SinonSpy<[error: any], void> = sandbox.spy(tapErrorFn);
+
+      try {
+        await instance
+          .get('/404')
+          .pipe(
+            tap({
+              error: (error) => spy(error)
+            })
+          )
+          .consume();
+      }
+      catch (err) {
+        expectToBeCalled(spy);
+        expectToBeCalledWith(spy, err);
+      }
+    });
+
+    it('should call finish callback', async () => {
+      function tapFinishFn() {}
+
+      const spy: SinonSpy<[], void> = sandbox.spy(tapFinishFn);
+
+      await instance
+        .get<TestItem>('/1')
+        .pipe(
+          tap({
+            finish: () => spy()
+          })
+        )
+        .consume();
+
+      expectToBeCalled(spy);
+    });
+
+    it('should call multiple callbacks in observer', async () => {
+      function tapResultFn(_item: TestItem) {}
+      function tapFinishFn() {}
+
+      const resultSpy: SinonSpy<[item: TestItem], void> = sandbox.spy(tapResultFn);
+      const finishSpy: SinonSpy<[], void> = sandbox.spy(tapFinishFn);
+
+      const result = await instance
+        .get<TestItem>('/1')
+        .pipe(
+          tap({
+            result: (item) => resultSpy(item),
+            finish: () => finishSpy()
+          })
+        )
+        .consume();
+
+      expectToBeCalled(resultSpy);
+      expectToBeCalledWith(resultSpy, result);
+      expectToBeCalled(finishSpy);
+    });
+
+    it('should work with other pipe operators', async () => {
+      function tapResultFn(_item: TestItem) {}
+
+      const spy: SinonSpy<[item: TestItem], void> = sandbox.spy(tapResultFn);
+
+      const result = await instance
+        .get<TestItem>('/1')
+        .pipe(
+          tap({
+            result: (item) => spy(item)
+          }),
+          mapResult(item => item.name)
+        )
+        .consume();
+
+      expectToBeCalled(spy);
       expectType(result, 'string');
     });
   });
