@@ -44,74 +44,38 @@ export class RequestController<Resource> {
   public addObserver(observer: Partial<Observer<Resource>>): RequestController<Resource> {
     const cloned = this.clone();
 
-    // Merge observer callbacks
-    if (observer.result) {
-      const existingResult = cloned.observerChain.result;
-      const newResult = observer.result;
-      cloned.observerChain.result = existingResult
-        ? (res) => {
-          existingResult(res);
-          newResult(res);
-        }
-        : newResult;
-    }
-
-    if (observer.error) {
-      const existingError = cloned.observerChain.error;
-      const newError = observer.error;
-      cloned.observerChain.error = existingError
-        ? (err) => {
-          existingError(err);
-          newError(err);
-        }
-        : newError;
-    }
-
-    if (observer.finish) {
-      const existingFinish = cloned.observerChain.finish;
-      const newFinish = observer.finish;
-      cloned.observerChain.finish = existingFinish
-        ? () => {
-          existingFinish();
-          newFinish();
-        }
-        : newFinish;
-    }
-
-    if (observer.abort) {
-      const existingAbort = cloned.observerChain.abort;
-      const newAbort = observer.abort;
-      cloned.observerChain.abort = existingAbort
-        ? (reason) => {
-          existingAbort(reason);
-          newAbort(reason);
-        }
-        : newAbort;
-    }
-
-    if (observer.retry) {
-      const existingRetry = cloned.observerChain.retry;
-      const newRetry = observer.retry;
-      cloned.observerChain.retry = existingRetry
-        ? (ev) => {
-          existingRetry(ev);
-          newRetry(ev);
-        }
-        : newRetry;
-    }
-
-    if (observer.download) {
-      const existingDownload = cloned.observerChain.download;
-      const newDownload = observer.download;
-      cloned.observerChain.download = existingDownload
-        ? (ev) => {
-          existingDownload(ev);
-          newDownload(ev);
-        }
-        : newDownload;
-    }
+    this.mergeCallback(cloned.observerChain, observer, 'result');
+    this.mergeCallback(cloned.observerChain, observer, 'error');
+    this.mergeCallback(cloned.observerChain, observer, 'finish');
+    this.mergeCallback(cloned.observerChain, observer, 'abort');
+    this.mergeCallback(cloned.observerChain, observer, 'retry');
+    this.mergeCallback(cloned.observerChain, observer, 'download');
 
     return cloned;
+  }
+
+  /**
+   * Merges a callback from the new observer into the existing observer chain
+   * @internal
+   */
+  private mergeCallback<K extends keyof Observer<Resource>>(
+    target: Partial<Observer<Resource>>,
+    source: Partial<Observer<Resource>>,
+    key: K
+  ): void {
+    if (!source[key]) return;
+
+    const existing = target[key];
+    const newCallback = source[key];
+
+    if (existing) {
+      target[key] = ((...args: any[]) => {
+        (existing as any)(...args);
+        (newCallback as any)(...args);
+      }) as any;
+    } else {
+      target[key] = newCallback;
+    }
   }
 
   /**
