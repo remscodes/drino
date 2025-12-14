@@ -6,3 +6,4 @@ export { onAbort } from './on-abort.pipe';
 export { onRetry } from './on-retry.pipe';
 export { onDownload } from './on-download.pipe';
 export { follow } from './follow.pipe';
+export { delay } from './delay.pipe';

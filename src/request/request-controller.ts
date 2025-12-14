@@ -43,14 +43,9 @@ export class RequestController<Resource> {
    */
   public addObserver(observer: Partial<Observer<Resource>>): RequestController<Resource> {
     const cloned = this.clone();
-
-    this.mergeCallback(cloned.observerChain, observer, 'result');
-    this.mergeCallback(cloned.observerChain, observer, 'error');
-    this.mergeCallback(cloned.observerChain, observer, 'finish');
-    this.mergeCallback(cloned.observerChain, observer, 'abort');
-    this.mergeCallback(cloned.observerChain, observer, 'retry');
-    this.mergeCallback(cloned.observerChain, observer, 'download');
-
+    for (const key in observer) {
+      this.mergeCallback(cloned.observerChain, observer, key as keyof Partial<Observer<Resource>>);
+    }
     return cloned;
   }
 
@@ -61,7 +56,7 @@ export class RequestController<Resource> {
   private mergeCallback<K extends keyof Observer<Resource>>(
     target: Partial<Observer<Resource>>,
     source: Partial<Observer<Resource>>,
-    key: K
+    key: K,
   ): void {
     if (!source[key]) return;
 
@@ -73,7 +68,8 @@ export class RequestController<Resource> {
         (existing as any)(...args);
         (newCallback as any)(...args);
       }) as any;
-    } else {
+    }
+    else {
       target[key] = newCallback;
     }
   }
@@ -84,7 +80,7 @@ export class RequestController<Resource> {
    * @internal
    */
   private clone<NewResource = Resource>(): RequestController<NewResource> {
-    const cloned = new RequestController<NewResource>(this.init as any, this.defaultConfig);
+    const cloned = new RequestController<NewResource>(this.init, this.defaultConfig);
     cloned.modifiers.push(...this.modifiers);
     Object.assign(cloned.observerChain, this.observerChain);
     return cloned;
@@ -138,7 +134,6 @@ export class RequestController<Resource> {
     return operators.reduce((source, operator) => operator(source), this as RequestController<any>);
   }
 
-
   public consume(): Promise<Resource>;
   public consume(observer: Observer<Resource>): void;
   public consume(observer?: Observer<Resource>): Promise<Resource> | void {
@@ -189,7 +184,7 @@ export class RequestController<Resource> {
 
     if (!observer) {
       // Use observerChain as observer
-      this.useObserver(this.observerChain as Observer<Resource>, tools);
+      this.useObserver(this.observerChain, tools);
     }
     else {
       this.useObserver(mergedObserver!, tools);
@@ -199,52 +194,14 @@ export class RequestController<Resource> {
   /** @internal */
   private mergeObservers(observer?: Observer<Resource>): Observer<Resource> | undefined {
     if (!observer && Object.keys(this.observerChain).length === 0) return undefined;
-    if (!observer) return this.observerChain as Observer<Resource>;
+    if (!observer) return this.observerChain;
     if (Object.keys(this.observerChain).length === 0) return observer;
 
     // Merge both observers
-    const merged: Partial<Observer<Resource>> = {};
+    const merged: Partial<Observer<Resource>> = { ...this.observerChain };
 
-    if (this.observerChain.result || observer.result) {
-      merged.result = (res) => {
-        this.observerChain.result?.(res);
-        observer.result?.(res);
-      };
-    }
-
-    if (this.observerChain.error || observer.error) {
-      merged.error = (err) => {
-        this.observerChain.error?.(err);
-        observer.error?.(err);
-      };
-    }
-
-    if (this.observerChain.finish || observer.finish) {
-      merged.finish = () => {
-        this.observerChain.finish?.();
-        observer.finish?.();
-      };
-    }
-
-    if (this.observerChain.abort || observer.abort) {
-      merged.abort = (reason) => {
-        this.observerChain.abort?.(reason);
-        observer.abort?.(reason);
-      };
-    }
-
-    if (this.observerChain.retry || observer.retry) {
-      merged.retry = (ev) => {
-        this.observerChain.retry?.(ev);
-        observer.retry?.(ev);
-      };
-    }
-
-    if (this.observerChain.download || observer.download) {
-      merged.download = (ev) => {
-        this.observerChain.download?.(ev);
-        observer.download?.(ev);
-      };
+    for (const key in observer) {
+      this.mergeCallback(merged, observer, key as keyof Observer<Resource>);
     }
 
     return merged as Observer<Resource>;

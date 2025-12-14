@@ -1,6 +1,7 @@
 import type { RetryEvent, StreamProgressEvent } from '../../features';
 import type { Interceptors } from '../../features/interceptors/models/interceptor.model';
 import type { InstanceRetryConfig } from '../../features/retry/models/retry-config.model';
+import type { Promisable } from '../../models/shared.model';
 import type { HttpResponse } from '../../response';
 import type { RequestController } from '../request-controller';
 import type { RequestConfig } from './request-config.model';
@@ -21,7 +22,7 @@ export type BlobBody<T> = Extract<T, Blob>
 export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
-export type Modifier<I, O> = (res: I) => O
+export type Modifier<I, O> = (res: I) => Promisable<O>
 
 export type CheckCallback<T> = (res: T) => void
 export type ReportCallback = (err: any) => void

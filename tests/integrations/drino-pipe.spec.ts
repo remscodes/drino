@@ -1,7 +1,7 @@
 import type { SinonSandbox, SinonSpy } from 'sinon';
 import * as sinon from 'sinon';
 import type { DrinoInstance } from '../../src';
-import drino, { mapResult, tap } from '../../src';
+import drino, { delay, mapResult, tap } from '../../src';
 import type { TestItem } from '../fixtures/services/item-service';
 import { ItemService } from '../fixtures/services/item-service';
 import { expectProperty, expectToBeCalled, expectToBeCalledWith, expectType } from '../fixtures/utils/expect-util';
@@ -174,6 +174,74 @@ describe('Drino - Pipe Methods', () => {
         .consume();
 
       expectToBeCalled(spy);
+      expectType(result, 'string');
+    });
+  });
+
+  describe('delay', () => {
+
+    it('should delay the result emission by specified milliseconds', async () => {
+      const startTime = Date.now();
+      const delayMs = 100;
+
+      const result = await instance
+        .get<TestItem>('/1')
+        .pipe(delay(delayMs))
+        .consume();
+
+      const elapsed = Date.now() - startTime;
+
+      // Verify the delay occurred (with some tolerance)
+      if (elapsed < delayMs) {
+        throw new Error(`Expected delay of at least ${delayMs}ms, but only ${elapsed}ms elapsed`);
+      }
+
+      // Verify the result is unchanged
+      expectProperty(result, 'name', 'string');
+      expectProperty(result, 'id', 'number');
+    });
+
+    it('should work with other pipe operators', async () => {
+      const result = await instance
+        .get<TestItem>('/1')
+        .pipe(
+          delay(50),
+          mapResult(item => item.name)
+        )
+        .consume();
+
+      expectType(result, 'string');
+    });
+
+    it('should preserve result type through delay', async () => {
+      const result = await instance
+        .get<TestItem>('/1')
+        .pipe(delay(50))
+        .consume();
+
+      expectType(result, 'object');
+      expectProperty(result, 'name', 'string');
+      expectProperty(result, 'id', 'number');
+    });
+
+    it('should delay after transformation', async () => {
+      const startTime = Date.now();
+      const delayMs = 100;
+
+      const result = await instance
+        .get<TestItem>('/1')
+        .pipe(
+          mapResult(item => item.name),
+          delay(delayMs)
+        )
+        .consume();
+
+      const elapsed = Date.now() - startTime;
+
+      if (elapsed < delayMs) {
+        throw new Error(`Expected delay of at least ${delayMs}ms, but only ${elapsed}ms elapsed`);
+      }
+
       expectType(result, 'string');
     });
   });
