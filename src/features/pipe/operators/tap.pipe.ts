@@ -1,5 +1,6 @@
 import { Observer } from '../../../request/models/request-controller.model';
-import { createPipeFromObserver, PipeFunction } from '../pipe-function';
+import { Pipeline } from '../models/operator.model';
+import { pipeFromObserver } from '../pipe-function';
 
 /**
  * Performs side effects using an Observer without modifying the result
@@ -13,6 +14,6 @@ import { createPipeFromObserver, PipeFunction } from '../pipe-function';
  *   })
  * )
  */
-export function tap<T>(observer: Observer<T>): PipeFunction<T, T> {
-  return createPipeFromObserver(observer);
+export function tap<T>(observer: Observer<T>): Pipeline<T, T> {
+  return pipeFromObserver(observer);
 }

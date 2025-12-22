@@ -2,6 +2,7 @@ import type { SinonSandbox, SinonSpy } from 'sinon';
 import * as sinon from 'sinon';
 import type { DrinoInstance } from '../../src';
 import drino, { delay, mapResult, tap } from '../../src';
+import { Pipeline } from '../../src/features/pipe/models/operator.model';
 import type { TestItem } from '../fixtures/services/item-service';
 import { ItemService } from '../fixtures/services/item-service';
 import { expectProperty, expectToBeCalled, expectToBeCalledWith, expectType } from '../fixtures/utils/expect-util';
@@ -153,7 +154,6 @@ describe('Drino - Pipe Methods', () => {
         )
         .consume();
 
-      expectToBeCalled(resultSpy);
       expectToBeCalledWith(resultSpy, result);
       expectToBeCalled(finishSpy);
     });

@@ -1,5 +1,6 @@
 import { Observer } from '../../../request/models/request-controller.model';
-import { createPipeFromObserver, PipeFunction } from '../pipe-function';
+import { Pipeline } from '../models/operator.model';
+import { pipeFromObserver } from '../pipe-function';
 
 /**
  * Executes a callback when the request is aborted
@@ -8,6 +9,6 @@ import { createPipeFromObserver, PipeFunction } from '../pipe-function';
  *   onAbort(reason => console.log('Request aborted:', reason))
  * )
  */
-export function onAbort<T>(cb: Observer<T>['abort']): PipeFunction<T, T> {
-  return createPipeFromObserver({ abort: cb });
+export function onAbort<T>(cb: Observer<T>['abort']): Pipeline<T, T> {
+  return pipeFromObserver({ abort: cb });
 }

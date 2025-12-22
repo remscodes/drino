@@ -1,5 +1,6 @@
 import { Observer } from '../../../request/models/request-controller.model';
-import { createPipeFromObserver, PipeFunction } from '../pipe-function';
+import { Pipeline } from '../models/operator.model';
+import { pipeFromObserver } from '../pipe-function';
 
 /**
  * Executes a callback when the request finishes (success or error)
@@ -9,6 +10,6 @@ import { createPipeFromObserver, PipeFunction } from '../pipe-function';
  *   finalize(() => console.log('Request completed'))
  * )
  */
-export function finalize<T>(cb: Observer<T>['finish']): PipeFunction<T, T> {
-  return createPipeFromObserver({ finish: cb });
+export function finalize<T>(cb: Observer<T>['finish']): Pipeline<T, T> {
+  return pipeFromObserver({ finish: cb });
 }

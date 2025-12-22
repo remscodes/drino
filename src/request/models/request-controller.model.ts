@@ -22,14 +22,10 @@ export type BlobBody<T> = Extract<T, Blob>
 export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
-export type Modifier<I, O> = (res: I) => Promisable<O>
-
-export type CheckCallback<T> = (res: T) => void
-export type ReportCallback = (err: any) => void
-export type FinalCallback = () => void
+export type Mapper<I, O> = (res: I) => Promisable<O>
 export type FollowCallback<A, B> = (res: A) => RequestController<B>
 
-export interface Observer<T> {
+export interface Observer<T = any> {
   result?: (res: T) => void
   error?:  (err: any) => void;
   finish?: () => void;
@@ -39,12 +35,7 @@ export interface Observer<T> {
   // upload?: (ev: StreamProgressEvent) => void;
 }
 
-export interface ObserverChain<T> {
-  result?: (res: T) => any
+export interface ObserverChain<I, O> extends Observer<I>{
+  result?: (res: I) => Promisable<O>;
   error?:  (err: any) => any;
-  finish?: () => any;
-  abort?: (reason: any) => any;
-  retry?:  (ev: RetryEvent) => any;
-  download?: (ev: StreamProgressEvent) => any;
-  // upload?: (ev: StreamProgressEvent) => void;
 }

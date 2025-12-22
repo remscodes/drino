@@ -1,3 +1,3 @@
-export type { PipeFunction } from './pipe-function';
-export { createPipeFromObserver, createPipeFromModifier } from './pipe-function';
-export * from './functions';
+export type { Pipeline } from './models/operator.model';
+export { pipeFromObserver, pipeFromModifier } from './pipe-function';
+export * from './operators';

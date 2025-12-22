@@ -1,5 +1,6 @@
 import { Observer } from '../../../request/models/request-controller.model';
-import { createPipeFromObserver, PipeFunction } from '../pipe-function';
+import { Pipeline } from '../models/operator.model';
+import { pipeFromObserver } from '../pipe-function';
 
 /**
  * Intercepts and reports errors without modifying the error flow
@@ -9,6 +10,6 @@ import { createPipeFromObserver, PipeFunction } from '../pipe-function';
  *   reportError(err => console.error('Request failed:', err))
  * )
  */
-export function reportError<T>(cb: Observer<T>['error']): PipeFunction<T, T> {
-  return createPipeFromObserver({ error: cb });
+export function reportError<T>(cb: Observer<T>['error']): Pipeline<T, T> {
+  return pipeFromObserver({ error: cb });
 }

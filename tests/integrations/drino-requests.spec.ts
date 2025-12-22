@@ -183,15 +183,13 @@ describe('Drino - Requests', () => {
   describe('cookies', () => {
 
     it('should receive and send httpOnly cookie', async () => {
-      const config = { credentials: 'include',  } as const;
+      const config = { credentials: 'include' } as const;
 
-      // First request sets the cookie
-      await drino.post<''>('http://localhost:8080/auth/login', {}, { read: 'string' })
-        .consume();
+      // Set the cookie
+      await drino.post<string>('http://localhost:8080/auth/login', {}, { read: 'string' }).consume();
 
-      // Second request uses the cookie
-      const { token } = await drino.get<{ token: string }>('http://localhost:8080/auth/context', config)
-        .consume();
+      // Use the cookie
+      const { token } = await drino.get<{ token: string }>('http://localhost:8080/auth/context', config).consume();
       expectEqual(token, '1234');
     });
   });
