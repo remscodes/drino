@@ -1,6 +1,6 @@
 import { Observer } from '../../../request/models/request-controller.model';
-import { Pipeline } from '../models/operator.model';
-import { pipeFromObserver } from '../pipe-function';
+import { Pipeline } from '../models/pipeline.model';
+import { pipeToObserve } from '../pipe-function';
 
 /**
  * Executes a callback on download progress events
@@ -9,6 +9,6 @@ import { pipeFromObserver } from '../pipe-function';
  *   onDownload(event => console.log('Progress:', event.progress))
  * )
  */
-export function onDownload<T>(cb: Observer<T>['download']): Pipeline<T, T> {
-  return pipeFromObserver({ download: cb });
+export function onDownload<T>(cb: Observer<T>['download']): Pipeline<T> {
+  return pipeToObserve({ download: cb });
 }

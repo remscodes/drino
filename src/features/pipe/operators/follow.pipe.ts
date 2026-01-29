@@ -1,14 +1,13 @@
 import { RequestController } from '../../../request';
 import { FollowCallback } from '../../../request/models/request-controller.model';
-import { Pipeline } from '../models/operator.model';
+import { Pipeline } from '../models/pipeline.model';
 
 /**
  * Chains another request after the current one completes
  * The result of the first request is passed to the callback which returns a new RequestController
- * Similar to RxJS flatMap operator
  * @example
  * // Get user details then fetch their posts
- * drino.get<User>('/api/user/123')
+ * drino.get<User>('/api/users/123')
  *   .pipe(
  *     follow(user => drino.get<Post[]>(`/api/users/${user.id}/posts`))
  *   )

@@ -1,7 +1,7 @@
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
 import type { HttpContext } from '../features/interceptors/context/http-context';
 import { DEFAULT_HTTP_CONTEXT_CHAIN } from '../features/interceptors/context/http-context.constants';
-import { Pipeline } from '../features/pipe/models/operator.model';
+import { Pipeline } from '../features/pipe/models/pipeline.model';
 import type { DrinoParentConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { mergeCallback } from '../utils/fn-util';

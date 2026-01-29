@@ -22,20 +22,20 @@ export type BlobBody<T> = Extract<T, Blob>
 export type ArrayBufferBody<T> = Extract<T, ArrayBuffer>
 export type FormDataBody<T> = Extract<T, FormData>
 
-export type Mapper<I, O> = (res: I) => Promisable<O>
-export type FollowCallback<A, B> = (res: A) => RequestController<B>
+export type Mapper<T1, T2> = (res: T1) => Promisable<T2>
+export type FollowCallback<T1, T2> = (res: T1) => RequestController<T2>
 
 export interface Observer<T = any> {
-  result?: (res: T) => void
-  error?:  (err: any) => void;
+  result?: (res: T) => void;
+  error?: (err: any) => void;
   finish?: () => void;
   abort?: (reason: any) => void;
-  retry?:  (ev: RetryEvent) => void;
+  retry?: (ev: RetryEvent) => void;
   download?: (ev: StreamProgressEvent) => void;
   // upload?: (ev: StreamProgressEvent) => void;
 }
 
-export interface ObserverChain<I, O> extends Observer<I>{
-  result?: (res: I) => Promisable<O>;
-  error?:  (err: any) => any;
+export interface ObserverChain<T1, T2> extends Observer<T1> {
+  result?: Mapper<T1, T2>;
+  error?: (err: any) => any;
 }
