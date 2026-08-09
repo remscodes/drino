@@ -186,7 +186,7 @@ describe('Drino - Requests', () => {
       const config = { credentials: 'include' } as const;
 
       // Set the cookie
-      await drino.post<string>('http://localhost:8080/auth/login', {}, { read: 'string' }).consume();
+      await drino.post<string>('http://localhost:8080/auth/login', {}, { ...config, read: 'string' }).consume();
 
       // Use the cookie
       const { token } = await drino.get<{ token: string }>('http://localhost:8080/auth/context', config).consume();
