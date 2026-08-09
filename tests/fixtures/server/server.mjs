@@ -8,7 +8,6 @@ import { errorRouter } from './error.router.mjs';
 import { fileRouter } from "./file.router.mjs";
 import { itemRouter } from './item.router.mjs';
 
-const hostname = 'localhost';
 const port = 8080;
 
 function requestInfo() {
@@ -18,7 +17,7 @@ function requestInfo() {
   }
 }
 
-express()
+const server = express()
   .use(
     cors({
       origin: [
@@ -41,7 +40,21 @@ express()
   .get('/empty', ({}, res) => {
     res.status(204).send();
   })
-  .listen(port, hostname, () => {
-    console.info(`Test server running on : http://${hostname}:${port}`);
-    process.send?.(SERVER_READY);
-  });
+  // No hostname : binds every interface. With a hostname, 'localhost' resolves to `::1`
+  // on macOS and the server only listens in IPv6, while Firefox connects in IPv4 and
+  // silently reaches whatever else holds the port.
+  .listen(port);
+
+server.on('error', ({ code }) => {
+  console.error(`Test server cannot listen on port ${port} : ${code}. Is another server already running ?`);
+  process.exit(1);
+});
+
+// `express` calls the `listen` callback even when the bind failed, so readiness is
+// announced only once an address is actually assigned.
+server.on('listening', () => {
+  if (!server.address()) return;
+
+  console.info(`Test server running on : http://localhost:${port}`);
+  process.send?.(SERVER_READY);
+});
