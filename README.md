@@ -30,7 +30,7 @@ npm install drino
 - [Advanced Usage](#advanced-usage)
     - [Interceptors](#interceptors)
     - [Progress Capturing](#progress-capturing)
-    - [Pipe Methods](#pipe-methods)
+    - [Pipe Operators](#pipe-operators)
     - [Request Annulation](#request-annulation)
     - [Request Retry](#request-retry)
 - [React Native support](#react-native-support)
@@ -84,6 +84,9 @@ drino.put(url, body, config?)
 
 drino.patch(url, body, config?)
 
+Each of them builds a request controller : **nothing is sent until `consume()` is called**. `head`
+resolves the response `Headers` instead of a body.
+
 ### Request Config
 
 ```ts
@@ -114,30 +117,47 @@ interface RequestConfig {
   // default: 'none'
   wrapper?: 'none' | 'response';
 
+  // Context to be used with interceptors.
+  context?: (ctx: HttpContext) => HttpContext;
+
   // AbortSignal to cancel HTTP Request with an AbortController.
-  // See below in section 'Abort Request'.
+  // See below in section 'Request Annulation'.
   signal?: AbortSignal;
 
-  // Time limit from which the request is aborted.
+  // Time limit in milliseconds from which the request is aborted.
   //
   // default: 0 (= meaning disabled)
   //
   // See below in section 'Timeout'.
-  timeoutMs?: number;
+  timeout?: number;
 
   // Retry a failed request a certain number of times on a specific http status.
-  // See below in section 'Request retry'.
+  // See below in section 'Request Retry'.
   retry?: RetryConfig;
 
-  // Config to inspect download progress.
-  // See below in section 'Progress capturing'.
-  progress?: ProgressConfig;
+  // The `fetch` function used to perform the request.
+  //
+  // default: globalThis.fetch
+  fetch?: typeof fetch;
+
+  // Passed through to `fetch`.
+  credentials?: RequestCredentials;    // default: 'same-origin'
+  mode?: RequestMode;                  // default: 'cors'
+  priority?: RequestPriority;          // default: 'auto'
+  cache?: RequestCache;                // default: 'default'
+  redirect?: RequestRedirect;          // default: 'follow'
+  keepalive?: boolean;                 // default: false
+  referrerPolicy?: ReferrerPolicy;     // default: 'origin-when-cross-origin'
+  integrity?: string;
 }
 ```
 
+Download progress is not configured here : it is enabled by providing a `download` callback (see
+[Progress Capturing](#progress-capturing)).
+
 ### Instance
 
-Instance can be created to embde common configuration to all requests produced from this instance.
+An instance can be created to embed a common configuration into all requests produced from this instance.
 
 ```ts
 import drino from 'drino';
@@ -164,11 +184,11 @@ child.get('/meow').consume() // GET -> http://localhost:8080/cat/meow
 #### Instance Config
 
 ```ts
-interface DrinoDefaultConfig {
+interface DrinoConfig {
   // Base URL
   // Example : 'https://example.com/v1/api'
   //
-  // default: 'http://localhost'
+  // default: the current page origin (`window.location.origin`), or '' outside a browser
   baseUrl?: string | URL;
 
   // Interceptors to take action during http request lifecyle.
@@ -182,9 +202,12 @@ interface DrinoDefaultConfig {
     beforeFinish?: ({ req, ctx }) => Promise<void> | void;
   };
 
-  // Default requestConfig applied to all requests hosted by the instance
-  // See above in section 'Request Config'
-  requestsConfig?: RequestConfig;
+  // Default config applied to all requests hosted by the instance.
+  // See above in section 'Request Config'.
+  //
+  // `read`, `wrapper` and `signal` can only be set per request.
+  // `retry` accepts the extra `onMethods` option at this level.
+  requestsConfig?: DrinoDefaultRequestsConfigInit;
 }
 ```
 
@@ -223,16 +246,24 @@ const instance = drino.create({
 });
 ```
 
+Every interceptor receives a single object argument and can be `async` : it is awaited before the
+lifecycle goes on. All of them receive at least `req` (the `HttpRequest`) and `ctx` (the `HttpContext`
+shared by all interceptors of the same request).
+
+Interceptors of a child instance run after those of its parent.
+
 #### Before consume
 
 Intercept a `HttpRequest` before the request is launched.
+
+It also receives an `abort` function to cancel the request before it is even sent.
 
 Example :
 
 ```ts
 const instance = drino.create({
   interceptors: {
-    beforeConsume: (req) => {
+    beforeConsume: ({ req }) => {
       const token = myService.getToken();
       req.headers.set('Authorization', `Bearer ${token}`);
     }
@@ -242,15 +273,20 @@ const instance = drino.create({
 
 #### After consume
 
-Intercept a `HttpRequest` just after the response has been received.
+Intercept just after the response has been received, whether it succeeded or not.
+
+`ok` discriminates the response type : `res` is a `HttpResponse` when `ok` is `true`, a
+`HttpErrorResponse` otherwise.
+
+It is called once per request, not once per retry.
 
 Example :
 
 ```ts
 const instance = drino.create({
   interceptors: {
-    afterConsume: (req) => {
-      console.info(`Response received from ${req.url}`);
+    afterConsume: ({ req, res, ok }) => {
+      console.info(`Response ${res.status} received from ${req.url} (ok: ${ok})`);
     }
   }
 });
@@ -260,13 +296,15 @@ const instance = drino.create({
 
 Intercept a result before being passed into `result` callback (Observer) or into `then()` arg callback (Promise).
 
+`res` is always the full `HttpResponse`, even when `wrapper` is `'none'`.
+
 Example :
 
 ```ts
 const instance = drino.create({
   interceptors: {
-    beforeResult: (res) => {
-      console.info(`Result : ${res}`);
+    beforeResult: ({ res }) => {
+      console.info(`Result : ${res.body}`);
     }
   }
 });
@@ -276,18 +314,20 @@ const instance = drino.create({
 
 Intercept an error before being passed into `error` callback (Observer) or into `catch()` arg callback (Promise).
 
+It is called once the retries — if any — have all failed.
+
 Example :
 
 ```ts
 const instance = drino.create({
   interceptors: {
-    beforeError: (errorResponse) => {
-      if (errorResponse.status === 401) {
+    beforeError: ({ errRes }) => {
+      if (errRes.status === 401) {
         myService.clearToken();
         myService.navigateToLogin();
       }
       else {
-        console.error(`Error ${errorResponse.status} from ${errorResponse.url} : ${errorResponse.error}`);
+        console.error(`Error ${errRes.status} from ${errRes.url} : ${errRes.error}`);
       }
     }
   }
@@ -314,23 +354,13 @@ const instance = drino.create({
 
 #### Download
 
-You can inspect download progress with `downloadProgress` observer's callback.
+You can inspect download progress with the `download` observer's callback, or with the
+[`onDownload`](#pipe-operators) pipe operator.
 
-Progress capturing can be disabled for the instance or for the request by set `inspect: false` into ProgressConfig in
-RequestConfig.
+There is nothing to enable : the response stream is only inspected when a `download` callback is
+present (and the response is not a `204 No Content`).
 
-```ts
-interface ProgressConfig {
-  download?: {
-    // Enable download progress.
-    //
-    // default : true
-    inspect?: boolean;
-  };
-}
-```
-
-A `StreamProgressEvent` is passed to `downloadProgress` callback for each progress iteration.
+A `StreamProgressEvent` is passed to the `download` callback for each progress iteration.
 
 ```ts
 export interface StreamProgressEvent {
@@ -350,7 +380,7 @@ export interface StreamProgressEvent {
 
   // Estimated remaining time in milliseconds to complete the progress.
   // Equals to `0` for the first `iteration`.
-  remainingMs: number;
+  remainingTime: number;
 
   // Current chunk received or sent.
   chunk: Uint8Array;
@@ -364,8 +394,8 @@ Example :
 
 ```ts
 drino.get('/cat/image').consume({
-  download: ({ loaded, total, percent, speed, remainingTimeMs }) => {
-    const remainingSeconds = remainingTimeMs / 1000;
+  download: ({ loaded, total, percent, speed, remainingTime }) => {
+    const remainingSeconds = remainingTime / 1000;
     const speedKBs = speed / 1024 * 1000;
 
     console.info(`Received ${loaded} of ${total} bytes (${Math.floor(percent * 100)} %).`);
@@ -379,52 +409,91 @@ drino.get('/cat/image').consume({
 });
 ```
 
-### Pipe Methods
+### Pipe Operators
 
-Before calling `consume()` method, you can chain call methods to modify or inspect the current value before being passed
-into final callbacks.
-
-#### Transform
-
-Change the result value.
+Before calling `consume()`, you can pass operators to `pipe()` to modify or inspect the current value
+before it is passed into the final callbacks.
 
 Example :
 
 ```ts
+import drino, { mapResult, tap } from 'drino';
+
 drino.get('/cat/meow')
-  .transform((res) => res.name)
+  .pipe(
+    tap({ result: (cat) => console.log(cat) }), // { name: "Gaïa" }
+    mapResult((cat) => cat.name),
+  )
   .consume({
     result: (name) => {
-      // handle value
-    },
-  });
-```
-
-#### Check
-
-Read the result value without changing it.
-
-Example :
-
-```ts
-drino.get('/cat/meow')
-  .check((res) => console.log(res)) // { name: "Gaïa" }
-  .consume({
-    result: (res) => {
-      // handle value
+      // handle value -> "Gaïa"
     }
   });
 ```
 
-#### Report
+`pipe()` is **immutable** : it returns a new controller and leaves the source untouched, so a piped
+controller can be stored, reused and consumed several times.
 
-Read the error value without changing it.
+```ts
+const req = drino.get('/cat/meow');
+const name = req.pipe(mapResult((cat) => cat.name));
 
-Example :
+await req.consume();  // { name: "Gaïa" }
+await name.consume(); // "Gaïa"
+await name.consume(); // "Gaïa" — consumed again, new http request
+```
+
+#### Available operators
+
+| Operator | Signature | Description |
+|---|---|---|
+| `mapResult` | `(res: T1) => T2 \| Promise<T2>` | Change the result value. |
+| `tap` | `Observer<T>` | Read the value and lifecycle events without changing them. |
+| `reportError` | `(err: any) => void` | Read the error value without changing it. |
+| `finalize` | `() => void` | Run a callback when the controller finished (result, error or abort). |
+| `onAbort` | `(reason: any) => void` | Run a callback when the request is aborted. |
+| `onRetry` | `(ev: RetryEvent) => void` | Run a callback on each retry. |
+| `onDownload` | `(ev: StreamProgressEvent) => void` | Run a callback on each download progress iteration. |
+| `delay` | `(ms: number)` | Delay the emission of the result. |
+| `follow` | `(res: T1) => RequestController<T2>` | Make another http request that depends on the previous one. |
+
+#### Map result
+
+Change the result value. The mapper can be asynchronous.
 
 ```ts
 drino.get('/cat/meow')
-  .report((err) => console.error(err.name)) // "ErrorName" 
+  .pipe(mapResult((cat) => cat.name))
+  .consume({
+    result: (name) => {
+      // handle value -> "Gaïa"
+    }
+  });
+```
+
+#### Tap
+
+Read the value without changing it. It accepts a full Observer, so any of its callbacks can be used.
+
+```ts
+drino.get('/cat/meow')
+  .pipe(
+    tap({
+      result: (cat) => console.log(cat), // { name: "Gaïa" }
+      error: (err) => console.error(err),
+      finish: () => console.log('Finished'),
+    })
+  )
+  .consume();
+```
+
+#### Report error
+
+Read the error value without changing it.
+
+```ts
+drino.get('/cat/meow')
+  .pipe(reportError((err) => console.error(err.status))) // 404
   .consume({
     result: (res) => {
       // handle value
@@ -434,52 +503,78 @@ drino.get('/cat/meow')
 
 #### Finalize
 
-Finalize when controller finished.
-
-Example :
+Run a callback when the controller finished.
 
 ```ts
 drino.get('/cat/meow')
-  .finalize(() => console.log('Finished')) // "Finished"
+  .pipe(finalize(() => console.log('Finished'))) // "Finished"
   .consume({
     result: (res) => {
       // handle value
     }
   });
+```
+
+#### On abort / On retry / On download
+
+Same callbacks as the ones of the Observer passed to `consume()`, but attached to the pipe.
+
+```ts
+drino.get('/cat/image')
+  .pipe(
+    onRetry(({ count }) => console.log(`Retry n°${count}`)),
+    onDownload(({ percent }) => console.log(`${Math.floor(percent * 100)} %`)),
+    onAbort((reason) => console.error(reason)),
+  )
+  .consume();
+```
+
+#### Delay
+
+Delay the emission of the result by a given time in milliseconds.
+
+```ts
+drino.get('/cat/meow')
+  .pipe(delay(1_000)) // result emitted 1 second later
+  .consume();
 ```
 
 #### Follow
 
 Make another http request sequentially that depends on the previous one.
 
-Example :
-
 ```ts
 drino.get('/cat/meow')
-  .follow((cat) => drino.get(`/dog/wouaf/cat-friend/${cat.name}`))
+  .pipe(follow((cat) => drino.get(`/dog/wouaf/cat-friend/${cat.name}`)))
   .consume({
     result: (res) => {
-      // handle value
+      // handle the dog
     }
   });
 ```
 
-#### Method combination
+#### Custom operators
 
-Pipe methods can be combined.
-
-Example :
+An operator is simply a function taking a `RequestController` and returning another one. Two helpers
+are exported to build them : `pipeToMap` to transform the value, `pipeToObserve` for side effects.
 
 ```ts
-drino.get('/cat/meow')
-  .check((cat) => console.log(cat)) // { name: "Gaïa" }
-  .transform((cat) => cat.name)
-  .check((name) => console.log(name)) // "Gaïa"
-  .consume({
-    result: (name) => {
-      // handle value
-    }
+import { Pipeline, pipeToMap, pipeToObserve } from 'drino';
+
+function extractField<T, K extends keyof T>(field: K): Pipeline<T, T[K]> {
+  return pipeToMap((res) => res[field]);
+}
+
+function logAll<T>(prefix: string): Pipeline<T> {
+  return pipeToObserve({
+    result: (res) => console.log(prefix, res),
+    error: (err) => console.error(prefix, err),
   });
+}
+
+drino.get('/cat/meow')
+  .pipe(logAll('[cat]'), extractField('name'))
+  .consume();
 ```
 
 ### Request Annulation
@@ -525,13 +620,13 @@ async function getCatInfo() {
 
 #### Timeout
 
-You can cancel a send request after a certain time using a `timeoutMs` (timeout in milliseconds).
+You can cancel a sent request after a certain time using `timeout` (in milliseconds).
 
 Example :
 
 ```ts
 // With Observer
-drino.get('/cat/meow', { timeoutMs: 2_000 }).consume({
+drino.get('/cat/meow', { timeout: 2_000 }).consume({
   result: (res) => {
     // handle result
   },
@@ -544,7 +639,7 @@ drino.get('/cat/meow', { timeoutMs: 2_000 }).consume({
 // With Promise async/await
 async function getCatInfo() {
   try {
-    const res = await drino.get('/cat/meow', { timeoutMs: 2_000 }).consume();
+    const res = await drino.get('/cat/meow', { timeout: 2_000 }).consume();
     // handle result
   }
   catch (err) {
@@ -564,19 +659,19 @@ interface RetryConfig {
   // Maximum retries to do on failed request.
   //
   // default: 0
-  max: number;
+  max?: number;
 
   // Use the "Retry-After" response Header to know how much time it waits before retry.
   //
   // default: true
   withRetryAfter?: boolean;
 
-  // Specify the time in millisecond to wait before retry.
+  // Specify the time in milliseconds to wait before retry.
   //
   // Work only if `withRetryAfter` is `false` or if "Retry-After" response header is not present.
   //
   // default: 0
-  withDelayMs?: number;
+  delay?: number;
 
   // HTTP response status code to filter which request should be retried on failure.
   //
@@ -591,7 +686,7 @@ interface RetryConfig {
   // Example: ["GET", "POST"]
   // 
   // default: "*"
-  onMethods?: '*' | string[];
+  onMethods?: '*' | RequestMethodType[];
 }
 ```
 
@@ -609,7 +704,8 @@ instance.get('/my-failed-api', {
 });
 ```
 
-When using Observer, you can use the `retry` callback to get info about current retry via `RetryEvent`.
+You can use the `retry` observer callback — or the [`onRetry`](#pipe-operators) operator — to get info
+about the current retry via `RetryEvent`.
 
 ```ts
 export interface RetryEvent {
