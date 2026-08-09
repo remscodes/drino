@@ -9,7 +9,7 @@ export interface RequestConfig<
   /**
    * Prefix URL.
    *
-   * Example : 'https://example.com' OR '/v1/api'
+   * Example: 'https://example.com' OR '/v1/api'
    */
   prefix?: string;
   /**
@@ -64,7 +64,7 @@ export interface RequestConfig<
    */
   fetch?: typeof fetch;
   /**
-   * A string indicating whether credentials will be sent with the request: always, never or only when sent to a same-origin URL.
+   * A string indicating whether credentials will be sent with the request: always, never, or only when sent to a same-origin URL.
    *
    * @default 'same-origin'
    */

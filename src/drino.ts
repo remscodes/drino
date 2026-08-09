@@ -1,7 +1,7 @@
 import type { DrinoInstance, HttpResponse } from './';
 import { mergeInstanceConfig } from './drino-util';
 import type { DrinoPlugin } from './models';
-import type { DrinoParentConfig, DrinoConfig } from './models/drino.model';
+import type { DrinoConfig, DrinoParentConfig } from './models/drino.model';
 import type { RequestMethodType, Url } from './models/http.model';
 import type { RequestConfig } from './request';
 import { RequestController } from './request';

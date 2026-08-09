@@ -9,6 +9,6 @@ import { pipeToObserve } from '../pipe-function';
  *   onAbort(reason => console.log('Request aborted:', reason))
  * )
  */
-export function onAbort<T>(cb: Observer<T>['abort']): Pipeline<T> {
-  return pipeToObserve({ abort: cb });
+export function onAbort<T>(abortCb: Observer<T>['abort']): Pipeline<T> {
+  return pipeToObserve({ abort: abortCb });
 }

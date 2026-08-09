@@ -9,6 +9,6 @@ import { pipeToObserve } from '../pipe-function';
  *   onDownload(event => console.log('Progress:', event.progress))
  * )
  */
-export function onDownload<T>(cb: Observer<T>['download']): Pipeline<T> {
-  return pipeToObserve({ download: cb });
+export function onDownload<T>(downloadCb: Observer<T>['download']): Pipeline<T> {
+  return pipeToObserve({ download: downloadCb });
 }

@@ -9,6 +9,6 @@ import { pipeToObserve } from '../pipe-function';
  *   onRetry(event => console.log('Retry attempt', event))
  * )
  */
-export function onRetry<T>(cb: Observer<T>['retry']): Pipeline<T> {
-  return pipeToObserve({ retry: cb });
+export function onRetry<T>(retryCb: Observer<T>['retry']): Pipeline<T> {
+  return pipeToObserve({ retry: retryCb });
 }

@@ -9,6 +9,6 @@ import { pipeToObserve } from '../pipe-function';
  *   reportError(err => console.error('Request failed:', err))
  * )
  */
-export function reportError<T>(cb: Observer<T>['error']): Pipeline<T> {
-  return pipeToObserve({ error: cb });
+export function reportError<T>(errorCb: Observer<T>['error']): Pipeline<T> {
+  return pipeToObserve({ error: errorCb });
 }

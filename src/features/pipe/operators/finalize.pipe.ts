@@ -9,6 +9,6 @@ import { pipeToObserve } from '../pipe-function';
  *   finalize(() => console.log('Request completed'))
  * )
  */
-export function finalize<T>(cb: Observer<T>['finish']): Pipeline<T> {
-  return pipeToObserve({ finish: cb });
+export function finalize<T>(finishCb: Observer<T>['finish']): Pipeline<T> {
+  return pipeToObserve({ finish: finishCb });
 }

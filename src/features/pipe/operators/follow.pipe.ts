@@ -1,6 +1,6 @@
-import { RequestController } from '../../../request';
 import { FollowCallback } from '../../../request/models/request-controller.model';
 import { Pipeline } from '../models/pipeline.model';
+import { pipeToMap } from '../pipe-function';
 
 /**
  * Chains another request after the current one completes
@@ -13,8 +13,6 @@ import { Pipeline } from '../models/pipeline.model';
  *   )
  *   .consume();
  */
-export function follow<T1, T2>(cb: FollowCallback<T1, T2>): Pipeline<T1, T2> {
-  return (source: RequestController<T1>) => {
-    return source.addMapper((result: T1) => cb(result).consume()) as unknown as RequestController<T2>;
-  };
+export function follow<T1, T2>(followCb: FollowCallback<T1, T2>): Pipeline<T1, T2> {
+  return pipeToMap((result: T1) => followCb(result).consume());
 }

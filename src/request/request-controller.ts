@@ -1,7 +1,7 @@
+import { Pipeline } from '../features';
 import { fixChromiumAndWebkitTimeoutError, fixFirefoxAbortError } from '../features/abort/abort-util';
 import type { HttpContext } from '../features/interceptors/context/http-context';
 import { DEFAULT_HTTP_CONTEXT_CHAIN } from '../features/interceptors/context/http-context.constants';
-import { Pipeline } from '../features/pipe/models/pipeline.model';
 import type { DrinoParentConfig } from '../models/drino.model';
 import type { RequestMethodType, Url } from '../models/http.model';
 import { mergeCallback } from '../utils/fn-util';
@@ -50,7 +50,6 @@ export class RequestController<Resource> {
     return cloned;
   }
 
-
   public addMapper<NewResource>(mapper: Mapper<Resource, NewResource>): RequestController<NewResource> {
     const cloned = this.clone<NewResource>();
     cloned.chains.push({ result: mapper });
@@ -71,7 +70,15 @@ export class RequestController<Resource> {
       };
     }
 
-    if (observer.error) step.error = observer.error;
+
+    if (observer.error) {
+      const observerError = observer.error;
+      step.error = (err: any) => {
+        observerError(err);
+        return err;
+      };
+    }
+
     if (observer.finish) step.finish = observer.finish;
     if (observer.abort) step.abort = observer.abort;
     if (observer.retry) step.retry = observer.retry;
@@ -213,7 +220,8 @@ export class RequestController<Resource> {
   private async consumeAndGetResult(tools: FetchTools): Promise<Resource> {
     await this.config.interceptors.beforeConsume({ req: this.request, ctx: tools.context, abort: (r) => tools.abortCtrl.abort(r) });
 
-    if (tools.abortCtrl.signal.aborted) throw tools.abortCtrl.signal.reason;
+    const signal = tools.abortCtrl.signal;
+    if (signal.aborted) throw signal.reason;
 
     let result = await performHttpRequest<Resource>(this.request, tools);
 
@@ -227,10 +235,15 @@ export class RequestController<Resource> {
 
   /** @internal */
   private reject(thrown: any): any {
-    return (this.config.abortCtrl.signal.aborted) ?
-      (this.config.abortCtrl.signal.timeout) ? fixChromiumAndWebkitTimeoutError(thrown)
-        : fixFirefoxAbortError(thrown)
-      : thrown;
+    const signal = this.config.abortCtrl.signal;
+
+    if (signal.aborted && signal.timeout)
+      return fixChromiumAndWebkitTimeoutError(thrown);
+
+    if (signal.aborted && !signal.timeout)
+      return fixFirefoxAbortError(thrown);
+
+    return thrown;
   }
 }
 
