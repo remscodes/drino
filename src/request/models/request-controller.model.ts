@@ -37,5 +37,4 @@ export interface Observer<T = any> {
 
 export interface ObserverChain<T1, T2> extends Observer<T1> {
   result?: Mapper<T1, T2>;
-  error?: (err: any) => any;
 }

@@ -12,6 +12,18 @@ import type { FetchTools } from './models/fetch-tools.model';
 import type { Mapper, Observer, ObserverChain, RequestControllerConfig } from './models/request-controller.model';
 import { mergeRequestConfigs } from './request-util';
 
+type ObserverEventKey = Exclude<keyof Observer, 'result'>
+
+/**
+ * Observer keys forwarded as callbacks.
+ *
+ * `result` is excluded: chain results are mappers applied in `consumeAndGetResult`.
+ *
+ * Must be kept in sync with `Observer`.
+ * @internal
+ */
+const OBSERVER_EVENT_KEYS: ObserverEventKey[] = ['error', 'finish', 'abort', 'retry', 'download'];
+
 export class RequestController<Resource> {
 
   public constructor(init: DrinoRequestInit, defaultConfig: DrinoParentConfig) {
@@ -69,7 +81,6 @@ export class RequestController<Resource> {
         return res;
       };
     }
-
 
     if (observer.error) {
       const observerError = observer.error;
@@ -148,23 +159,18 @@ export class RequestController<Resource> {
   }
 
   /**
-   * Collects all observer callbacks from the pipeline and merges with the passed observer
+   * Collects all observer callbacks from the pipeline and merges with the passed observer.
    * @internal
    */
   private mergeWithChain(observer?: Observer<Resource>): Partial<Observer<Resource>> {
     const finalObserver: Partial<Observer<Resource>> = {};
 
-    for (const chain of this.chains) {
-      if (chain.error) mergeCallback(finalObserver, chain as any, 'error');
-      if (chain.finish) mergeCallback(finalObserver, chain as any, 'finish');
-      if (chain.abort) mergeCallback(finalObserver, chain as any, 'abort');
-      if (chain.retry) mergeCallback(finalObserver, chain as any, 'retry');
-      if (chain.download) mergeCallback(finalObserver, chain as any, 'download');
-    }
+    for (const chain of this.chains)
+      for (const key of OBSERVER_EVENT_KEYS) mergeCallback(finalObserver, chain, key);
 
     if (observer) {
-      for (const key in observer) {
-        mergeCallback(finalObserver, observer, key as keyof Observer<Resource>);
+      for (const key of Object.keys(observer) as (keyof Observer)[]) {
+        mergeCallback(finalObserver, observer, key);
       }
     }
 
@@ -178,15 +184,12 @@ export class RequestController<Resource> {
     }
     catch (thrown: unknown) {
       const signal = tools.abortCtrl.signal;
-      if (signal.aborted) {
-        observer.abort?.(signal.reason);
-        throw thrown;
-      }
-
       const err = this.reject(thrown);
-      observer.error?.(err);
 
-      throw thrown;
+      if (signal.aborted) observer.abort?.(signal.reason);
+      else observer.error?.(err);
+
+      throw err;
     }
     finally {
       await this.config.interceptors.beforeFinish({ req: this.request, ctx: tools.context });
@@ -206,7 +209,6 @@ export class RequestController<Resource> {
         if (signal.aborted) return observer.abort?.(signal.reason);
 
         const err = this.reject(thrown);
-
         observer.error?.(err);
       }
       finally {
